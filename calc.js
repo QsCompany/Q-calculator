@@ -55,7 +55,12 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
                 this.hasDot = true;
                 this.ndec = 1;
             }
+            else if (c == 'c')
+                return this.clear();
             else {
+                var cfn = CalcData.opers[c];
+                if (!cfn)
+                    return;
                 var fn = CalcData.opers[this.Oper];
                 if (this.lc) {
                     this.Stream = this.Stream.substr(0, this.Stream.length - 1) + c;
@@ -74,8 +79,6 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
                     this.Stream += c;
                     return;
                 }
-                else if (c == 'c')
-                    return this.clear();
                 else
                     return;
             }

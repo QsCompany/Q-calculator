@@ -1,4 +1,4 @@
-import { basic, bind, mvc, collection, utils, BuckupList, reflection } from './corelib';
+import { basic, bind, mvc, collection, utils, BuckupList, reflection } from './Corelib';
 import { defs } from './defs';
 import { filters } from './Filters';
 export declare type conv2template = mvc.ITemplate | string | Function | UI.Template | HTMLElement;

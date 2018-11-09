@@ -53,14 +53,17 @@ export class CalcData extends bind.DObject {
             this.hasDot = true;
             this.ndec = 1;
         }
+        else if(c=='c')
+            return this.clear();
         else {
+            var cfn=CalcData.opers[c];
+            if(!cfn) return;
             var fn = CalcData.opers[this.Oper];
             if (this.lc) {
                 this.Stream = this.Stream.substr(0, this.Stream.length - 1) + c;
                 this.Oper = c;
                 return;
             }
-
             if (c == '=') {
                 if (fn)
                     var r = fn(this.Result, this.Num);
@@ -74,7 +77,6 @@ export class CalcData extends bind.DObject {
                 return;
 
             }
-            else if (c == 'c') return this.clear();
             else return;
         }
         this.lc = void 0;
