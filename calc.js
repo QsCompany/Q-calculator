@@ -37,14 +37,16 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
             return _this;
         }
         CalcData.prototype.getChar = function (c) {
-            var s = (c.currentTarget || c.target).getAttribute('arg');
+            if (c instanceof KeyboardEvent)
+                var s = c.key;
+            else if (c instanceof MouseEvent)
+                s = (c.currentTarget || c.target).getAttribute('arg');
             var x = s;
             if (x >= '0' && x <= '9')
                 return parseInt(x);
             return x;
         };
-        CalcData.prototype.append = function (c) {
-            c = this.getChar(c);
+        CalcData.prototype.AppendChar = function (c) {
             if (typeof c == 'number')
                 this.Num = !this.hasDot ? this.Num * 10 + c : this.Num + c / (this.ndec *= 10);
             else if (c == '.') {
@@ -79,6 +81,9 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
             }
             this.lc = void 0;
             this.Stream += c;
+        };
+        CalcData.prototype.append = function (c) {
+            this.AppendChar(this.getChar(c));
         };
         CalcData.prototype.clear = function (result, oper, keepStrm) {
             this.Result = typeof result === 'number' ? result : 0;
@@ -128,6 +133,9 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
             });
             return _this;
         }
+        Calc.prototype.OnKeyDown = function (e) {
+            this.Value.append(e);
+        };
         Calc.prototype.setName = function (e, d) {
             if (e === 'rslt')
                 this.rslt = d;
@@ -176,9 +184,6 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
         };
         return App;
     }(Core_1.UI.Layout));
-    function test() {
-        (new App()).ShowApp();
-    }
-    test();
+    (new App()).ShowApp();
 });
 //# sourceMappingURL=calc.js.map
