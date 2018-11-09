@@ -1,0 +1,83 @@
+<template name="calcView">
+    <calc id="app"   v-cloak>
+        <div id="calculator">
+            <div class="screen-container">
+                <div class="result">
+                    <transition name="slide-fade">
+                    <div class="number" db-name="rslt"  v-cloak db-str>{{Result}}</div>
+                    </transition>
+                </div>
+                <div class="calculation">
+                    <div class="number" v-cloak db-str>{{Stream}}</div>
+                </div>
+            </div>
+            <div class="btn-container">
+                <div class="oper-container">
+                        <div class="btn" id="clear" on-click="clear">
+                            <div class="number">AC</div>
+                        </div>
+                        <div class="btn operations divide" on-click="append" arg="/">
+                            <div class="number">÷</div>
+                        </div>
+                        <div class="btn operations multiplication" on-click="append" arg="*">
+                            <div class="number">×</div>
+                        </div>
+                        <div class="btn operations plus" on-click="append" arg="+">
+                            <div class="number">+</div>
+                        </div>
+                        <div class="btn operations less" on-click="append" arg="-">
+                            <div class="number">-</div>
+                        </div>
+                </div>
+                        
+                <div class="row">
+                    <div class="btn" on-click="append" arg="7">
+                        <div class="number">7</div>
+                    </div>
+                    <div class="btn" on-click="append" arg="8">
+                        <div class="number">8</div>
+                    </div>
+                    <div class="btn" on-click="append" arg="9">
+                        <div class="number">9</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="btn" on-click="append" arg="4">
+                        <div class="number">4</div>
+                    </div>
+                    <div class="btn" on-click="append" arg="5">
+                        <div class="number">5</div>
+                    </div>
+                    <div class="btn" on-click="append" arg="6">
+                        <div class="number">6</div>
+                    </div>                    
+                </div>
+                <div class="row">
+                    <div class="btn" on-click="append" arg="1">
+                        <div class="number">1</div>
+                    </div>
+                    <div class="btn" on-click="append" arg="2">
+                        <div class="number">2</div>
+                    </div>
+                    <div class="btn" on-click="append" arg="3">
+                        <div class="number">3</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="btn" id="dot" on-click="append" arg=".">
+                        <div class="number">.</div>
+                    </div>
+                    <div class="btn" on-click="append" arg="0">
+                        <div class="number">0</div>
+                    </div>
+                        <div class="btn">
+                        <div class="number"></div>
+                    </div>
+                    <div class="btn" id="result" on-click="append" arg="=">
+                        <div class="number">=</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

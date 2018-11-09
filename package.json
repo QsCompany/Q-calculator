@@ -1,0 +1,17 @@
+{
+  "name": "q-calculator",
+  "version": "1.0.0",
+  "description": "Simple cacuator code using Q-infinite framework",
+  "main": "calc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "caclulator",
+    "q-infinite"
+  ],
+  "author": "Achour Brahim",
+  "license": "UNLICENSED",
+  "dependencies": {
+  }
+}
