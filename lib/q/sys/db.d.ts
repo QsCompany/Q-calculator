@@ -1,13 +1,13 @@
 import { basic, bind, collection } from './Corelib';
 import { sdata } from './System';
 export declare module db {
-    type callback<T> = (iss: boolean, sender: Database, sqlTrans, result?: SQLResultSet<T>) => void;
+    type callback<T> = (iss: boolean, sender: Database, sqlTrans: any, result?: SQLResultSet<T>) => void;
     interface IExecCmd {
         cmd: string;
-        callback: (iss: boolean, sender: Database, sqlTrans, result?) => void;
+        callback: (iss: boolean, sender: Database, sqlTrans: any, result?: any) => void;
     }
     interface IDatabase {
-        transaction(callback: (db) => void, onerror: (db, b) => void): any;
+        transaction(callback: (db: any) => void, onerror: (db: any, b: any) => void): any;
     }
     interface Command {
         async: boolean;
@@ -16,11 +16,11 @@ export declare module db {
     }
     interface ScalCommand extends Command {
         cmd: string;
-        callback?: (iss: boolean, sender: Database, sqlTrans, result?: SQLResultSet<any>) => void;
+        callback?: (iss: boolean, sender: Database, sqlTrans: any, result?: SQLResultSet<any>) => void;
     }
     interface VectorCommand extends Command {
         cmd: string[];
-        callback?: (index: number, iss: boolean, sender: Database, sqlTrans, result?: SQLResultSet<any>) => void;
+        callback?: (index: number, iss: boolean, sender: Database, sqlTrans: any, result?: SQLResultSet<any>) => void;
     }
     class Database {
         databaseName: string;
@@ -37,21 +37,21 @@ export declare module db {
         private isExecuting;
         private queue;
         Push(cmd: ScalCommand | VectorCommand): void;
-        execute(async: boolean, command: string, callback?: (iss: boolean, sender: this, sqlTrans, result?: SQLResultSet<any>) => void): void;
+        execute(async: boolean, command: string, callback?: (iss: boolean, sender: this, sqlTrans: any, result?: SQLResultSet<any>) => void): void;
         _exeScalSQL(db: any, cmd: ScalCommand): void;
         _exeVectorSQL(db: any, cmd: VectorCommand): void;
-        executes(async: boolean, commands: string[], callback?: (index: number, iss: boolean, sender: this, sqlTrans, result?: SQLResultSet<any>) => void): void;
-        syncExecute(command: any, callback?: (iss: boolean, sender: this, sqlTrans, result?) => void): void;
+        executes(async: boolean, commands: string[], callback?: (index: number, iss: boolean, sender: this, sqlTrans: any, result?: SQLResultSet<any>) => void): void;
+        syncExecute(command: any, callback?: (iss: boolean, sender: this, sqlTrans: any, result?: any) => void): void;
         private _commands;
         private _current;
         private _IsExecuting;
-        private _Push(cmd);
+        private _Push;
         private _job;
-        private _runCmd();
-        private _transaction(db);
-        private _OnSuccess(sql, rslt);
-        private _OnError(sqlE);
-        private _next();
+        private _runCmd;
+        private _transaction;
+        private _OnSuccess;
+        private _OnError;
+        private _next;
         CreateTable(name: string, rowType: Function): this;
         Get(tableName: string): IDBTableInfo;
         private _store;
@@ -71,18 +71,18 @@ export declare module db {
         readonly Key: bind.DProperty<any, bind.DObject>;
         constructor(tableName: any, type: Function);
         init(): void;
-        private getSB(s);
+        private getSB;
         getCreateCmd(): basic.StringCompile;
         getInsertCmd(): basic.StringCompile;
         getUpdateCmd(): basic.StringCompile;
         getSelectCmd(): basic.StringCompile;
         getDeleteCmd(): basic.StringCompile;
-        private getTypeName(type);
-        private getDbValue(name, v);
+        private getTypeName;
+        private getDbValue;
         getNumber(v: any): string;
         static emptyDate: Date;
-        private static parseBool(v);
-        private getJsValue(name, v);
+        private static parseBool;
+        private getJsValue;
         getAvaibleCmd(extCols: string | string[]): string;
         jointCols(cols: string[]): string;
     }
@@ -90,13 +90,13 @@ export declare module db {
         database: Database;
         builder: SQLInstructureBuilder;
         constructor(database: Database, tableName: string, type: Function);
-        Insert(row: T, callback: (iss: boolean, sender: Database, sqlTrans, result) => void): void;
-        Delete(row: T, callback: (iss: boolean, sender: Database, sqlTrans, result) => void): void;
-        Update(row: T, callback: (iss: boolean, sender: Database, sqlTrans, result) => void): void;
-        Select(row: T, callback: (iss: boolean, sender: Database, sqlTrans, result) => void): void;
-        Create(callback: (iss: boolean, sender: Database, sqlTrans, result) => void): void;
+        Insert(row: T, callback: (iss: boolean, sender: Database, sqlTrans: any, result: any) => void): void;
+        Delete(row: T, callback: (iss: boolean, sender: Database, sqlTrans: any, result: any) => void): void;
+        Update(row: T, callback: (iss: boolean, sender: Database, sqlTrans: any, result: any) => void): void;
+        Select(row: T, callback: (iss: boolean, sender: Database, sqlTrans: any, result: any) => void): void;
+        Create(callback: (iss: boolean, sender: Database, sqlTrans: any, result: any) => void): void;
         ExecuteOperation(cm: IOperation, callback?: db.callback<T>): void;
-        getAvaible(exCols?: string | string[], callback?: (iss: boolean, sender: Database, sqlTrans, result?) => void): void;
+        getAvaible(exCols?: string | string[], callback?: (iss: boolean, sender: Database, sqlTrans: any, result?: any) => void): void;
         ExecuteOperations(ops: IOperation[], callback: (succ: boolean, nfail: number) => void): void;
         static __count: number;
         ExecuteOperations1(ops: IOperation[], callback: (succ: boolean, nfail: number) => void): void;
@@ -150,7 +150,7 @@ export declare module db {
         Insert = 2,
         Delete = 3,
         UpdateOnly = 4,
-        InsertOnly = 5,
+        InsertOnly = 5
     }
     interface SQLResultSet<T> {
         rows: T[];

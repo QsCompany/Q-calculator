@@ -1,0 +1,53 @@
+<templates>
+    <template name="calc-button">
+        <div class="btn" id="clear">
+            <div class="number"></div>
+        </div>
+    </template>
+    <template name="calcView">
+        <calc id="app" v-cloak>
+            <div id="calculator">
+                <div class="screen-container">
+                    <div class="result">
+                        <q-transition name="slide-fade">
+                            <div id="rslt" db-style="font-size:{{50-((data.Result).toString().length * 1.25)}}px" class="number" db-name="rslt" db-str>{{Result}}</div>
+                        </q-transition>
+                    </div>
+                    <div class="calculation">
+                        <div class="number" v-cloak db-str>{{Stream}}</div>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <div class="oper-container" db-name="btnList">
+                        <calc-button label="AC" on-click="clear" id="clear"></calc-button>
+                        <calc-button label="÷" on-click="append" class="operations divide" arg="/"></calc-button>
+                        <calc-button label="x" on-click="append" class="operations multiplication" arg="*"></calc-button>
+                        <calc-button label="+" on-click="append" class="operations plus" arg="+"></calc-button>
+                        <calc-button label="-" on-click="append" class="operations less" arg="-"></calc-button>
+                    </div>
+                    <div class="row">
+                        <calc-button label="7" on-click="append" class="append" arg="7"></calc-button>
+                        <calc-button label="8" on-click="append" class="append" arg="8"></calc-button>
+                        <calc-button label="9" on-click="append" class="append" arg="9"></calc-button>
+                    </div>
+                    <div class="row">
+                        <calc-button label="4" on-click="append" class="append" arg="4"></calc-button>
+                        <calc-button label="5" on-click="append" class="append" arg="5"></calc-button>
+                        <calc-button label="6" on-click="append" class="append" arg="6"></calc-button>
+                    </div>
+                    <div class="row">
+                        <calc-button label="1" on-click="append" class="append" arg="1"></calc-button>
+                        <calc-button label="2" on-click="append" class="append" arg="2"></calc-button>
+                        <calc-button label="3" on-click="append" class="append" arg="3"></calc-button>
+                    </div>
+                    <div class="row">
+                        <calc-button label="." on-click="append" class="append" arg="."></calc-button>
+                        <calc-button label="0" on-click="append" class="append" arg="0"></calc-button>
+                        <calc-button></calc-button>
+                        <calc-button label="=" on-click="append" arg="=" id="result"></calc-button>
+                    </div>
+                </div>
+            </div>
+        </calc>
+    </template>
+</templates>

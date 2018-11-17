@@ -1,244 +1,110 @@
-import { basic, bind, mvc, collection, utils, BuckupList, reflection } from './Corelib';
+import { basic, bind, collection, utils, BuckupList } from './Corelib';
 import { defs } from './defs';
 import { filters } from './Filters';
+import { reflection, mvc } from './runtime';
+import { attributes, help as _help, Controller } from "./Dom";
 export declare type conv2template = mvc.ITemplate | string | Function | UI.Template | HTMLElement;
 export declare module UI {
     enum KeyboardControllerResult {
         Handled = 0,
         Release = -1,
-        ByPass = 2,
+        ByPass = 2
     }
-    interface IKeyCombinerTarget extends basic.ITBindable<(k: keyCominerEvent, e: IKeyCombinerTarget) => void> {
-        target?: Node | JControl;
+    enum Keys {
+        Enter = 13,
+        Tab = 9,
+        Esc = 27,
+        Escape = 27,
+        Up = 38,
+        Down = 40,
+        Left = 37,
+        Right = 39,
+        PgDown = 34,
+        PageDown = 34,
+        PgUp = 33,
+        PageUp = 33,
+        End = 35,
+        Home = 36,
+        Insert = 45,
+        Delete = 46,
+        Backspace = 8,
+        Space = 32,
+        Meta = 91,
+        Win = 91,
+        Mac = 91,
+        Multiply = 106,
+        Add = 107,
+        Subtract = 109,
+        Decimal = 110,
+        Divide = 111,
+        Scrollock = 145,
+        Pausebreak = 19,
+        Numlock = 144,
+        "5numlocked" = 12,
+        Shift = 16,
+        Capslock = 20,
+        F1 = 112,
+        F2 = 113,
+        F3 = 114,
+        F4 = 115,
+        F5 = 116,
+        F6 = 117,
+        F7 = 118,
+        F8 = 119,
+        F9 = 120,
+        F10 = 121,
+        F11 = 122,
+        F12 = 123,
+        AltLeft = 18,
+        AltRight = 18,
+        ShiftLeft = 18,
+        ShiftRight = 18,
+        ControlLeft = 17,
+        ControlRight = 17,
+        MetaLeft = 91,
+        MetaRight = 91
     }
-    interface IKeyA {
-        [s: string]: IKeyCombinerTarget[];
+    enum Controlkeys {
+        Alt = 18,
+        Shift = 16,
+        Control = 17,
+        Meta = 91
     }
-    class keyCominerEvent {
-        Owner: any;
-        OnComined: bind.EventListener<(owner: this, e: IKeyCombinerTarget) => void>;
-        private _keyA;
-        private _keyB;
-        private handlers;
-        sort(ar: IKeyCombinerTarget[]): void;
-        sort1(ar: Node[]): void;
-        KeyA: KeyboardEvent;
-        KeyB: KeyboardEvent;
-        constructor(Owner: any);
-        private elementInViewport1(el);
-        private elementInViewport(el);
-        Cancel: boolean;
-        private _stopEvent;
-        private _rise();
-        reset(): void;
-        handleEvent(e: KeyboardEvent): void;
-        private isValid(keyA);
-        On(keyA: string, keyB: string, handle: (s: keyCominerEvent, e: IKeyCombinerTarget) => void, target?: JControl | Node, owner?: any): IKeyCombinerTarget;
-        Off(keyA: string, keyB: string, e: IKeyCombinerTarget): void;
-        private _pause;
-        protected dom: HTMLElement;
-        pause(): void;
-        resume(): void;
-        attachTo(dom: HTMLElement): void;
-        stopPropagation(): void;
-    }
-    class DesktopKeyboardManager extends keyCominerEvent {
-        protected desk: Desktop;
-        constructor(desk: Desktop);
-        dom: HTMLElement;
-        attachTo(v: HTMLElement): void;
-    }
-    interface IKeyboardControllerEventArgs {
-        e?: KeyboardEvent;
-        Result?: KeyboardControllerResult;
-        Controller: IKeyboardController;
-    }
-    interface IKeyboardController {
-        owner?: any;
-        invoke(e: IKeyboardControllerEventArgs): any;
-        onResume?(e: IKeyboardControllerEventArgs): boolean;
-        onPause?(e: IKeyboardControllerEventArgs): boolean;
-        onStop?(e: IKeyboardControllerEventArgs): boolean;
-        stackable?: boolean;
-        params?: any[];
-    }
-    class KeyboardControllerManager {
-        Desktop: UI.Desktop;
-        private _controllers;
-        _current: IKeyboardController;
-        constructor(Desktop: UI.Desktop);
-        Current(): IKeyboardController;
-        GetController(nc: IKeyboardController): boolean;
-        Release(c: IKeyboardController): boolean;
-        ResumeStack(): boolean;
-        Invoke(e: KeyboardEvent): KeyboardControllerResult;
-    }
-}
-export declare module UI {
     enum Events {
         keydown = 2,
         keyup = 3,
-        keypress = 5,
+        keypress = 5
     }
-    abstract class JControl extends bind.Scop implements EventListenerObject {
-        protected _view: HTMLElement;
-        private _parentScop;
-        getParent(): bind.Scop;
-        protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
-        setParent(v: bind.Scop): boolean;
-        CombinatorKey(keyA: string, keyB: string, callback: (this: this, e: keyCominerEvent) => void): IKeyCombinerTarget;
-        SearchParents<T extends JControl>(type: Function): T;
-        static LoadCss(url: any): HTMLLinkElement;
-        static __fields__(): any[];
-        readonly InnerHtml: string;
-        Float(v: HorizontalAlignement): void;
-        Clear(): void;
-        protected parent: JControl;
-        _presenter: JControl;
-        private _hotKey;
-        _onInitialize: bind.EventListener<(s: JControl) => void>;
-        OnInitialized: (s: this) => void;
-        Presenter: JControl;
-        setAttribute(name: any, value: any): this;
-        OnKeyDown(e: KeyboardEvent): any | void;
-        OnContextMenu(e: MouseEvent): any;
-        OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any | void;
-        setAttributes(attributes: {
-            [s: string]: string;
-        }): this;
-        applyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
-        applyStyle(a: string, b: string, c: string, d: string, e: string): any;
-        applyStyle(a: string, b: string, c: string, d: string): any;
-        applyStyle(a: string, b: string, c: string): any;
-        applyStyle(a: string, b: string): any;
-        applyStyle(a: string): any;
-        disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string, x: string): any;
-        disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
-        disapplyStyle(a: string, b: string, c: string, d: string, e: string): any;
-        disapplyStyle(a: string, b: string, c: string, d: string): any;
-        disapplyStyle(a: string, b: string, c: string): any;
-        disapplyStyle(a: string, b: string): any;
-        disapplyStyle(a: string): any;
-        private _display;
-        Visible: boolean;
-        Wait: boolean;
-        Enable: boolean;
-        Parent: JControl;
-        private static counter;
-        private _id;
-        private init;
-        readonly IsInit: boolean;
-        protected OnFullInitialized(): void;
-        protected OnPaint: (this: this, n: this) => void;
-        protected instantanyInitializeParent(): boolean;
-        ToolTip: string;
-        readonly View: HTMLElement;
-        constructor(_view: HTMLElement);
-        protected _hasValue_(): boolean;
-        protected abstract initialize(): any;
-        static createDiv(): HTMLDivElement;
-        addEventListener<T>(event: string, handle: (sender: this, e: Event, param: T) => void, param: T, owner?: any): basic.DomEventHandler<any, any>;
-        private static _handle(eth, ev, p);
-        AddRange(chidren: JControl[]): this;
-        Add(child: JControl): this;
-        IndexOf(child: JControl): void;
-        Insert(child: JControl, to: number): this;
-        Remove(child: JControl, dispose?: boolean): boolean;
-        protected getTemplate(child: JControl): JControl;
-        readonly Id: number;
-        Dispose(): void;
-        protected OnHotKey(): void;
-        HotKey: HotKey;
-        handleEvent(e: Event): void;
-        private _events;
-        private isEventRegistred(event);
-        private registerEvent(event);
-        static toggleClass(dom: any, className: any): void;
+    enum ListType {
+        Ordred = 0,
+        UnOrdred = 1
     }
-    namespace attributes {
-        function ContentProperty(propertyName: string | bind.DProperty<any, any>): (target: typeof JControl) => void;
-        function ChildrenProperty(e: {
-            PropertyName?: string;
-            MethodName?: string;
-        }): (target: typeof JControl) => void;
-        function SelfProcessing(): (target: typeof JControl) => void;
+    enum MetricType {
+        Pixel = 0,
+        Percentage = 1,
+        Inch = 2,
+        Em = 3
     }
-    interface IContentControl extends JControl {
-        Content: JControl;
+    enum ButtonStyle {
+        Default = 0,
+        Primary = 1,
+        success = 2,
+        Info = 3,
+        Warning = 4,
+        Danger = 5,
+        Link = 6,
+        Block = 7
     }
-    abstract class Control<T extends JControl> extends JControl {
-        private _c;
-        private readonly Children;
-        Add(child: T): this;
-        Insert(child: T, to: number): this;
-        Remove(child: T, dispose?: boolean): boolean;
-        RemoveAt(i: number, dispose: boolean): boolean;
-        protected abstract Check(child: T): any;
-        protected readonly HasTemplate: boolean;
-        protected getTemplate(child: T): JControl;
-        protected OnChildAdded(child: T): void;
-        getChild(i: number): T;
-        IndexOf(item: T): number;
-        constructor(view: HTMLElement);
-        readonly Count: number;
-        CloneChildren(): void;
-        Clear(dispose?: boolean): void;
-        Dispose(): void;
-    }
-    class Desktop extends Control<App> {
-        static DPCurrentApp: bind.DProperty<App, Desktop>;
-        static DPCurrentLayout: bind.DProperty<JControl, Desktop>;
-        CurrentLayout: JControl;
-        Logout(): any;
-        OpenSignin(): void;
-        isReq: number;
-        KeyCombiner: keyCominerEvent;
-        CurrentApp: defs.UI.IApp;
-        static ctor(): void;
-        private _currentLayoutChanged(e);
-        private selectApp(oldApp, app);
-        static __fields__(): bind.DProperty<JControl, Desktop>[];
-        AuthStatChanged(v: boolean): void;
-        private apps;
-        IsSingleton: boolean;
-        constructor();
-        initialize(): void;
-        private observer;
-        private mouseController(e);
-        KeyboardManager: UI.KeyboardControllerManager;
-        private _keyboardControllers;
-        private _keyboardController;
-        private KeyboardController;
-        GetKeyControl(owner: any, invoke: (e: KeyboardEvent, ...params: any[]) => KeyboardControllerResult, params: any[]): void;
-        ReleaseKeyControl(): void;
-        private focuser;
-        private handleTab(e, _view);
-        OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): void;
-        defaultKeys: string;
-        OnKeyDown(e: KeyboardEvent): void;
-        handleEvent(e: Event): any;
-        OnContextMenu(e: MouseEvent): any;
-        private ShowStart();
-        static readonly Current: Desktop;
-        Check(v: defs.UI.IApp): boolean;
-        Show(app: defs.UI.IApp): void;
-        private to;
-        private loadApp;
-        Add(i: defs.UI.IApp): this;
-        Register(app: defs.UI.IApp): void;
-        AuthenticationApp: defs.UI.IAuthApp;
-        private Redirect(app);
-        OnUsernameChanged(job: any, e: any): void;
-    }
-    class Container extends Control<JControl> {
-        constructor();
-        initialize(): void;
-        Check(child: JControl): boolean;
+    enum SearchActionMode {
+        None = 0,
+        Validated = 1,
+        Instantany = 2,
+        NoSearch = 3
     }
     enum Icons {
         Bar = 0,
         Next = 1,
-        Prev = 2,
+        Prev = 2
     }
     enum Glyphs {
         none = 0,
@@ -504,16 +370,340 @@ export declare module UI {
         menuLeft = 260,
         menuRight = 261,
         menuDown = 262,
-        menuUp = 263,
+        menuUp = 263
+    }
+    enum MessageResult {
+        Exit = 0,
+        ok = 1,
+        cancel = 2,
+        abort = 3
+    }
+    enum NotifyType {
+        Focuse = 0,
+        UnFocus = 1
+    }
+    enum ServiceType {
+        Main = 0,
+        Stackable = 1,
+        Instantany = 3
+    }
+    interface IContextMenuItem {
+        Title: string;
+        Shortcut?: string;
+        Icon?: string;
+    }
+    enum Location {
+        Left = 1,
+        Top = 2,
+        Right = 4,
+        Bottom = 8,
+        HCenter = 5,
+        VCenter = 10,
+        Center = 15,
+        TopLeft = 3
+    }
+    interface IContextMenuEventArgs<T> {
+        ObjectStat?: any;
+        e: MouseEvent;
+        x: number;
+        y: number;
+        selectedItem?: T;
+        cancel?: boolean;
+        callback(e: IContextMenuEventArgs<T>): any;
+    }
+    interface IContextMenu<T> {
+        getTarget(): JControl;
+        OnAttached(e: IContextMenuEventArgs<T>): any;
+        OnClosed(result: T, e: IContextMenuEventArgs<T>): boolean;
+        getView(): UI.JControl;
+    }
+    interface IService {
+        GetLeftBar(): JControl;
+        GetRightBar(): JControl;
+        Handler?: EventTarget;
+        ServiceType: ServiceType;
+        Notify?: bind.EventListener<(s: IService, notifyTYpe: NotifyType) => void>;
+        Callback(args: any): any;
+        Handled(): boolean;
+    }
+    interface INavEventArgs {
+        List: NavPage;
+        Item: NavPanel;
+    }
+    interface IKeyCombinerTarget extends basic.ITBindable<(k: keyCominerEvent, e: IKeyCombinerTarget) => void> {
+        target?: Node | JControl;
+    }
+    interface IKeyA {
+        [s: string]: IKeyCombinerTarget[];
+    }
+    interface IKeyboardControllerEventArgs {
+        e?: KeyboardEvent;
+        Result?: UI.KeyboardControllerResult;
+        Controller: IKeyboardController;
+    }
+    interface IKeyboardController {
+        owner?: any;
+        invoke(e: IKeyboardControllerEventArgs): any;
+        onResume?(e: IKeyboardControllerEventArgs): boolean;
+        onPause?(e: IKeyboardControllerEventArgs): boolean;
+        onStop?(e: IKeyboardControllerEventArgs): boolean;
+        stackable?: boolean;
+        params?: any[];
+    }
+    interface IItem {
+        Tag: any;
+        Content: string | HTMLElement | JControl;
+        Url: string;
+        OnItemSelected(menuItem: MenuItem): any;
+    }
+    enum HorizontalAlignement {
+        Left = 0,
+        Center = 1,
+        Right = 2
+    }
+    enum VerticalAlignement {
+        Top = 0,
+        Center = 1,
+        Bottom = 2
+    }
+}
+export declare module UI {
+    class HotKey {
+        private _key;
+        private __ctrl;
+        Key: Keys;
+        Control: Controlkeys;
+        IsPressed(e: KeyboardEvent): boolean;
+        private checkKey;
+        private checkControl;
+    }
+}
+export declare module UI {
+    function processHTML(dom: HTMLElement, data?: any): TControl<any>;
+    class DragableElement implements EventListenerObject {
+        element: HTMLElement;
+        header: HTMLElement;
+        pos1: number;
+        pos2: number;
+        pos3: number;
+        pos4: number;
+        private closeDragElementHandler;
+        private elementDragHandler;
+        elementDrag(e: MouseEvent): void;
+        closeDragElement(): void;
+        handleEvent(e: MouseEvent): void;
+        constructor(element: HTMLElement, header: HTMLElement);
+        initialize(element: HTMLElement, header: HTMLElement): void;
+        Dispose(): void;
+    }
+    class keyCominerEvent {
+        Owner: any;
+        OnComined: bind.EventListener<(owner: this, e: IKeyCombinerTarget) => void>;
+        private _keyA;
+        private _keyB;
+        private handlers;
+        sort(ar: IKeyCombinerTarget[]): undefined;
+        sort1(ar: Node[]): void;
+        KeyA: KeyboardEvent;
+        KeyB: KeyboardEvent;
+        constructor(Owner: any);
+        private elementInViewport1;
+        private elementInViewport;
+        Cancel: boolean;
+        private _stopEvent;
+        private _rise;
+        reset(): void;
+        handleEvent(e: KeyboardEvent): void;
+        private isValid;
+        On(keyA: string, keyB: string, handle: (s: keyCominerEvent, e: IKeyCombinerTarget) => void, target?: JControl | Node, owner?: any): IKeyCombinerTarget;
+        Off(keyA: string, keyB: string, e: IKeyCombinerTarget): void;
+        private _pause;
+        protected dom: HTMLElement;
+        pause(): void;
+        resume(): void;
+        attachTo(dom: HTMLElement): void;
+        stopPropagation(): void;
+    }
+    class DesktopKeyboardManager extends keyCominerEvent {
+        protected desk: Desktop;
+        constructor(desk: Desktop);
+        dom: HTMLElement;
+        attachTo(v: HTMLElement): void;
+    }
+    class KeyboardControllerManager {
+        Desktop: UI.Desktop;
+        private _controllers;
+        _current: IKeyboardController;
+        constructor(Desktop: UI.Desktop);
+        Current(): IKeyboardController;
+        GetController(nc: IKeyboardController): boolean;
+        Release(c: IKeyboardController): boolean;
+        ResumeStack(): boolean;
+        Invoke(e: KeyboardEvent): UI.KeyboardControllerResult;
+    }
+}
+export declare module UI {
+    abstract class JControl extends bind.Scop implements EventListenerObject {
+        protected _view: HTMLElement;
+        private _parentScop;
+        getParent(): bind.Scop;
+        protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
+        setParent(v: bind.Scop): boolean;
+        CombinatorKey(keyA: string, keyB: string, callback: (this: this, e: keyCominerEvent) => void): IKeyCombinerTarget;
+        SearchParents<T extends JControl>(type: Function): T;
+        static LoadCss(url: any): HTMLLinkElement;
+        static __fields__(): any[];
+        readonly InnerHtml: string;
+        Float(v: HorizontalAlignement): void;
+        Clear(): void;
+        protected parent: JControl;
+        _presenter: JControl;
+        private _hotKey;
+        _onInitialize: bind.EventListener<(s: JControl) => void>;
+        OnInitialized: (s: this) => void;
+        Presenter: JControl;
+        setAttribute(name: any, value: any): this;
+        OnKeyDown(e: KeyboardEvent): any | void;
+        OnContextMenu(e: MouseEvent): any;
+        OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any | void;
+        setAttributes(attributes: {
+            [s: string]: string;
+        }): this;
+        applyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
+        applyStyle(a: string, b: string, c: string, d: string, e: string): any;
+        applyStyle(a: string, b: string, c: string, d: string): any;
+        applyStyle(a: string, b: string, c: string): any;
+        applyStyle(a: string, b: string): any;
+        applyStyle(a: string): any;
+        disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string, x: string): any;
+        disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
+        disapplyStyle(a: string, b: string, c: string, d: string, e: string): any;
+        disapplyStyle(a: string, b: string, c: string, d: string): any;
+        disapplyStyle(a: string, b: string, c: string): any;
+        disapplyStyle(a: string, b: string): any;
+        disapplyStyle(a: string): any;
+        private _display;
+        Visible: boolean;
+        Wait: boolean;
+        Enable: boolean;
+        Parent: JControl;
+        private static counter;
+        private _id;
+        private init;
+        readonly IsInit: boolean;
+        protected OnFullInitialized(): void;
+        protected OnPaint: (this: this, n: this) => void;
+        protected instantanyInitializeParent(): boolean;
+        ToolTip: string;
+        readonly View: HTMLElement;
+        constructor(_view: HTMLElement);
+        protected _hasValue_(): boolean;
+        protected abstract initialize(): any;
+        static createDiv(): HTMLDivElement;
+        addEventListener<T>(event: string, handle: (sender: this, e: Event, param: T) => void, param: T, owner?: any): basic.DomEventHandler<any, any>;
+        private static _handle;
+        AddRange(chidren: JControl[]): this;
+        Add(child: JControl): this;
+        IndexOf(child: JControl): void;
+        Insert(child: JControl, to: number): this;
+        Remove(child: JControl, dispose?: boolean): boolean;
+        protected getTemplate(child: JControl): JControl;
+        readonly Id: number;
+        Dispose(): void;
+        protected OnHotKey(): void;
+        HotKey: HotKey;
+        handleEvent(e: Event): void;
+        private _events;
+        private isEventRegistred;
+        private registerEvent;
+        static toggleClass(dom: any, className: any): void;
+        private _events_;
+        watch(name: string, callback: (e: attributes.EventEventArgs<this, any>) => void, owner?: any): this;
+        protected notify(name: string, e: attributes.EventEventArgs<this, any>): void;
+        unwatch(name: string, callback: (e: attributes.EventEventArgs<any, any>) => void, owner?: any): void;
+    }
+    interface IContentControl extends JControl {
+        Content: JControl;
+    }
+    abstract class Control<T extends JControl> extends JControl {
+        private _c;
+        readonly Children: T[];
+        Add(child: T): this;
+        NativeAdd(child: JControl): void;
+        Insert(child: T, to: number): this;
+        Remove(child: T, dispose?: boolean): boolean;
+        RemoveAt(i: number, dispose: boolean): boolean;
+        protected abstract Check(child: T): any;
+        protected readonly HasTemplate: boolean;
+        protected getTemplate(child: T): JControl;
+        protected OnChildAdded(child: T): void;
+        getChild(i: number): T;
+        IndexOf(item: T): number;
+        constructor(view: HTMLElement);
+        readonly Count: number;
+        CloneChildren(): void;
+        Clear(dispose?: boolean): void;
+        Dispose(): void;
+    }
+    class Desktop extends Control<App> {
+        WrapPage(e: attributes.ContentEventArgs): void;
+        static DPCurrentApp: bind.DProperty<App, Desktop>;
+        static DPCurrentLayout: bind.DProperty<JControl, Desktop>;
+        CurrentLayout: JControl;
+        Logout(): any;
+        OpenSignin(): void;
+        isReq: number;
+        KeyCombiner: keyCominerEvent;
+        CurrentApp: defs.$UI.IApp;
+        static ctor(): void;
+        private _currentLayoutChanged;
+        private selectApp;
+        static __fields__(): bind.DProperty<JControl, Desktop>[];
+        AuthStatChanged(v: boolean): void;
+        private apps;
+        IsSingleton: boolean;
+        constructor();
+        initialize(): void;
+        private observer;
+        private mouseController;
+        KeyboardManager: UI.KeyboardControllerManager;
+        private _keyboardControllers;
+        private _keyboardController;
+        private KeyboardController;
+        GetKeyControl(owner: any, invoke: (e: KeyboardEvent, ...params: any[]) => UI.KeyboardControllerResult, params: any[]): void;
+        ReleaseKeyControl(): void;
+        private focuser;
+        private handleTab;
+        OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): void;
+        defaultKeys: string;
+        OnKeyDown(e: KeyboardEvent): void;
+        handleEvent(e: Event): any;
+        OnContextMenu(e: MouseEvent): any;
+        private ShowStart;
+        static readonly Current: Desktop;
+        Check(v: defs.$UI.IApp): boolean;
+        Show(app: defs.$UI.IApp): void;
+        private to;
+        private loadApp;
+        Add(i: defs.$UI.IApp): this;
+        Register(app: defs.$UI.IApp): void;
+        AuthenticationApp: defs.$UI.IAuthApp;
+        private Redirect;
+        OnUsernameChanged(job: any, e: any): void;
+    }
+    class Container extends Control<JControl> {
+        constructor();
+        initialize(): void;
+        Check(child: JControl): boolean;
     }
     class Glyph extends JControl {
-        private isIcon;
+        private isIcon?;
         static AllGlyphs(panel: JControl): void;
         static Test(): any;
         static CreateGlyphDom(glyph: UI.Glyphs, toolTip: string, cssClass?: string): HTMLSpanElement;
-        private static GetGlyphCSS(name);
-        private static GetIconCSS(name);
-        private getStyle();
+        private static GetGlyphCSS;
+        private static GetIconCSS;
+        private getStyle;
         constructor(glyph: Glyphs | Icons, isIcon?: boolean, toolTip?: string);
         initialize(): void;
         private v;
@@ -530,7 +720,7 @@ export declare module UI {
         Text: string;
         Content: Node;
         Type: string;
-        private reset();
+        private reset;
     }
     class GlyphButton extends Button {
         initialize(): void;
@@ -571,10 +761,6 @@ export declare module UI {
         Text: string;
         PlaceHolder: string;
     }
-    enum ListType {
-        Ordred = 0,
-        UnOrdred = 1,
-    }
     class List extends Control<JControl> {
         constructor(type?: ListType);
         initialize(): void;
@@ -597,16 +783,16 @@ export declare module UI {
         Check(item: JControl): boolean;
     }
     class ServiceNavBar<T extends IItem> extends JControl {
-        App: defs.UI.IApp;
+        App: defs.$UI.IApp;
         private autoInitializePanels;
-        constructor(App: defs.UI.IApp, autoInitializePanels: boolean);
+        constructor(App: defs.$UI.IApp, autoInitializePanels: boolean);
         initialize(): void;
         private _lefttabs;
         private _righttabs;
         private bi;
         LeftTabs: Navbar<T>;
         RightTabs: Navbar<T>;
-        private createItem(page);
+        private createItem;
         OnPageSelected: (page: T) => void;
         OnClick(page: T): void;
         Add(child: JControl): this;
@@ -615,16 +801,16 @@ export declare module UI {
         serviceNotified(s: IService, n: NotifyType): void;
         private services;
         private readonly currentStack;
-        private CurrentService();
+        private CurrentService;
         PushGBar(ser: IService): void;
         PopGBar(ser: IService): void;
         ExitBar(): void;
         PushBar(ser: IService): void;
         PopBar(): void;
-        private HideCurrentService();
-        private ShowCurrentService();
+        private HideCurrentService;
+        private ShowCurrentService;
         Push(s: IService): void;
-        private Has(s);
+        private Has;
         Pop(s?: IService): void;
         Register(service: IService): void;
         private _services;
@@ -634,14 +820,14 @@ export declare module UI {
         constructor();
         initialize(): void;
         private oicd;
-        private ItemsChanged(e);
-        private createItem(page);
+        private ItemsChanged;
+        private createItem;
         selectable: boolean;
         private _selectedItem;
         readonly SelectedItem: MenuItem;
-        private onClick(page, sender);
+        private onClick;
         Float(v: HorizontalAlignement): void;
-        private CClear(m);
+        private CClear;
         readonly Items: collection.ExList<T, any>;
         OnSelectedItem: bind.EventListener<(item: T) => void>;
     }
@@ -656,12 +842,6 @@ export declare module UI {
         initialize(): void;
         IsFixedTop: boolean;
         IsHeader: boolean;
-    }
-    interface IItem {
-        Tag: any;
-        Content: string | HTMLElement | JControl;
-        Url: string;
-        OnItemSelected(menuItem: MenuItem): any;
     }
     class MenuItem extends Anchore implements EventListenerObject, basic.IDisposable {
         Source: IItem;
@@ -679,16 +859,6 @@ export declare module UI {
         OnKeyDown(e: any): any;
         OnContextMenu(e: any): any;
     }
-    enum ButtonStyle {
-        Default = 0,
-        Primary = 1,
-        success = 2,
-        Info = 3,
-        Warning = 4,
-        Danger = 5,
-        Link = 6,
-        Block = 7,
-    }
     class Input extends JControl {
         Disable(disable: any): void;
         constructor(dom?: any);
@@ -698,14 +868,8 @@ export declare module UI {
         Blur(): void;
         handleEvent(e: FocusEvent): void;
         OnFocusIn(e: FocusEvent): void;
-        OnKeyPressed(e: KeyboardEvent): KeyboardControllerResult;
+        OnKeyPressed(e: KeyboardEvent): UI.KeyboardControllerResult;
         OnFocusOut(e: FocusEvent): void;
-    }
-    enum SearchActionMode {
-        None = 0,
-        Validated = 1,
-        Instantany = 2,
-        NoSearch = 3,
     }
     class ActionText extends JControl {
         private btn_ok;
@@ -749,7 +913,7 @@ export declare module UI {
         RightTabs: Navbar<T>;
         readonly Header: NavbarHeader;
         constructor(top: boolean);
-        private createItem(page);
+        private createItem;
         initialize(): void;
         Open(on?: boolean): void;
         OnPageSelected: (page: T) => void;
@@ -769,10 +933,10 @@ export declare module UI {
         readonly Header: NavbarHeader;
         readonly Container: Container;
         constructor(top: boolean);
-        private createItem(page);
+        private createItem;
         static __fields__(): any;
         Clear(): void;
-        private CClear(m);
+        private CClear;
         initialize(): void;
         OnClick(item: T): void;
         static DPSelectedItem: bind.DProperty<IItem, Head<IItem>>;
@@ -783,76 +947,7 @@ export declare module UI {
         initialize(): void;
         Check(c: JControl): boolean;
     }
-    enum Keys {
-        Enter = 13,
-        Tab = 9,
-        Esc = 27,
-        Escape = 27,
-        Up = 38,
-        Down = 40,
-        Left = 37,
-        Right = 39,
-        PgDown = 34,
-        PageDown = 34,
-        PgUp = 33,
-        PageUp = 33,
-        End = 35,
-        Home = 36,
-        Insert = 45,
-        Delete = 46,
-        Backspace = 8,
-        Space = 32,
-        Meta = 91,
-        Win = 91,
-        Mac = 91,
-        Multiply = 106,
-        Add = 107,
-        Subtract = 109,
-        Decimal = 110,
-        Divide = 111,
-        Scrollock = 145,
-        Pausebreak = 19,
-        Numlock = 144,
-        "5numlocked" = 12,
-        Shift = 16,
-        Capslock = 20,
-        F1 = 112,
-        F2 = 113,
-        F3 = 114,
-        F4 = 115,
-        F5 = 116,
-        F6 = 117,
-        F7 = 118,
-        F8 = 119,
-        F9 = 120,
-        F10 = 121,
-        F11 = 122,
-        F12 = 123,
-        AltLeft = 18,
-        AltRight = 18,
-        ShiftLeft = 18,
-        ShiftRight = 18,
-        ControlLeft = 17,
-        ControlRight = 17,
-        MetaLeft = 91,
-        MetaRight = 91,
-    }
-    enum Controlkeys {
-        Alt = 18,
-        Shift = 16,
-        Control = 17,
-        Meta = 91,
-    }
-    class HotKey {
-        private _key;
-        private __ctrl;
-        Key: Keys;
-        Control: Controlkeys;
-        IsPressed(e: KeyboardEvent): boolean;
-        private checkKey(e);
-        private checkControl(e);
-    }
-    class Page extends Control<JControl> implements defs.UI.IPage, basic.IDisposable, IService, IItem {
+    class Page extends Control<JControl> implements defs.$UI.IPage, basic.IDisposable, IService, IItem {
         protected app: App;
         Name: string;
         Tag: any;
@@ -900,26 +995,10 @@ export declare module UI {
         Has(s: IService): number;
         Exit(): void;
     }
-    enum HorizontalAlignement {
-        Left = 0,
-        Center = 1,
-        Right = 2,
-    }
-    enum VerticalAlignement {
-        Top = 0,
-        Center = 1,
-        Bottom = 2,
-    }
     class Point {
         x: number;
         y: number;
         constructor(x: number, y: number);
-    }
-    enum MetricType {
-        Pixel = 0,
-        Percentage = 1,
-        Inch = 2,
-        Em = 3,
     }
     class Metric {
         Value: number;
@@ -993,29 +1072,30 @@ export declare module UI {
         Location: Point;
         Size: Size;
         private RelocationJob;
-        private reLocation(hr, vr);
+        private reLocation;
         Add(child: JControl): this;
         AddRange(childs: JControl[]): this;
     }
-    abstract class Layout<T extends defs.UI.IPage> extends Control<T> implements defs.UI.IApp {
+    abstract class Layout<T extends defs.$UI.IPage> extends Control<T> implements defs.$UI.IApp {
         readonly IsAuthentication: boolean;
         protected OnPageChanging(e: bind.EventArgs<T, this>): void;
         protected OnPageChanged(e: bind.EventArgs<T, this>): void;
-        static DPSelectedPage: bind.DProperty<defs.UI.IPage, Layout<any>>;
+        static DPSelectedPage: bind.DProperty<defs.$UI.IPage, Layout<any>>;
         static DPCurrentModal: bind.DProperty<Modal, Layout<any>>;
         CurrentModal: Modal;
         SelectedPage: T;
-        static __fields__(): (bind.DProperty<defs.UI.IPage, Layout<any>> | bind.DProperty<Modal, Layout<any>>)[];
+        static __fields__(): (bind.DProperty<defs.$UI.IPage, Layout<any>> | bind.DProperty<Modal, Layout<any>>)[];
         Name: string;
-        abstract Foot: ServiceNavBar<IItem>;
-        abstract SearchBox: ActionText;
+        Foot: ServiceNavBar<IItem>;
+        SearchBox: ActionText;
         Pages: collection.List<T>;
         protected abstract showPage(page: T): any;
+        protected Check(child: T): boolean;
         Logout(): void;
         constructor(view: any);
         protected silentSelectPage(oldPage: T, page: T): void;
         Open(page: T): void;
-        private PagesChanged(e);
+        private PagesChanged;
         OpenPage(pageNme: string): boolean;
         AddPage(child: T): void;
         SelectNaxtPage(): void;
@@ -1053,7 +1133,7 @@ export declare module UI {
         static DPBadge: bind.DProperty<String, App>;
         Badge: String;
         private static Apps;
-        static readonly CurrentApp: defs.UI.IApp;
+        static readonly CurrentApp: defs.$UI.IApp;
         readonly Name: string;
         Head: Head<Page>;
         private AppBody;
@@ -1077,46 +1157,20 @@ export declare module UI {
         Add(child: Page | Head<IItem> | Foot | QBar<IItem> | ContentControl | ServiceNavBar<IItem>): this;
         static __fields__(): any;
     }
-    abstract class AuthApp extends App implements defs.UI.IAuthApp {
+    abstract class AuthApp extends App implements defs.$UI.IAuthApp {
         readonly IsAuthentication: boolean;
         constructor(key: any, b: bind.EventListener<(v: boolean) => void>);
         abstract IsLogged<T>(callback: (v: boolean, param: T) => void, param: T): any;
-        abstract RedirectApp: defs.UI.IApp;
+        abstract RedirectApp: defs.$UI.IApp;
         OnStatStatChanged: bind.EventListener<(auth: this, isLogged: boolean) => void>;
-    }
-    enum NotifyType {
-        Focuse = 0,
-        UnFocus = 1,
-    }
-    enum ServiceType {
-        Main = 0,
-        Stackable = 1,
-        Instantany = 3,
-    }
-    interface IService {
-        GetLeftBar(): JControl;
-        GetRightBar(): JControl;
-        Handler?: EventTarget;
-        ServiceType: ServiceType;
-        Notify?: bind.EventListener<(s: IService, notifyTYpe: NotifyType) => void>;
-        Callback(args: any): any;
-        Handled(): boolean;
-    }
-    class FunctionGroup<T extends Function> extends Function {
-        private _;
-        private map;
-        constructor();
-        Push(f: T, name?: string): void;
-        Remove(name: string): T;
-        Create(): Function;
     }
     class Modal extends JControl {
         Content: UI.JControl;
         protected focuser: basic.focuser;
         private _searchBox;
         private abonment;
-        private getSearchBox(d);
-        private callBack(b, old, _new);
+        private getSearchBox;
+        private callBack;
         onSearch: (modal: this, s: ProxyAutoCompleteBox<any>, oldValue: any, newValue: any) => void;
         OnSearch(i: (modal: this, s: ProxyAutoCompleteBox<any>, oldValue: any, newValue: any) => void): void;
         private _container;
@@ -1137,7 +1191,7 @@ export declare module UI {
         static NextZIndex(): number;
         readonly IsOpen: boolean;
         Open(): void;
-        targetApp: defs.UI.IApp;
+        targetApp: defs.$UI.IApp;
         protected silentClose(): void;
         Close(msg: MessageResult): void;
         constructor();
@@ -1149,11 +1203,11 @@ export declare module UI {
         protected createFoot(foot: JControl): void;
         private events;
         private static casses;
-        private _setText(role, text);
+        private _setText;
         SetVisible(role: MessageResult, visible: boolean): void;
-        private createBtn(result, title?);
-        private _initBtn(title, result);
-        private _btnClicked(sender, e, t);
+        private createBtn;
+        private _initBtn;
+        private _btnClicked;
         Add(child: JControl): this;
         Remove(child: JControl): boolean;
         Insert(child: JControl, i: number): this;
@@ -1163,7 +1217,7 @@ export declare module UI {
         OnKeyDown(e: KeyboardEvent): any;
         OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
         Clear(): void;
-        static _ShowDialog(title: string, msg: string | HTMLElement | JControl, callback?: (r, m: Modal) => void, ok?: string, cancel?: string): (msg: any) => void | void;
+        static _ShowDialog(title: string, msg: string | HTMLElement | JControl, callback?: (r: any, m: Modal) => void, ok?: string, cancel?: string): (msg: any) => void | void;
         private static closedMessages;
         static ShowDialog(title: string, msg: string | HTMLElement | JControl, callback?: (e: MessageEventArgs) => void, ok?: string, cancel?: string, abort?: string): Modal;
         setStyle(name: string, value: string): this;
@@ -1171,12 +1225,6 @@ export declare module UI {
         setHeight(value: string): this;
         IsMaterial: boolean;
         OnContextMenu(e: any): any;
-    }
-    enum MessageResult {
-        Exit = 0,
-        ok = 1,
-        cancel = 2,
-        abort = 3,
     }
     class MessageEventArgs {
         Modal: Modal;
@@ -1212,10 +1260,10 @@ export declare module UI {
         private opcd;
         private fromInit;
         protected createButton(isLeft: boolean): any;
-        private createIndecator(i);
+        private createIndecator;
         private b;
-        private ItemsChanged(e);
-        private selectNext();
+        private ItemsChanged;
+        private selectNext;
         Clear(): void;
         Check(child: CarouselItem): boolean;
         Add(child: CarouselItem): this;
@@ -1223,7 +1271,7 @@ export declare module UI {
         RemoveAt(i: number): boolean;
     }
     class PaginationSurf extends JControl {
-        private isNext;
+        private isNext?;
         private anchore;
         private span;
         private text;
@@ -1261,24 +1309,24 @@ export declare module UI {
         readonly SelectedRange: number;
         readonly Count: number;
         StartIndex: number;
-        private OnCountChanged(o, n);
-        private OnRangeChanged(o, n);
-        private OnStartIndexChanged(n);
+        private OnCountChanged;
+        private OnRangeChanged;
+        private OnStartIndexChanged;
         constructor();
         AddItem(page: PaginationSurf): void;
         initialize(): void;
         private opcd;
         private sp;
         OnClick(e: PaginationSurf): void;
-        private isInRange(i);
-        private convert(i);
-        private OnItemsChanged(e);
+        private isInRange;
+        private convert;
+        private OnItemsChanged;
     }
     class NumericUpDown extends JControl {
         private f;
-        static DPValue: bind.DProperty<number, NumericUpDown>;
         Value: number;
-        static __fields__(): bind.DProperty<number, NumericUpDown>[];
+        protected checkValue(e: any): void;
+        protected _valueChanged(e: bind.EventArgs<number, NumericUpDown>): void;
         private minValue;
         private defaultValue;
         private maxvalue;
@@ -1288,13 +1336,9 @@ export declare module UI {
         protected _hasValue_(): boolean;
         constructor();
         initialize(): void;
-        private textChanged(e);
+        private textChanged;
         Focus(): void;
         SelectAll(): void;
-    }
-    interface pair<K, P> {
-        Key: K;
-        Value: P;
     }
     class NavPanel extends JControl implements IService {
         Name: string;
@@ -1338,7 +1382,7 @@ export declare module UI {
     class NavPage extends UI.Page {
         static DPSelectedItem: bind.DProperty<NavPanel, NavPage>;
         static __fields__(): any;
-        private _onSelectedItemChanged(e);
+        private _onSelectedItemChanged;
         private con;
         private nav;
         private caption;
@@ -1360,7 +1404,7 @@ export declare module UI {
         OnKeyDown(e: KeyboardEvent): void;
         OnContextMenu(e: MouseEvent): boolean;
         OnPrint(): any;
-        private static _onItemSelected(s, e, p);
+        private static _onItemSelected;
         private events;
         Select(name: string): boolean;
         GetLeftBar(): any;
@@ -1382,11 +1426,11 @@ export declare module UI {
         abstract getDataContext(): any;
         static Create(item: any): ScopicTemplateShadow;
         abstract getScop(): bind.Scop;
-        readonly abstract Controller: bind.Controller;
+        abstract readonly Controller: Controller;
     }
     class ScopicTemplateShadow extends TemplateShadow {
-        private scop;
-        readonly Controller: bind.Controller;
+        private scop?;
+        readonly Controller: Controller;
         private cnt;
         setDataContext(data: any): void;
         getDataContext(): any;
@@ -1399,8 +1443,8 @@ export declare module UI {
     }
     class EScopicTemplateShadow {
         private control;
-        private scop;
-        readonly Controller: bind.Controller;
+        private scop?;
+        readonly Controller: Controller;
         private cnt;
         setDataContext(data: any): void;
         getDataContext(): any;
@@ -1432,18 +1476,16 @@ export declare module UI {
         private data;
         static DPData: bind.DProperty<any, TControl<any>>;
         Data: T;
-        static __fields__(): bind.DProperty<any, TControl<any>>[];
-        static ctor(): void;
         static Me: any;
         constructor(itemTemplate: mvc.ITemplate | string | Function | Template | HTMLElement, data: T | bind.Scop);
         protected OnFullInitialized(): void;
-        private _onTemplateCompiled(cnt);
-        protected OnCompileEnd(cnt: bind.Controller): void;
+        private _onTemplateCompiled;
+        protected OnCompileEnd(cnt: Controller): void;
         private Shadow;
         getScop(): bind.Scop;
         private _template;
         initialize(): void;
-        _onCompiled: bind.EventListener<(s: this, cnt: bind.Controller) => void>;
+        _onCompiled: bind.EventListener<(s: this, cnt: Controller) => void>;
         private compiled;
         OnCompiled: (s: this) => void;
         readonly IsCompiled: boolean;
@@ -1465,9 +1507,9 @@ export declare module UI {
         static DPSource: bind.DProperty<collection.List<any>, ListAdapter<any, any>>;
         Source: collection.List<T>;
         static DPSelectedIndex: bind.DProperty<number, ListAdapter<any, any>>;
-        private __checkSelectedIndex(e);
+        private __checkSelectedIndex;
         AcceptNullValue: boolean;
-        private swap(i);
+        private swap;
         SelectedIndex: number;
         static DPItemStyle: bind.DProperty<string[], ListAdapter<any, any>>;
         ItemStyle: string[];
@@ -1484,8 +1526,8 @@ export declare module UI {
         readonly SelectedChild: TemplateShadow;
         SelectedItem: T;
         activateClass: string;
-        private OnSelectedIndexChanged(_old, _new);
-        private riseItemSelectedEvent(ni, nc, oi, oc);
+        private OnSelectedIndexChanged;
+        private riseItemSelectedEvent;
         Select(t: TemplateShadow): void;
         SelectItem(t: T): void;
         static _getTemplate(template: mvc.ITemplate | string | Function): mvc.ITemplate;
@@ -1493,37 +1535,37 @@ export declare module UI {
         static ctor(): void;
         constructor(template: conv2template, itemTemplate?: conv2template, data?: P | bind.Scop, getSourceFromScop?: boolean);
         private params;
-        private initTemplate(itemTemplate?, getSourceFromScop?);
-        private static getFirstChild(dom);
-        private static getTemplate(d);
+        private initTemplate;
+        private static getFirstChild;
+        private static getTemplate;
         private sli;
-        private getSourceFromScop(x);
-        private CmdExecuter(n, d, s);
-        private AttachSelectedItem(x);
-        private CmdAttacheSelectedItemExecuter(n, d, s);
+        private getSourceFromScop;
+        private CmdExecuter;
+        private AttachSelectedItem;
+        private CmdAttacheSelectedItemExecuter;
         private RlSourceScop;
         initialize(): void;
-        private OnSourceChanged(e);
-        private ReSelect();
+        private OnSourceChanged;
+        private ReSelect;
         private _scop;
         private readonly Scop;
         BindTo(scop: bind.Scop): void;
-        private OnScopValueChanged(pb, e);
+        private OnScopValueChanged;
         OnItemClicked(s: TemplateShadow, e: Event, t: ListAdapter<any, any>): void;
         protected getItemShadow(item: T, i: number): TemplateShadow;
         protected disposeItemShadow(item: T, child: TemplateShadow, i: number): TemplateShadow;
         protected disposeItemsShadow(items: T[], child: TemplateShadow[]): void;
-        private _insert(item, i);
-        private _remove(item, i);
+        private _insert;
+        private _remove;
         private count;
-        private OnAdd(e);
-        private OnSet(e);
-        private OnClear(e?);
-        private OnRemove(e);
-        private OnReplace(e);
-        private Reset(e?);
+        private OnAdd;
+        private OnSet;
+        private OnClear;
+        private OnRemove;
+        private OnReplace;
+        private Reset;
         protected clearGarbage(): void;
-        private Recycle();
+        private Recycle;
         Dispose(): void;
         Add(child: JControl): this;
         AddRange(children: JControl[]): this;
@@ -1557,40 +1599,10 @@ export declare module UI {
         private timeout;
         private isOpen;
         private i;
-        private toInt(b);
+        private toInt;
         Open(e: MouseEvent, callback: basic.ITBindable<(r: RichMenu<T>, si: T) => void>, left: boolean, bottom: boolean): void;
         Close(imediate: boolean): void;
         Data: any[];
-    }
-    interface IContextMenuItem {
-        Title: string;
-        Shortcut?: string;
-        Icon?: string;
-    }
-    enum Location {
-        Left = 1,
-        Top = 2,
-        Right = 4,
-        Bottom = 8,
-        HCenter = 5,
-        VCenter = 10,
-        Center = 15,
-        TopLeft = 3,
-    }
-    interface IContextMenuEventArgs<T> {
-        ObjectStat?: any;
-        e: MouseEvent;
-        x: number;
-        y: number;
-        selectedItem?: T;
-        cancel?: boolean;
-        callback(e: IContextMenuEventArgs<T>): any;
-    }
-    interface IContextMenu<T> {
-        getTarget(): JControl;
-        OnAttached(e: IContextMenuEventArgs<T>): any;
-        OnClosed(result: T, e: IContextMenuEventArgs<T>): boolean;
-        getView(): UI.JControl;
     }
     class ExContextMenu extends JControl {
         static DPTitle: bind.DProperty<string, ExContextMenu>;
@@ -1604,19 +1616,19 @@ export declare module UI {
         static readonly NextZIndex: number;
         constructor(items?: IContextMenuItem[]);
         initialize(): void;
-        private OnItemSelected(lst, i, tmp, oldi, oldtmp);
-        private OnItemInserted(lst, i, data, cnt);
-        private OnItemRemoved(lst, i, data, cnt);
-        private Action(cnt, data, e);
+        private OnItemSelected;
+        private OnItemInserted;
+        private OnItemRemoved;
+        private Action;
         OnAction: bind.EventListener<(sender: this, selected: IContextMenuItem) => void>;
         location: Location;
         ShowForTarget(): void;
         Show(x: any, y: any): void;
-        private toInt(b);
+        private toInt;
         private readonly HorizontalFraction;
         private readonly VerticalFraction;
         handleEvent(e: MouseEvent): void;
-        private _OnContextMenu(target, dom, e);
+        private _OnContextMenu;
         Close(): void;
         Target: JControl | HTMLElement;
         private target;
@@ -1627,13 +1639,13 @@ export declare module UI {
         constructor(items?: (CItem | string)[]);
         initialize(): void;
         private itemChangedDlg;
-        private SourceChanged(e);
-        private add(t);
+        private SourceChanged;
+        private add;
         private OnItemSelected;
         OnMenuItemSelected: bind.EventListener<(s: ContextMenu, i: MenuItem) => void>;
-        private remove(t);
-        private replace(o, n);
-        private clear();
+        private remove;
+        private replace;
+        private clear;
         reset(): void;
         Add(j: JControl): this;
         AddRange(citem: JControl[]): this;
@@ -1642,8 +1654,8 @@ export declare module UI {
         private thrid;
         private dateout;
         handleEvent(e: MouseEvent): void;
-        private _OnContextMenu(target, dom, e);
-        private timeout(t);
+        private _OnContextMenu;
+        private timeout;
         Target: JControl;
         private target;
     }
@@ -1653,7 +1665,7 @@ export declare module UI {
         static createDashArray(diam: number, degs: number[]): void;
     }
     class CostumizedShadow extends TemplateShadow {
-        private data;
+        private data?;
         Controller: any;
         setDataContext(data: any): void;
         getDataContext(): any;
@@ -1674,7 +1686,7 @@ export declare module UI {
         constructor(tree: utils.Tree<T>, getString: (v: T) => string);
         initialize(): void;
         Reset(): void;
-        private add(cont, node);
+        private add;
     }
     module help {
         function createHeader<Owner>(hd: HTMLTableRowElement, cols: IColumnTableDef[], orderBy?: basic.ITBindable<(sender: Owner, orderBy: string, col: IColumnCellHeaderDef, view: HTMLTableHeaderCellElement) => void>): HTMLTableRowElement;
@@ -1705,11 +1717,6 @@ export declare module UI {
             editable?: boolean;
         }
     }
-    class _Grid {
-        constructor();
-    }
-}
-export declare module UI {
 }
 export declare module UI {
     interface IAutoCompleteBox {
@@ -1758,7 +1765,7 @@ export declare module UI {
 export declare module UI {
     class Paginator<T> extends JControl {
         countPerPage: number;
-        private full;
+        private full?;
         static InputScop: bind.Scop;
         private content;
         private paginator;
@@ -1766,9 +1773,10 @@ export declare module UI {
         readonly Filter: filters.list.SubListFilter<T>;
         constructor(countPerPage: number, dom?: HTMLElement, full?: boolean);
         initialize(): void;
+        Refresh(): void;
         private _cnt;
         Content: JControl;
-        private whenIndexChanged(b, e);
+        private whenIndexChanged;
         OnIndexChanged(ev: (b: bind.PropBinding, e: bind.EventArgs<number, BiPagination>) => void): bind.PropBinding;
         OffIndexChanged(b: bind.PropBinding): boolean;
         Max: number;
@@ -1784,17 +1792,11 @@ export declare module UI {
         static DPOutput: bind.DProperty<collection.ExList<any, filters.list.SubListPatent>, Paginator<any>>;
         readonly Output: collection.ExList<T, filters.list.SubListPatent>;
         private bindInputToMax;
-        private OnInputChanged(e);
+        private OnInputChanged;
         private bindScopToInput;
         InputScop: bind.Scop;
         static __fields__(): bind.DProperty<collection.List<any>, Paginator<any>>[];
         static createPaginator<T, P>(adapter: ListAdapter<T, P>, dataSource: collection.List<T>, max?: number): Paginator<T>;
-    }
-}
-export declare module UI {
-    class Grid extends UI.JControl {
-        initialize(): void;
-        private createRule();
     }
 }
 export declare module UI {
@@ -1811,7 +1813,7 @@ export declare module UI {
         constructor(Title: string);
     }
     class StrechyButton extends UI.ListAdapter<IStrechyButtonItemData, collection.List<IStrechyButtonItemData>> {
-        private __data;
+        private __data?;
         private triggerButton;
         private listDom;
         private itemTemplate;
@@ -1820,12 +1822,12 @@ export declare module UI {
         initialize(): void;
         private static EventCloseIsRegistered;
         private static OpenedStrechyButtons;
-        private static RegisterEvents(enable);
+        private static RegisterEvents;
         static CloseAll(enableEvent: boolean): void;
         Open(): void;
         Close(): void;
-        private simpleClose();
-        private simpleOpen();
+        private simpleClose;
+        private simpleOpen;
         static handleEvent(event: any): void;
         handleEvent(event: Event): void;
     }
@@ -1835,7 +1837,7 @@ export declare module UI {
         OnSearch: (data: string) => void;
         initialize(): void;
         handleEvent(e: KeyboardEvent): void;
-        private validate(ev);
+        private validate;
         IsOpen: boolean;
         open(): void;
         close(): void;
@@ -1906,7 +1908,7 @@ export declare module UI.Modals {
     class EditorAction<T> implements IEditorAction<T> {
         private proxyAction;
         private callback;
-        private invoke(x, p, isNew);
+        private invoke;
         OnSuccess: ModalEditorResult<T>;
         OnError: ModalEditorResult<T>;
         constructor(proxyAction: IEditorAction<T>, callback: DBCallback<T>);
@@ -1922,16 +1924,16 @@ export declare module UI.Modals {
         private source;
         private tableTmplate;
         private itemTemplate;
-        private datas;
-        private asScopic;
-        isMatch: (p: utils.IPatent<T>, item: T) => boolean;
+        private datas?;
+        private asScopic?;
+        isMatch?: (p: utils.IPatent<T>, item: T) => boolean;
         private paginator;
         private Datacontext;
         constructor(source: collection.List<T>, tableTmplate: string, itemTemplate: string, datas?: any, asScopic?: boolean, isMatch?: (p: utils.IPatent<T>, item: T) => boolean);
         static IsMatch<T>(p: utils.IPatent<T>, item: T): boolean;
         IsMatch: (p: utils.IPatent<T>, item: T) => boolean;
         initialize(): void;
-        private static createPaginator<T>(adapterView, source);
+        private static createPaginator;
         SelectedItem: T;
         show(onc: UI.Modals.ModalListAction<T>, list?: collection.List<T>): void;
         Source: collection.List<T>;
@@ -1941,7 +1943,7 @@ export declare module UI.Modals {
         Close(msg: any): void;
         private onc;
         _exList: collection.ExList<T, any>;
-        private createFilter();
+        private createFilter;
     }
 }
 export declare module UI {
@@ -1968,11 +1970,11 @@ export declare module UI {
         initialize(): void;
         OnBringIntoFront(): void;
         constructor(name: string, caption: string, items: ITabControlItem[]);
-        private onSelectedTabChanged(newIndex, oldIndex, newChild, oldChild);
-        private Reslect();
+        private onSelectedTabChanged;
+        private Reslect;
         OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
         OnKeyDown(e: KeyboardEvent): any;
-        CloseTab(e: Event, dt: bind.EventData, scopValue: bind.Scop, events: bind.events): void;
+        CloseTab(e: Event, dt: _help.EventData, scopValue: bind.Scop, events: _help.events): void;
     }
     class UniTabControl<T> extends UI.NavPanel {
         private content;
@@ -1988,10 +1990,10 @@ export declare module UI {
         static __fields__(): any;
         initialize(): void;
         constructor(name: string, caption: string, items: collection.List<ITabControlData<UniTabControl<T>, T>>, content: JControl, onSelectedItemChanged: (s: UniTabControl<T>, cnt: JControl, selected: ITabControlData<UniTabControl<T>, T>) => string);
-        private onSelectedTabChanged(newIndex, oldIndex, newChild, oldChild);
+        private onSelectedTabChanged;
         OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
         OnKeyDown(e: KeyboardEvent): any;
-        CloseTab(e: Event, dt: bind.EventData, scopValue: bind.Scop, events: bind.events): void;
+        CloseTab(e: Event, dt: _help.EventData, scopValue: bind.Scop, events: _help.events): void;
         OnTabSelected: bind.EventListener<(e: ITabControlEventArgs<T>) => void>;
         OnTabClosed: bind.EventListener<(e: ITabControlEventArgs<T>) => void>;
         GetLeftBar(): any;
@@ -2018,5 +2020,3 @@ export declare module UI {
     }
 }
 export declare var LoadDefaultCSS: (callback?: any, onerror?: any) => void;
-export declare namespace template {
-}

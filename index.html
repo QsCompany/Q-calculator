@@ -1,15 +1,28 @@
 ﻿<!DOCTYPE html>
 <html lang="fr-fr" dir="ltr" class="az">
+
 <head>
+    <script>
+        DEBUG = true;
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="Description" content="Developped by Achour Brahim., Price: Free,Length: 1 MB" />
-    <meta name="author"content="Achour Brahim" />
+    <meta name="author" content="Achour Brahim" />
     <meta name="google-play-app" content="qapp.ddns.net" />
     <link rel="manifest" href="/manifest.json">
     <script src="./lib/qloader.js" entry-point="./entrypoint.js"></script>
     <link rel="icon" href="./assets/favicon.ico">
 </head>
+
 <body>
+    <!-- the sum of {{*c}} ** {{*b}} => {{(*c***b)}} -->
+    <q-app>
+        <!-- <md-textbox type='text' db-bind="*c" label="C value" bind-to-scop db-twoway=true></md-textbox>
+        <md-textbox type='text' db-bind="*b" label="B Value" bind-to-scop db-twoway=true></md-textbox> -->
+        <q-calc db-name="_calc" on:result="window.console.log(data.Result)" :value="Result">
+        </q-calc>
+    </q-app>
 </body>
+
 </html>

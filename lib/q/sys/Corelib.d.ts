@@ -1,18 +1,23 @@
+/// <reference path="../../qloader.d.ts" />
 import { UI } from './UI';
-import { models } from './QModel';
 import { Parser } from './Syntaxer';
-export declare type GFunction = Function | reflection.GenericType | reflection.DelayedType;
-export declare type Guid = number;
-export declare namespace Common {
-    var Message: models.Message;
-    var Math: any;
-    class RichMenu {
-    }
-}
-export declare namespace TemplateTypes {
-    function RichMenu(): void;
+import { reflection } from './runtime';
+import { Controller } from "./Dom";
+export declare namespace html {
+    function fromText(t: string): Element;
+    function indexOf(node: Node): number;
+    function replace(child: Node, by: Node): Node;
+    function wrap(child: Element, into: Element): Element;
 }
 export declare namespace css {
+    var cssRules: any[];
+    class CSSRule {
+        constructor(cssrule: any, parent: any);
+        Dispose(): void;
+        readonly Selectors: any;
+        IsMatch(selector: any): void;
+    }
+    function collectCss(): void;
     function getVar(name: string): void;
     function toValidCssName(c: any): any;
     function toValidEnumName(c: any): any;
@@ -71,9 +76,6 @@ export declare namespace math {
 export declare namespace string {
     function IsPrintable(keyCode: number, charCode: number): boolean;
 }
-export declare namespace helper {
-    function TryCatch<T>(owner: any, Try: (...args: any[]) => T, Catch?: (e: Error, ...args: any[]) => T, params?: any[]): T;
-}
 export declare namespace basic {
     namespace Settings {
         function get(name: any): any;
@@ -86,7 +88,7 @@ export declare namespace basic {
         UnknownStat = 3,
         DataCheckError = 4,
         DataWasChanged = 16,
-        None = 5,
+        None = 5
     }
     namespace polyfill {
         var supportTemplate: boolean;
@@ -173,7 +175,7 @@ export declare namespace basic {
         Owner: T;
         Invoke: (...args: any[]) => void;
         private _dispose;
-        objectStat: any;
+        objectStat?: any;
         constructor(Owner: T, Invoke: (...args: any[]) => void, _dispose: (ihe: Delegate<T>) => void, objectStat?: any);
         handleEvent(...args: any[]): void;
         Dispose(): void;
@@ -198,7 +200,7 @@ export declare namespace basic {
         Width: number;
         private _h;
         Height: number;
-        private OnChanged();
+        private OnChanged;
         private _onchanged;
         constructor();
         Set(left: number, top: number, width: number, height: number): void;
@@ -222,7 +224,7 @@ export declare namespace basic {
         constructor(g: string);
         Equals(o: any): boolean;
         toString(): string;
-        private static FromNumber(v);
+        private static FromNumber;
         static readonly New: iGuid;
     }
     interface IId {
@@ -244,16 +246,16 @@ export declare namespace basic {
     class CodeCompiler {
         private script;
         constructor();
-        private toRegString(s);
+        private toRegString;
         private static params;
         generateFn(stack: (string | Parser.ICode)[], hasNoReturn?: boolean): IReg;
-        private _push(code);
+        private _push;
         push(code: string | string[]): any[] | IReg;
         Compile(): void;
         reset(): void;
-        private _onload(t);
-        private _onerror(t);
-        private OnFnSuccess(fn, t);
+        private _onload;
+        private _onerror;
+        private OnFnSuccess;
         onFnLoad: (fn: Function, t: IReg) => void;
         onload: (t: this) => void;
         onerror: (t: this) => void;
@@ -277,12 +279,12 @@ export declare namespace basic {
         private getString;
         params: any;
         constructor(indexer: (string | SIndex)[], getString: (name: string, value: any) => string, params: any);
-        private static generateIndexer(s, array);
+        private static generateIndexer;
         static Compile(s: string, getString?: (name: string, value: any) => string, params?: any): StringCompile;
         apply(data: any): string;
         bind(data: bind.DObject): void;
         private data;
-        private onDataChanged(ev);
+        private onDataChanged;
         Value: string;
     }
     interface Stat {
@@ -367,7 +369,7 @@ export declare namespace basic {
         IsFolder: boolean;
         constructor(url?: string);
         toString(): string;
-        private init(url);
+        private init;
         static getHost(url: string): [string, string[]];
         static getFullHost(url: string): [string, string[]];
         Combine(path: string | Url): Url;
@@ -383,7 +385,7 @@ export declare namespace basic {
     }
 }
 export declare namespace query {
-    type selector = (t: _$, node: Node, param) => boolean;
+    type selector = (t: _$, node: Node, param: any) => boolean;
     interface _$ {
         detach(): this;
         insertBefore(thisDom: Node): this;
@@ -453,98 +455,28 @@ export declare namespace query {
     function $$(dom: Node | Node[]): __ | _;
 }
 export declare function $$(dom: Node | Node[]): query.__ | query._;
-export declare namespace reflection {
-    interface ICallHistory {
-        caller: any;
-        arguments: any[];
-        fn: Function;
-    }
-    type Method<RET, T extends (...args: any[]) => RET> = MethodGroup<RET, T> | T | basic.ITBindable<T>;
-    class MethodGroup<RET, T extends (...args: any[]) => RET> implements basic.ITBindable<T> {
-        Owner: any;
-        private _list;
-        constructor(f?: Method<RET, T>, Owner?: any);
-        Invoke: T;
-        add(m: T | Method<RET, T>): this;
-        With(owner: any, ...args: any[]): RET;
-        Clone(): MethodGroup<RET, T>;
-    }
-    function ToMethodGroup<RET, T extends (...args: any[]) => RET>(x: Method<RET, T>): MethodGroup<{}, T>;
-    function Invoke<RET, T extends (...args: any[]) => RET>(f: Method<RET, T>, owner: any, args: any[]): RET;
-    interface IDebuggerInfo {
-        obsArgs: boolean;
-        Stack?: ICallHistory[];
-        debug?: boolean;
-        save?: boolean;
-        callback?: Function;
-        fn: Function;
-        proxy?: Function;
-        ReCalc?: (callHistory: ICallHistory | number, direct: boolean) => any;
-    }
-    function isInstanceOfClassName(instance: any, className: any): boolean;
-    function isInstanceOfClass(instance: any, type: any): boolean;
-    function _isInstanceOf(type: Function, superType: Function): boolean;
-    function GetBaseType(type: any): any;
-    function GetBaseTypes(type: any, totype?: any): typeof Object[];
-    function IsInstanceOf(type: any, superType: any): boolean;
-    class Type {
-        private passed;
-        type: Function;
-        constructor(type: any);
-        _getPath(root: any): any;
-        GetType(root: any): any;
-    }
-    class GenericType {
-        Constructor: Function;
-        Params: Function[];
-        prototype: any;
-        constructor(Constructor: Function, Params: Function[], base: Function);
-        readonly base: Function;
-        GetBaseType(): Function;
-        static GetType(type: Function, params?: Function[], checkOnly?: boolean, base?: Function): GenericType | Function;
-        private static i(f);
-        static IsInstanceOf(type: any, superType: any): any;
-        static _isInstanceOf: (((type: Function, superType: Function) => boolean) | ((type: Function, superGType: GenericType) => boolean) | ((gtype: GenericType, superGType: GenericType) => boolean) | ((gtype: GenericType, superType: Function) => boolean))[];
-    }
-    class DelayedType {
-        readonly Type: Function;
-        private _type;
-        constructor(type: () => Function);
-    }
-    namespace Observable {
-        function observeProperty(obj: any, propName: string, evnt: string): void;
-        function setObservableProperty<T>(obj: any, propName: string, get: () => T, set: (val: T) => void, evnt: string): void;
-        function ObjectToObservable(o: Object): void;
-    }
-    function IsClass(obj: ObjectConstructor): boolean;
-    function IsPrototype(obj: any): boolean;
-    function IsInstance(obj: any): boolean;
-}
-export declare namespace services {
-    var Service: any;
-}
-export declare namespace attributes {
-    function property<PropertyType, ClassType>(type: Function | reflection.GenericType | reflection.DelayedType, defaultValue?: PropertyType, Name?: string, changed?: (e: bind.EventArgs<PropertyType, ClassType>) => void, check?: (e: bind.EventArgs<PropertyType, ClassType>) => void, attribute?: bind.PropertyAttribute, StaticName?: string): (target: any, propertyKey: string, descriptor?: PropertyDescriptor) => any;
-    function property1<PropertyType, ClassType>(type: Function | reflection.GenericType | reflection.DelayedType, options: {
+export declare namespace bind {
+    function property<PropertyType, ClassType>(type: Function | reflection.GenericType | reflection.DelayedType, defaultValue?: PropertyType, Name?: string, changed?: (e: bind.EventArgs<PropertyType, ClassType>) => void, check?: (e: bind.EventArgs<PropertyType, ClassType>) => void, attribute?: bind.PropertyAttribute, StaticName?: string, override?: boolean): (target: any, propertyKey: string, descriptor?: PropertyDescriptor) => any;
+    function property1<PropertyType, ClassType>(type: Function | reflection.GenericType | reflection.DelayedType, options?: {
         Name?: string;
         StaticName?: string;
         defaultValue?: PropertyType;
         changed?: (e: bind.EventArgs<PropertyType, ClassType>) => void;
         check?: (e: bind.EventArgs<PropertyType, ClassType>) => void;
         attribute?: bind.PropertyAttribute;
+        override?: boolean;
     }): (target: any, propertyKey: string, descriptor?: PropertyDescriptor) => any;
     function getProperties<classType>(type: any): bind.DProperty<any, classType>[];
-    function Delete(type: any): any;
-    function ComponentParser(tagName: string, createControl: (x: Processor.Tree, p: Processor.Instance) => Processor.Result, check?: (x: Processor.Tree, p: Processor.Instance) => boolean): any;
+    function Delete(type: any): boolean;
 }
 export declare namespace bind {
     class Job implements basic.IJob {
         Name: string;
         Todo: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
-        Check: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
-        OnError: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
-        OnInitialize: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
-        OnScopDisposing: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
+        Check?: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
+        OnError?: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
+        OnInitialize?: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
+        OnScopDisposing?: (job: JobInstance, e: bind.EventArgs<any, any>) => void;
         constructor(Name: string, Todo: (job: JobInstance, e: bind.EventArgs<any, any>) => void, Check?: (job: JobInstance, e: bind.EventArgs<any, any>) => void, OnError?: (job: JobInstance, e: bind.EventArgs<any, any>) => void, OnInitialize?: (job: JobInstance, e: bind.EventArgs<any, any>) => void, OnScopDisposing?: (job: JobInstance, e: bind.EventArgs<any, any>) => void);
     }
     class Jobs implements basic.IJob {
@@ -569,7 +501,7 @@ export declare namespace bind {
         getEvent(name: string): EventListenerOrEventListenerObject;
         constructor(Scop: bind.Scop, job: basic.IJob, dom: Node);
         private propb;
-        private ValueChanged(s, e);
+        private ValueChanged;
         Dispose(): void;
         IsDisposed: any;
         _store: any;
@@ -582,59 +514,31 @@ export declare namespace bind {
     function GetJob(name: string): basic.IJob;
     function Register(job: basic.IJob, override?: boolean): basic.IJob;
 }
-export declare namespace thread {
-    interface IDispatcherCallback {
-        callback: (delegate: (...param: any[]) => void, param: any, _this: any) => void;
-        params: JobParam;
-        _this: any;
-        optimizable: boolean;
-        isWaiting: boolean;
-        id: number;
-        children: IDispatcherCallback[];
-        ce: number;
-    }
-    class JobParam {
-        id: number;
-        params: any[];
-        constructor(id: number, params?: any[]);
-        Set(...params: any[]): this;
-        Set1(params: any[]): this;
-        Clone(): JobParam;
-    }
-    class Dispatcher {
-        static OnIdle(owner: any, callback: () => void, once?: boolean): void;
-        static InIdle(): boolean;
-        static GC(): void;
-        static clone(ojob: IDispatcherCallback, params: any[], __this?: any): IDispatcherCallback;
-        static cretaeJob(delegate: (...param: any[]) => void, param: any[], _this: any, optimizable: boolean): JobParam;
-        static Clear(o: JobParam): void;
-        static readonly CurrentJob: IDispatcherCallback;
-        private static start();
-        static Push(ojob: JobParam, params?: any[], _this?: any): IDispatcherCallback;
-        static call(_this: any, fn: Function, ...args: any[]): void;
-        static IsRunning(): boolean;
-    }
-}
 export declare namespace bind {
     class DProperty<T, P> {
         Attribute: PropertyAttribute;
         Name: string;
-        Type: GFunction;
-        DefaultValue: T;
-        Changed: (e: EventArgs<T, P>) => void;
-        Check: (e: EventArgs<T, P>) => void;
+        Type: reflection.GFunction;
+        DefaultValue?: T;
+        Changed?: (e: EventArgs<T, P>) => void;
+        Check?: (e: EventArgs<T, P>) => void;
+        Base: DProperty<T, P>;
+        AsOverride(): this;
+        AsVirtual(): void;
+        Override: boolean;
+        Virtual: boolean;
         Index: number;
         GType: reflection.GenericType;
-        constructor(Attribute: PropertyAttribute, Name: string, Type: GFunction, DefaultValue?: T, Changed?: (e: EventArgs<T, P>) => void, Check?: (e: EventArgs<T, P>) => void);
+        constructor(Attribute: PropertyAttribute, Name: string, Type: reflection.GFunction, DefaultValue?: T, Changed?: (e: EventArgs<T, P>) => void, Check?: (e: EventArgs<T, P>) => void);
         readonly IsKey: boolean;
-        private RedifineChecker();
+        private RedifineChecker;
         checkType(val: T): boolean;
         _checkType<T>(val: T): boolean;
-        private isGenerictype<T>(val);
-        private static isObject<T>(val);
-        private static isString<T>(val);
-        private static isNumber<T>(val);
-        private static isBoolean<T>(val);
+        private isGenerictype;
+        private static isObject;
+        private static isString;
+        private static isNumber;
+        private static isBoolean;
     }
     class EventArgs<T, P> implements basic.IDisposable {
         static New<T, P>(prop: DProperty<T, P>, ithis: P, _old: T, _new: T): EventArgs<T, P>;
@@ -682,7 +586,7 @@ export declare namespace bind {
     }
     class PropBinding implements basic.IDisposable, basic.IDelegate {
         Invoke: (sender: PropBinding, e: EventArgs<any, any>) => void;
-        Owner: any;
+        Owner?: any;
         IsWaiting: boolean;
         constructor(Invoke: (sender: PropBinding, e: EventArgs<any, any>) => void, Owner?: any);
         private _isIvnoked;
@@ -690,7 +594,7 @@ export declare namespace bind {
         Dispose(): void;
     }
     class PropertyStore implements basic.IDisposable {
-        Value: any;
+        Value?: any;
         _bindings: Array<PropBinding>;
         readonly InsBindings: PropBinding[];
         constructor(Value?: any);
@@ -701,10 +605,7 @@ export declare namespace bind {
         Private = 4,
         SerializeAsId = 8,
         IsKey = 16,
-        Optional = 32,
-    }
-    enum ObjectAttribute {
-        NonSerializable = 2,
+        Optional = 32
     }
     abstract class DObject implements basic.IDisposable {
         private static _dpStore;
@@ -721,11 +622,11 @@ export declare namespace bind {
         static IsClass(x: any): boolean;
         static CreateField<PropertyType, ClassType>(name: string, type: Function | reflection.GenericType | reflection.DelayedType, defaultValue?: PropertyType, changed?: (e: EventArgs<PropertyType, ClassType>) => void, check?: (e: EventArgs<PropertyType, ClassType>) => void, attribute?: PropertyAttribute): DProperty<PropertyType, ClassType>;
         private static typeCount;
-        private static getId(type);
-        private static _buildProperty(obj, propName);
+        private static getId;
+        private static _buildProperty;
         IsPropertiesChanged(m: BuckupList<this>): boolean;
         static ToDObject(obj: any, props: string[]): any;
-        private static register(type);
+        private static register;
         private store;
         private __events__;
         getType(): any;
@@ -745,7 +646,7 @@ export declare namespace bind {
         protected onPropertyChanged(ev: EventArgs<any, any>): void;
         Observe<T>(prop: DProperty<T, this>, ev: (sender: PropBinding, ev: EventArgs<T, this>) => void, owner?: any): PropBinding;
         UnObserve<T>(prop: DProperty<T, this>, y: PropBinding | ((sender: PropBinding, ev: EventArgs<T, this>) => void), owner?: any): boolean;
-        private _disposeProp<T>(prs, t, index);
+        private _disposeProp;
         OnPropertyChanged<T>(prop: DProperty<T, this>, ev: (sender: PropBinding, ev: EventArgs<T, this>) => void, owner?: any): PropBinding;
         addEvent<T>(prop: DProperty<T, this>, b: PropBinding): void;
         removeEvent<T>(prop: DProperty<T, this>, y: PropBinding): boolean;
@@ -763,12 +664,12 @@ export declare namespace bind {
         CreateBackup(OnUndo?: (self: this, bl: BuckupList<this>) => void): BuckupList<this>;
         Commit(r?: BuckupList<any>): boolean;
         Rollback(b?: BuckupList<this>, walkTrougth?: boolean): boolean;
-        private UndoTo(b, walkTrougth);
+        private UndoTo;
     }
     enum DisposingStat {
         None = 0,
         Disposing = 1,
-        Disposed = 2,
+        Disposed = 2
     }
     class XPath {
         Name: string;
@@ -781,7 +682,7 @@ export declare namespace bind {
         Dispose(): void;
     }
     class Observer extends bind.DObject {
-        private controller;
+        private controller?;
         static DPMe: DProperty<any, Observer>;
         Me: any;
         static DPPath: DProperty<string[], Observer>;
@@ -792,13 +693,13 @@ export declare namespace bind {
         GenType(): typeof Observer;
         xpath: XPath[];
         constructor(me: any, path: string[], controller?: Controller);
-        private calcPrefix(str);
-        private rebuidPath(e);
-        private disposePath();
+        private calcPrefix;
+        private rebuidPath;
+        private disposePath;
         getValue(l: number): any;
-        private Start(i?);
+        private Start;
         ESetValue(value: any): void;
-        private callMe(binding, e);
+        private callMe;
         Dispose(): void;
     }
     interface IJobScop {
@@ -807,46 +708,8 @@ export declare namespace bind {
         Jobs: JobInstance[];
         Control: UI.JControl;
         dom?: Node;
-        events?: bind.events;
-    }
-    enum ProcessStat {
-        NotProcessed = 0,
-        Processing = 1,
-        Processed = 2,
-    }
-    class Controller extends DObject implements basic.IDisposable {
-        OnNodeLoaded(): any;
-        readonly MainControll: UI.JControl;
-        static Attach(control: UI.JControl, data?: any | Scop): Controller;
-        getStat(): ProcessStat;
-        private Stat;
-        private _stat;
-        processHowEver: boolean;
-        static __feilds__(): DProperty<HTMLElement, Controller>[];
-        static DPView: DProperty<HTMLElement, Controller>;
-        View: HTMLElement;
-        JCParent: UI.JControl[];
-        private _onCompiled;
-        OnCompiled: basic.ITBindable<(t: this) => void>;
-        private _onCompiling;
-        OnCompiling: basic.ITBindable<(t: this) => void>;
-        private ViewChanged(e);
-        unlistenForNodeInsertion(odom: Node, ndisp?: boolean): void;
-        private listenForNodeInsertion(dom);
-        private implemented(d);
-        handleEvent(e: Event): void;
-        private ProcessBinding(e?);
-        private static pb(t);
-        Scop: Scop;
-        static explorerJob: thread.JobParam;
-        readonly CurrentControl: UI.JControl;
-        instances: IJobScop[];
-        CompileChild(dom: Node, scop: Scop, control: UI.JControl): IJobScop;
-        private ParseBinding(data);
-        private processEvent(v);
-        constructor(cnt: UI.JControl);
-        PDispose(): void;
-        Dispose(): void;
+        skipProcessing?: boolean;
+        ContinueInto?: Element;
     }
 }
 export declare namespace utils {
@@ -866,23 +729,19 @@ export declare namespace utils {
         Add(c: T): void;
         Clear(): void;
         Reset(): void;
-        private OnAdd(target);
+        private OnAdd;
         getNodes(): Node<T>[];
         getBases(): Node<T>[];
-        private OnRemove(item);
-        private OnClear();
+        private OnRemove;
+        private OnClear;
         OnChange: bind.EventListener<(base: Node<T>, target: Node<T>, add_remove_clear: boolean) => void>;
-    }
-    class RemoveRef<T> {
-        Ref: T;
-        constructor(ref: T);
     }
     class ListEventArgs<P, T> implements basic.IDisposable {
         oldItem: T;
         newItem: T;
         startIndex: P;
         event: collection.CollectionEvent;
-        collection: T[];
+        collection?: T[];
         constructor(oldItem: T, newItem: T, startIndex: P, event: collection.CollectionEvent, collection?: T[]);
         Dispose(): void;
         static readonly ResetEvent: any;
@@ -914,8 +773,8 @@ export declare namespace utils {
     class filterCallback<T, P extends IPatent<T>> {
         callback: (filter: utils.Filter<T, P>, data: any) => void;
         data: any;
-        name: string;
-        id: number;
+        name?: string;
+        id?: number;
         constructor(callback: (filter: utils.Filter<T, P>, data: any) => void, data: any, name?: string, id?: number);
     }
 }
@@ -926,7 +785,7 @@ export declare namespace collection {
         Replace = 2,
         Cleared = 3,
         Reset = 4,
-        Setted = 5,
+        Setted = 5
     }
     type ListEventInvoker<T> = (e: utils.ListEventArgs<number, T>) => void;
     type ListEventHandler<T> = ListEventInvoker<T> | (basic.ITBindable<ListEventInvoker<T>>);
@@ -935,7 +794,7 @@ export declare namespace collection {
         protected argType: Function;
         static __fields__(): any[];
         static DPCount: bind.DProperty<number, List<any>>;
-        private UCount();
+        private UCount;
         protected _list: T[];
         readonly ArgType: Function;
         GetType(): Function | reflection.GenericType;
@@ -957,14 +816,14 @@ export declare namespace collection {
         IndexOf(item: T): number;
         Listen: ListEventHandler<T>;
         Unlisten: ListEventHandler<T>;
-        private OnChanged(item, startIndex, event, oldItem, collection?);
+        private OnChanged;
         private _changed;
         private _changing;
         protected getArgType(json: any): Function;
         ToJson(x: encoding.SerializationContext, indexer: encoding.IIndexer): any;
         FromJson(json: any, x: encoding.SerializationContext, update?: boolean, callback?: (prop: string, val: any) => Object): this;
         OnDeserialize(list: T[]): void;
-        private static getType(json);
+        private static getType;
         UpdateDelegate: () => T[];
         static GenType(T: Function): Function | reflection.GenericType;
     }
@@ -974,7 +833,7 @@ export declare namespace collection {
     }
     class Dictionary<T, P> extends bind.DObject {
         Name: string;
-        ReadOnly: boolean;
+        ReadOnly?: boolean;
         private keys;
         private values;
         constructor(Name: string, ReadOnly?: boolean);
@@ -995,7 +854,7 @@ export declare namespace collection {
         GetKeyOf(val: P): T;
         Listen: (e: utils.ListEventArgs<T, P>) => void;
         Unlisten: (e: utils.ListEventArgs<T, P>) => void;
-        private OnChanged(item, startIndex, event, oldItem);
+        private OnChanged;
         private _changed;
         UpdateDelegate: () => T[];
     }
@@ -1010,15 +869,15 @@ export declare namespace collection {
         Shift: number;
         static __fields__(): (bind.DProperty<utils.Filter<any, any>, ExList<any, any>> | bind.DProperty<number, ExList<any, any>> | bind.DProperty<List<any>, ExList<any, any>>)[];
         private _fid;
-        private filterChanged(e);
-        private sourceChanged(e);
+        private filterChanged;
+        private sourceChanged;
         private sicd;
-        private MaxResultChanged(e);
+        private MaxResultChanged;
         static New<T, P extends utils.IPatent<T>>(source: List<T>, filter: utils.Filter<T, P>, argType?: Function): ExList<T, P>;
         constructor(argType: Function);
-        private static patentChanged<T, P>(e, t);
-        private sourceItemChanged(e);
-        private isMatch(i, item);
+        private static patentChanged;
+        private sourceItemChanged;
+        private isMatch;
         start: number;
         Reset(): void;
     }
@@ -1028,16 +887,16 @@ export declare namespace collection {
     }
     class TransList<From, To> extends List<To> {
         private converter;
-        private stat;
+        private stat?;
         static __fields__(): bind.DProperty<List<any>, TransList<any, any>>[];
         private sli;
-        private SourceChanged<T, U>(e);
+        private SourceChanged;
         static DPSource: bind.DProperty<List<any>, TransList<any, any>>;
         Source: List<any>;
         constructor(argType: Function, converter: Converter<From, To>, stat?: any);
         private _internal;
-        private OnSourceChanged(e);
-        private Reset();
+        private OnSourceChanged;
+        private Reset;
         Add(t: To): this;
         Remove(x: To): boolean;
         Insert(i: number, item: To): boolean;
@@ -1057,7 +916,7 @@ export declare namespace collection {
         abstract OnSourceInitialized(_old: collection.List<T>, _nex: collection.List<T>): any;
         abstract OnSourceReset(): any;
         abstract OnSourceReplace(oldItem: T, newItem: T, index: number): any;
-        private initChanged(e);
+        private initChanged;
     }
     abstract class Render<T, P> extends Binding<T> {
         GetType(): typeof Render;
@@ -1084,121 +943,6 @@ export declare namespace collection {
         data: T;
     }
 }
-export declare namespace mvc {
-    abstract class ITemplate {
-        abstract Create(): HTMLElement;
-        Name: string;
-        constructor(Name: string);
-    }
-    class iTemplate extends ITemplate {
-        private _Url;
-        readonly Url: string;
-        private _Shadow;
-        Shadow: HTMLTemplateElement;
-        Create(): HTMLElement;
-        constructor(relativeUrl: string, name: string, shadow?: HTMLTemplateElement);
-        Load(): void;
-    }
-    enum Devices {
-        Desktop = 0,
-        Mobile = 1,
-        Tablete = 2,
-    }
-    class NULL {
-    }
-    interface ITemplateGroup {
-        Url: string;
-        OnError(init: Initializer): any;
-        OnSuccess(init: Initializer): any;
-    }
-    interface FolderEntries {
-        [name: string]: MvcDescriptor;
-    }
-    interface TemplateEntries {
-        [name: string]: ITemplate;
-    }
-    class MvcDescriptor {
-        Name: string;
-        private _dataType;
-        DataType: Function | string;
-        Subs: FolderEntries;
-        Items: TemplateEntries;
-        Parent: MvcDescriptor;
-        Default: ITemplate;
-        constructor(Name: string, dataType?: Function | string);
-        readonly Root: MvcDescriptor;
-        Get(path: string | string[]): ITemplate;
-        GetFoder(path: string | string[], max?: number): MvcDescriptor;
-        CreateFolder(path: string | string[], type?: Function): MvcDescriptor;
-        Add(templ: ITemplate): this;
-        AddFolder(name: string, dataType?: Function | string): MvcDescriptor;
-        private registerTemplates(dom, url, getType);
-        private registerTemplate(cat, url, name?);
-        static Root: MvcDescriptor;
-        static Get(path: string | string[]): ITemplate;
-        static GetByType(datatype: Function): MvcDescriptor;
-        static GetByName(folderName: string): MvcDescriptor;
-        static Add(template: HTMLTemplateElement, path: string, name?: string): MvcDescriptor;
-        static New(name: string, dataType: Function): MvcDescriptor;
-        Register(path: string, tmp: HTMLTemplateElement, url: string, name?: string): MvcDescriptor;
-        Process(des: HTMLElement, url: string, getType: (t: string) => Function): MvcDescriptor;
-    }
-    class Initializer {
-        private require;
-        static readonly Instances: Initializer;
-        constructor(require: (modules: string, onsuccss?: (result: any) => void, onerror?: (result: any) => void, context?: any) => void);
-        Init(): void;
-        Dispose(): void;
-        readonly System: collection.List<MvcDescriptor>;
-        private readonly _system;
-        Add(templGroup: ITemplateGroup, require?: (modules: string, onsuccss?: (result: any) => void, onerror?: (result: any) => void, context?: any) => any): void;
-        private static typeResolvers;
-        static SetTypeResolver(name: any, typeResolver: (typeName: string) => Function): void;
-        private _pending;
-        private pending;
-        private static gonsuccess(r);
-        private static gonerror(r);
-        private static onsuccess(r);
-        private static onerror(r);
-        static html2Template(html: string): HTMLTemplateElement;
-        static htmlToElements(html: any): any;
-        then(call: (Initializer: Initializer) => void): void;
-        static then(call: (Initializer: Initializer) => void): void;
-        private static callbacks;
-        protected onfinish(): void;
-        private static onfinish(t);
-        static Get(type: Function): MvcDescriptor;
-        getDescriptor(name: string, type: Function): MvcDescriptor;
-        private templatesDescrpt;
-        ExcecuteTemplate(url: string, templ: HTMLElement, typeResolver?: (typeName: string) => Function, e?: ITemplateExport): void;
-        static Register(e: PluginsEvent): void;
-        static MakeAsParsed(r: ITemplateExport): void;
-        private static parsed;
-    }
-    class Template {
-        private static _store;
-        static TempplatesPath: string;
-        private _type;
-        private _view;
-        private _name;
-        private _for;
-        readonly forType: any;
-        readonly View: HTMLElement;
-        readonly Name: string;
-        readonly For: string;
-        constructor(templateDOM: HTMLElement);
-        static getTemplates(type: any): Template[];
-        private static fromInside;
-        static LoadTemplate(templateName: string, context: basic.IContext): void;
-        static getWebRequest(): any;
-        private static _webRequest;
-        private static OnRecieveTemplates(result);
-        private static createTemplate(tmplate);
-        static GetAll(name: string): any[];
-        static Get(name: string, vtype: string): any;
-        static Foreach(callback: (tmplate: Template) => boolean): void;
-    }
-}
 export declare namespace bind {
     interface IJobCollection {
         [s: string]: basic.IJob;
@@ -1213,8 +957,8 @@ export declare namespace bind {
         setParent(v: Scop): boolean;
         protected canBeParent(v: Scop): boolean;
         SetExParent(scop: Scop, parent: Scop): boolean;
-        private findAttribute(name);
-        private static getAttribute(scp, name, createIfNotEist?);
+        private findAttribute;
+        private static getAttribute;
         setAttribute(name: string, value: any): void;
         getAttribute(name: string, createIfNotEist?: boolean): Scop;
         static __fields__(): DProperty<any, Scop>[];
@@ -1223,10 +967,11 @@ export declare namespace bind {
         protected _bindingMode: BindingMode;
         constructor(_bindingMode: BindingMode);
         protected valueChanged(sender: bind.PropBinding, e: bind.EventArgs<any, this>): void;
-        private _OnValueChanged_(e);
+        private _OnValueChanged_;
         protected abstract _OnValueChanged(e: bind.EventArgs<any, any>): any;
         static Create(s: string, parent?: Scop, bindingMode?: BindingMode, controller?: Controller): Scop;
         static BuildScop(p: Parser.ParserResult, parent: Scop, bindingMode: bind.BindingMode, controller?: Controller): Scop;
+        setController(controller: Controller): this;
         static GenerateScop(s: string, _parent?: Scop, bindingMode?: BindingMode, controller?: Controller): Scop;
         static GetStringScop(s: string, _parent: bind.Scop, controller: Controller): string | StringScop;
         AddJob(job: basic.IJob, dom: Node): JobInstance;
@@ -1241,11 +986,11 @@ export declare namespace bind {
         forEach<T>(callback: (s: any, param: T) => boolean, param?: T): void;
         readonly ParentValue: any;
         WhenIschanged<T>(callback: (s: bind.PropBinding, e: bind.EventArgs<T, any>) => void, owner?: any): () => void;
-        OffIsIchangeing(callback: ($new, $old?) => void): void;
+        OffIsIchangeing(callback: ($new: any, $old?: any) => void): void;
         private _valueChanegedCallbacks;
     }
     class StringScop extends bind.Scop {
-        private template;
+        template: (string | Parser.ICode)[];
         private _dom;
         AttacheTo(Dom: Node): any;
         private pb;
@@ -1260,10 +1005,10 @@ export declare namespace bind {
     }
     class FunctionCallScop extends bind.Scop {
         protected _OnValueChanged(e: EventArgs<any, any>): void;
-        Reset(s?: PropBinding, e?: EventArgs<any, Scop>): void;
+        Invoke(s?: PropBinding, e?: EventArgs<any, Scop>): void;
         private args;
         private caller;
-        constructor(rslt: Parser.parsers.FunctionResult, _parent: bind.Scop, controller?: Controller);
+        constructor(rslt: Parser.parsers.FunctionResult, _parent: bind.Scop, controller?: Controller, mode?: bind.BindingMode);
     }
     class ArrayCallScop extends bind.Scop {
         protected _OnValueChanged(e: EventArgs<any, any>): void;
@@ -1271,6 +1016,50 @@ export declare namespace bind {
         private index;
         private caller;
         constructor(rslt: Parser.parsers.ArrayResult, _parent: bind.Scop, controller?: Controller);
+    }
+    class IScopConst {
+        Dispose(): any;
+        scop: bind.Scop;
+        isConstant: boolean;
+        pb?: bind.PropBinding;
+        value?: any;
+        Value: any;
+        constructor(arg: Parser.ParserResult, _parent: bind.Scop, controller?: Controller);
+        CaptureEvent(callback: (s: bind.PropBinding, ev: bind.EventArgs<any, bind.Scop>) => void, owner: any): this;
+    }
+    class CondtionScop extends bind.Scop {
+        _onConditionChanged(s: bind.PropBinding, ev: bind.EventArgs<any, bind.Scop>): any;
+        _onSuccessChanged(s: bind.PropBinding, ev: bind.EventArgs<any, bind.Scop>): any;
+        _onFailChanged(s: bind.PropBinding, ev: bind.EventArgs<any, bind.Scop>): any;
+        protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
+        constructor(rslt: Parser.parsers.ConditionResult, _parent: bind.Scop, controller?: Controller);
+        Condition: IScopConst;
+        Success: IScopConst;
+        Fail: IScopConst;
+        Dispose(): void;
+    }
+    class BiComputeScop extends bind.Scop {
+        Reset(_s?: bind.PropBinding, _ev?: bind.EventArgs<any, bind.Scop>): void;
+        protected _OnValueChanged(_e: bind.EventArgs<any, any>): void;
+        constructor(rslt: Parser.parsers.BiComputeResult, _parent: bind.Scop, controller?: Controller);
+        A: IScopConst;
+        Oper: {
+            fn: Parser.ifn;
+            oper: string;
+        };
+        B: IScopConst;
+        Dispose(): void;
+    }
+    class UniComputeScop extends bind.Scop {
+        _onOperandChanged(_s?: bind.PropBinding, _ev?: bind.EventArgs<any, bind.Scop>): any;
+        protected _OnValueChanged(_e: bind.EventArgs<any, any>): void;
+        constructor(rslt: Parser.parsers.UniComputeResult, _parent: bind.Scop, controller?: Controller);
+        A: IScopConst;
+        Oper: {
+            fn: Parser.ifn;
+            oper: string;
+        };
+        Dispose(): void;
     }
     class NamedScop extends Scop {
         private _name;
@@ -1283,9 +1072,9 @@ export declare namespace bind {
     }
     class Bind extends Scop {
         static __fields__(): (DProperty<Scop, Bind> | DProperty<string[], Bind>)[];
-        private PathChanged(e);
+        private PathChanged;
         private pb;
-        private static ParentChanged(e);
+        private static ParentChanged;
         Dispose(): void;
         ParentValueChanged(sender: bind.PropBinding, e: bind.EventArgs<any, any>): void;
         private static DPPath;
@@ -1296,7 +1085,7 @@ export declare namespace bind {
         private observerBinding;
         constructor(path: string | string[], parent: Scop, bindMode?: BindingMode);
         private isChanging;
-        private __OnValueChanged(sender, e);
+        private __OnValueChanged;
         protected AttributeChanged(e: Event): void;
         private int;
         protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
@@ -1328,9 +1117,9 @@ export declare namespace bind {
         private type;
         private eq;
         constructor(parent: Scop, type: Parser.ITypedScop, bindingMode: BindingMode);
-        private OnParentValueChanged(pB, e);
-        private reProcess();
-        private checkType(pS, tiss, itself);
+        private OnParentValueChanged;
+        private reProcess;
+        private checkType;
     }
     class db {
         todo: string;
@@ -1368,22 +1157,7 @@ export declare namespace bind {
         Todo?(job: JobInstance, e: EventArgs<any, any>): void;
         constructor(scopFunction: bind.Scop);
     }
-    type delg = (ovalue, value, scop: bind.Scop, job: JobInstance, event: EventArgs<any, any>) => void;
-    interface EventData {
-        dom: Node;
-        scop: Scop;
-        controller: Controller;
-    }
-    class events implements basic.IJob, EventListenerObject {
-        scop: Scop;
-        private events;
-        Name: string;
-        Todo?(job: JobInstance, e: EventArgs<any, any>): void;
-        Register(eventType: string, dom: Node, scop: Scop, controller: Controller): void;
-        handleEvent(e: Event): void;
-        private exec(dt, scopValue, e);
-        constructor(scop: Scop);
-    }
+    type delg = (ovalue: any, value: any, scop: bind.Scop, job: JobInstance, event: EventArgs<any, any>) => void;
     abstract class Filter<T, CT> extends Scop {
         protected source: Scop;
         private dbb;
@@ -1416,7 +1190,7 @@ export declare namespace bind {
     enum BindingMode {
         SourceToTarget = 1,
         TwoWay = 3,
-        TargetToSource = 2,
+        TargetToSource = 2
     }
     class TwoBind<T> {
         private bindingMode;
@@ -1455,91 +1229,6 @@ export declare namespace bind {
         Dispose(): void;
     }
 }
-export declare namespace Processor {
-    class debug {
-        private static lst;
-        static OnAttribute(name: any, value: any): void;
-        static check(p: Instance): void;
-    }
-    interface Result {
-        e?: bind.IJobScop;
-        Break?: boolean;
-    }
-    enum Stat {
-        None = 0,
-        Waitting = 1,
-        Executing = 2,
-        Executed = 3,
-    }
-    interface Def {
-        name: string;
-        attribute: string;
-        check?(x: Tree, e: Instance): boolean;
-        execute: (x: Processor.Tree, e: Instance) => Result;
-        valueParser?(value: string): any;
-        priority?: number;
-        isPrimitive?: boolean;
-        isFinalizer?: boolean;
-    }
-    interface Instance {
-        stat: Stat;
-        value: any;
-        instance: Def;
-        manager: Manager;
-    }
-    interface ComponentCreator {
-        Def: Def;
-        css: string[];
-        context: IContext;
-        TagName: string;
-    }
-    class Manager {
-        private static _components;
-        private static _processors;
-        private static enumerator;
-        static maxPriority: number;
-        static getPrcessorByName(name: string): Def;
-        static getPrcessorByAttribute(name: string): Def;
-        static stringIsNullOrWhiteSpace(s: string): boolean;
-        static registerComponent(p: Def): void;
-        static register(p: Def): void;
-        private static orderDefs(a, b);
-        private static orderInstances(a, b);
-        enumerator: Instance[];
-        events: {
-            [s: string]: string;
-        };
-        ComponentCreator: Instance;
-        getProcessorByAttribute(processor: string): Instance;
-        constructor(dom: Node);
-    }
-    class Tree {
-        e: bind.IJobScop;
-        parent: Tree;
-        controller: bind.Controller;
-        readonly Scop: bind.Scop;
-        readonly Control: UI.JControl;
-        readonly Dom: Node;
-        readonly IsNew: boolean;
-        constructor(e: bind.IJobScop, parent: Tree, controller: bind.Controller);
-        validateE(): void;
-        static New(dom: Node, parent: Tree, controller: bind.Controller): Tree;
-        static Root(dom: Node, Scop: bind.Scop, Control: UI.JControl, controller?: bind.Controller): Tree;
-        New(dom: Node): Tree;
-        readonly Depth: any;
-    }
-    class MyClass {
-        static ParseBinding(data: Processor.Tree): bind.IJobScop;
-        static ExploreTree(data: Processor.Tree): void;
-    }
-    function register(p: Def): void;
-    class Compiler {
-        private static initEvents(xx, m);
-        static Compile(x: Tree): bind.IJobScop;
-    }
-    function Register(p: Processor.Def): void;
-    function Compile(x: Tree): bind.IJobScop;
-}
 export declare namespace ScopicControl {
     interface ControlCreatorEventArgs {
         name: string;
@@ -1547,7 +1236,7 @@ export declare namespace ScopicControl {
         currentScop: bind.Scop;
         parentScop: bind.Scop;
         parentControl: UI.JControl;
-        controller: bind.Controller;
+        controller: Controller;
         e: bind.IJobScop;
         Result?: UI.JControl;
     }
@@ -1664,7 +1353,7 @@ export declare namespace encoding {
         static getType(type: Function): Function;
         FromJson(json: any, type: Function | reflection.GenericType, path: IPath<any, any>): any;
         ToJson(obj: any): any;
-        private _toJson(obj, ret);
+        private _toJson;
         toString(): void;
         _arrayToJson(arr: Array<any>, ret: IIndexer): {
             "__type__": NativeTypes;
@@ -1696,15 +1385,15 @@ export declare namespace encoding {
         private _cursor;
         private _startCursor;
         static ReadAllLines(s: string): string[];
-        private parse(pind, s);
-        private static isEmptyLine(s, pchar);
-        private static trim(s, pchar);
-        private static nextChar(s, pchar);
-        private static readString(s, stat);
-        private static readColumn(s, cursor);
-        private static clear(arr, start);
-        private static fillColumns(s, stat, e);
-        private static readLine(s, stat, e);
+        private parse;
+        private static isEmptyLine;
+        private static trim;
+        private static nextChar;
+        private static readString;
+        private static readColumn;
+        private static clear;
+        private static fillColumns;
+        private static readLine;
         constructor(input: string, autoParse: boolean, asJson: any);
         ColumnName(index: number): string;
         ColumnIndex(name: string): number;
@@ -1714,7 +1403,7 @@ export declare namespace encoding {
         AllowNullValue: boolean;
         Next(e?: fillArgs): boolean;
         swapArgs(e: fillArgs): fillArgs;
-        private jsonParser(e);
+        private jsonParser;
         readonly Current: any[] | Object;
         Field(name_index: string | number): any;
     }
@@ -1726,40 +1415,13 @@ export declare namespace encoding {
         Function = 4,
         Array = 5,
         Object = 6,
-        DObject = 7,
-    }
-    class UTF8 {
-        static UTF8Decoder: any;
-        static ToArray(str: string, outU8Array: (Uint8Array | number[]), outIdx: number, maxBytesToWrite: number): number;
-        static lengthOf(str: string): number;
-        static ToString(u8Array: Uint8Array, idx: number): any;
-        static GetBytes(str: string): any[];
-    }
-    class UTF16 {
-        static UTF16Decoder: any;
-        static ToString(HEAP16: Uint16Array, ptr: number): any;
-        static ToArray(str: string, HEAP16: Uint16Array, outPtr: number, maxBytesToWrite: number): number;
-        static lengthBytesUTF16(str: string): number;
-    }
-    class UTF32 {
-        static UTF32ToString(HEAP32: Uint32Array, ptr: number): string;
-        static stringToUTF32(str: string, HEAP32: Uint32Array, outPtr: number, maxBytesToWrite: number): number;
-        static lengthBytesUTF32(str: string): number;
-    }
-    namespace Utf8 {
-        function ucs2decode(string: any): any[];
-        function ucs2encode(array: any): string;
-        function utf8encode(string: any): string;
-        function utf8decode(byteString: any): string;
-        var version: string;
-        var encode: typeof utf8encode;
-        var decode: typeof utf8decode;
+        DObject = 7
     }
 }
 export declare class xNode<T> {
     node: Node;
     param: T;
-    unknown: xNode<T>[];
+    unknown?: xNode<T>[];
     children: xNode<T>[];
     parent: xNode<T>;
     constructor(node: Node, param: T, unknown?: xNode<T>[]);
@@ -1768,13 +1430,10 @@ export declare class xNode<T> {
     Validate(): this;
     ReValidate(callback: (node: xNode<T>) => void): void;
     get(node: Node): xNode<T>;
-    private _add(node);
+    private _add;
     remove(node: Node): xNode<T>;
     hasChild(node: Node): xNode<T>;
     foreach(callback: (parent: xNode<T>, child: xNode<T>) => number, parent?: xNode<T>): number;
-}
-export declare namespace UIDispatcher {
-    function OnIdle(f: () => void): void;
 }
 export declare namespace net {
     class Header {
@@ -1789,7 +1448,7 @@ export declare namespace net {
         document = 1,
         text = 2,
         arraybuffer = 3,
-        blob = 4,
+        blob = 4
     }
     enum WebRequestMethod {
         Get = 0,
@@ -1807,10 +1466,10 @@ export declare namespace net {
         Print = 12,
         UPDATE = 13,
         SUPDATE = 14,
-        Set = 15,
+        Set = 15
     }
     class WebRequest implements basic.IDisposable {
-        crypt: basic.ICrypto;
+        crypt?: basic.ICrypto;
         Uid: string;
         Pwd: string;
         private http;
@@ -1822,12 +1481,12 @@ export declare namespace net {
         private downloadDelegate;
         constructor(crypt?: basic.ICrypto);
         Dispose(): void;
-        private _onprogress(e);
+        private _onprogress;
         readonly IsSuccess: boolean;
         Download(req: IRequestUrl, data: any): void;
         Download2(c: Request): void;
-        private getUrlOf(c);
-        private getDataOf(c);
+        private getUrlOf;
+        private getDataOf;
         GetFileSize(url: any, callback: any): void;
         RequestHeader(url: any, callback: any): void;
         OnComplete: bind.EventListener<(e: WebRequest) => void>;
@@ -1838,7 +1497,7 @@ export declare namespace net {
     abstract class RequestParams<T, S> {
         protected callback: (sender: S, result: any) => void;
         data: T;
-        isPrivate: boolean;
+        isPrivate?: boolean;
         IsSuccess: boolean;
         constructor(callback: (sender: S, result: any) => void, data: T, isPrivate?: boolean);
         Callback(sender: S, result: any): void;
@@ -1873,8 +1532,8 @@ export declare namespace net {
         Crypto: basic.ICrypto;
         constructor(crypt: basic.ICrypto);
         current: Request;
-        private OnError();
-        private DownloadComplete(xmlRequest);
+        private OnError;
+        private DownloadComplete;
         Push(url: IRequestUrl, data: RequestParams<any, QueeDownloader>, params: IRequestParams): void;
         Insert(dcall: Request): void;
         Start(): void;
@@ -1901,10 +1560,10 @@ export declare namespace net {
     class RequestUrl implements IRequestUrl {
         private _url;
         private context;
-        Header: IRequestHeader;
-        Method: net.WebRequestMethod;
-        HasBody: boolean;
-        ResponseType: ResponseType;
+        Header?: IRequestHeader;
+        Method?: net.WebRequestMethod;
+        HasBody?: boolean;
+        ResponseType?: ResponseType;
         beforRequest: (req: net.IRequestUrl) => void;
         timeout?: number;
         Url: string;
@@ -1917,7 +1576,7 @@ export declare namespace basic {
         event: string;
         private owner;
         private handle;
-        private param;
+        private param?;
         Started: boolean;
         constructor(dom: Element, event: string, owner: any, handle: (eh: DomEventHandler<T, P>, ev: T, param: P) => void, param?: P);
         Start(): void;
@@ -1928,88 +1587,9 @@ export declare namespace basic {
         static Dispose(dom: EventTarget, event?: string): void;
     }
 }
-export declare namespace crypto {
-    function string2bytes_16(a: string): Uint16Array;
-    function bytes2string_16(a: Uint16Array): string;
-    function string2bytes(a: string | number[]): any[];
-    function bytes2string(a: any): string;
-    class Aes implements basic.ICrypto {
-        protected Key: number[];
-        constructor(key: string | number[] | Uint8Array);
-        InitKey(key: number[]): number[];
-        static ExpandKey(b: number[]): void;
-        Encrypt(data: number[]): number[];
-        Decrypt(data: number[]): number[];
-        SEncrypt(data: string): string;
-        SDecrypt(data: string): string;
-        static SubBytes(a: any, c: any): void;
-        static AddRoundKey(a: any, c: any): void;
-        static ShiftRows(a: any, c: any): void;
-        static MixColumns(b: any): void;
-        static MixColumns_Inv(b: any): void;
-    }
-    class AesCBC extends Aes {
-        constructor(key: string | number[]);
-        InitKey(key: number[]): number[];
-        static blockXOR(a: any, c: any): any[];
-        static blockIV(): number[];
-        static pad16(a: number[]): number[];
-        static depad(a: number[]): number[];
-        Encrypt(data: number[]): number[];
-        Decrypt(data: number[]): number[];
-    }
-}
-export declare namespace crypto {
-    class SecureRandom {
-        nextBytes(a: any): void;
-        rng_get_byte(): any;
-    }
-}
-export declare module crypto1 {
-    function string2bytes(a: string): Uint8Array;
-    function bytes2string(a: Uint8Array): string;
-    class ExAes {
-        protected Key: Uint8Array;
-        constructor(key: string | Uint8Array);
-        InitKey(key: Uint8Array): Uint8Array;
-        static ExpandKey(b: Uint8Array): void;
-        Encrypt(data: Uint8Array): Uint8Array;
-        Decrypt(data: Uint8Array): Uint8Array;
-        static SubBytes(a: Uint8Array, c: Uint8Array): void;
-        static AddRoundKey(a: any, c: any): void;
-        static ShiftRows(a: any, c: any): void;
-        static MixColumns(b: any): void;
-        static MixColumns_Inv(b: any): void;
-    }
-    class AesCBC extends ExAes {
-        constructor(key: string | Uint8Array);
-        InitKey(key: Uint8Array): Uint8Array;
-        static blockXOR(a: Uint8Array, c: Uint8Array): Uint8Array;
-        static blockIV(): Uint8Array;
-        static pad16(a: Uint8Array): Uint8Array;
-        static depad(a: Uint8Array): Uint8Array;
-        concate(a: Uint8Array, b: Uint8Array): Uint8Array;
-        Encrypt(data: Uint8Array): Uint8Array;
-        Decrypt(data: Uint8Array): Uint8Array;
-    }
-}
-export declare module crypto1 {
-    class SecureRandom {
-        nextBytes(a: any): void;
-        rng_get_byte(): any;
-    }
-}
 export interface BuckupList<T> {
     values: any[];
     OnUndo?: (self: T, bl: BuckupList<T>) => void;
-}
-export declare namespace Ids {
-    class t1 {
-    }
-    class t2 {
-    }
-    class t3 {
-    }
 }
 export declare namespace injecter {
     function observe(obj: any, prop: string, callback: (s: bind.PropBinding, e: bind.EventArgs<any, any>) => void, owner?: any): bind.PropBinding;
@@ -2024,7 +1604,7 @@ export declare namespace Notification {
     }
     interface NotificationHandler<Owner> {
         Id?: any;
-        callback: (this: Owner, e: NotificationArgs, ...args) => void;
+        callback: (this: Owner, e: NotificationArgs, ...args: any[]) => void;
         owner?: Owner;
         params?: any;
         context?: IContext;
@@ -2032,37 +1612,4 @@ export declare namespace Notification {
     function on(name: string, handler: NotificationHandler<any>): void;
     function fire(name: string, params: any[]): void;
     function off(name: string, hndl_id: NotificationHandler<any> | any): boolean;
-}
-export declare namespace Attributes {
-    type attributeType = (...args: any[]) => any;
-    interface Attribute<T> extends attributeType {
-        declare(_target: any, data: T): void;
-        getData(_target: any): T;
-    }
-    enum AttributeTargets {
-        Class = 2,
-        Object = 4,
-        Function = 8,
-        Property = 16,
-        All = -1,
-    }
-    interface AttributeDefinition {
-        AllowMultiple?: boolean;
-        Heritable?: boolean;
-        Target?: AttributeTargets;
-    }
-    function asAttribute(attributer: Function, e: AttributeDefinition): void;
-    function getAttributeDef(attr: Function): AttributeDefinition;
-    function check(attr: Function, args: IArguments): boolean;
-    function getAttributesOf(_target: any): Attribute<any>;
-    function getAttributeOf<T>(_target: any, _attribute: Attribute<T>): T;
-}
-export declare namespace PaintThread {
-    interface task2 {
-        owner: any;
-        method: Function;
-        args: any[];
-    }
-    function Push(ins: bind.JobInstance, e: bind.EventArgs<any, any>, scop?: bind.Scop): void;
-    function OnPaint(task: task2): void;
 }

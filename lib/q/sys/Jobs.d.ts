@@ -6,7 +6,7 @@ export declare function parseTarget(dom: Element): {
 export declare function getTarget(dom: Element, depth: number, id: any): Element;
 export declare function getTargetFrom(dom: Element): Element;
 export declare module Jobs {
-    function InputChecks(name: string, check: (value: string) => boolean): void;
+    function InputChecks(): void;
     function Load(): void;
     class interpolation implements basic.IJob {
         Name: string;
@@ -21,24 +21,22 @@ export declare module Jobs {
         OnError(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
         OnInitialize(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
         OnScopDisposing(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-        Handle(ji: bind.JobInstance, e: Event): void;
+        Handle(ji: bind.JobInstance): void;
     }
     class FloatJob implements basic.IJob {
-        private checks;
         Name: string;
         reg: (str: any) => boolean;
         Todo(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
         OnInitialize(ji: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-        handleEvent(ji: bind.JobInstance, e: Event): void;
+        handleEvent(ji: bind.JobInstance): void;
         OnScopDisposing(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
     }
     class AccordionSelectJob implements basic.IJob {
-        private checks;
         Name: string;
         Todo(ji: bind.JobInstance, e: bind.EventArgs<any, any>): void;
         OnError(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
         OnInitialize(ji: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-        callback(e: Event): void;
+        callback(): void;
         OnScopDisposing(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
     }
     var LabelJob: basic.IJob;

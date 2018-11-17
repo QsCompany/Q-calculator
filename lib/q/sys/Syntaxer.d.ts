@@ -1,140 +1,25 @@
 import { bind } from "./Corelib";
-export declare enum JSToken {
-    None = 0,
-    EndOfFile = 1,
-    Semicolon = 2,
-    RightCurly = 3,
-    LeftCurly = 4,
-    Debugger = 5,
-    Var = 6,
-    If = 7,
-    For = 8,
-    Do = 9,
-    While = 10,
-    Continue = 11,
-    Break = 12,
-    Return = 13,
-    With = 14,
-    Switch = 15,
-    Throw = 16,
-    Try = 17,
-    Function = 18,
-    Else = 19,
-    ConditionalCommentStart = 20,
-    ConditionalCommentEnd = 21,
-    ConditionalCompilationOn = 22,
-    ConditionalCompilationSet = 23,
-    ConditionalCompilationIf = 24,
-    ConditionalCompilationElseIf = 25,
-    ConditionalCompilationElse = 26,
-    ConditionalCompilationEnd = 27,
-    ConditionalCompilationVariable = 28,
-    Identifier = 29,
-    Null = 30,
-    True = 31,
-    False = 32,
-    This = 33,
-    StringLiteral = 34,
-    IntegerLiteral = 35,
-    NumericLiteral = 36,
-    TemplateLiteral = 37,
-    LeftParenthesis = 38,
-    LeftBracket = 39,
-    AccessField = 40,
-    ArrowFunction = 41,
-    RestSpread = 42,
-    FirstOperator = 43,
-    Delete = 43,
-    Increment = 44,
-    Decrement = 45,
-    Void = 46,
-    TypeOf = 47,
-    LogicalNot = 48,
-    BitwiseNot = 49,
-    FirstBinaryOperator = 50,
-    Plus = 50,
-    Minus = 51,
-    Multiply = 52,
-    Divide = 53,
-    Modulo = 54,
-    BitwiseAnd = 55,
-    BitwiseOr = 56,
-    BitwiseXor = 57,
-    LeftShift = 58,
-    RightShift = 59,
-    UnsignedRightShift = 60,
-    Equal = 61,
-    NotEqual = 62,
-    StrictEqual = 63,
-    StrictNotEqual = 64,
-    LessThan = 65,
-    LessThanEqual = 66,
-    GreaterThan = 67,
-    GreaterThanEqual = 68,
-    LogicalAnd = 69,
-    LogicalOr = 70,
-    InstanceOf = 71,
-    In = 72,
-    Comma = 73,
-    Assign = 74,
-    PlusAssign = 75,
-    MinusAssign = 76,
-    MultiplyAssign = 77,
-    DivideAssign = 78,
-    ModuloAssign = 79,
-    BitwiseAndAssign = 80,
-    BitwiseOrAssign = 81,
-    BitwiseXorAssign = 82,
-    LeftShiftAssign = 83,
-    RightShiftAssign = 84,
-    UnsignedRightShiftAssign = 85,
-    LastAssign = 85,
-    ConditionalIf = 86,
-    Colon = 87,
-    LastOperator = 87,
-    Case = 88,
-    Catch = 89,
-    Default = 90,
-    Finally = 91,
-    New = 92,
-    RightParenthesis = 93,
-    RightBracket = 94,
-    SingleLineComment = 95,
-    MultipleLineComment = 96,
-    UnterminatedComment = 97,
-    PreprocessorDirective = 98,
-    Enum = 99,
-    Extends = 100,
-    Super = 101,
-    Class = 102,
-    Const = 103,
-    Export = 104,
-    Import = 105,
-    Module = 106,
-    Let = 107,
-    Implements = 108,
-    Interface = 109,
-    Package = 110,
-    Private = 111,
-    Protected = 112,
-    Public = 113,
-    Static = 114,
-    Yield = 115,
-    Native = 116,
-    Get = 117,
-    Set = 118,
-    AspNetBlock = 119,
-    ReplacementToken = 120,
-    EndOfLine = 121,
-    WhiteSpace = 122,
-    Error = 123,
-    RegularExpression = 124,
-    Limit = 125,
-}
-export interface ref<T> {
-    value?: T;
+export declare namespace Parser {
+    interface ifn {
+        (a: bind.IScopConst, b: bind.IScopConst): any;
+        (a: bind.IScopConst): any;
+        (a: any, b: any): any;
+        (a: any): any;
+        isComplex?: boolean;
+    }
+    interface IoperMap {
+        [char: string]: IoperMap | ifn;
+    }
+    const _unaire__: IoperMap;
+    const _oper_: IoperMap;
+    function getOperation(b: syntaxer, _oper_: IoperMap): {
+        oper: string;
+        fn: (a: any, b: any) => any;
+    };
 }
 export declare namespace Parser {
+    function bi_compute(b: syntaxer, r: ParserResult): boolean;
+    function uni_compute(b: syntaxer, r: ParserResult): boolean;
     enum TokenType {
         uknown = 0,
         alpha = 1,
@@ -145,7 +30,7 @@ export declare namespace Parser {
         prefix = 32,
         filter = 64,
         whites = 128,
-        alphanum = 3,
+        alphanum = 3
     }
     interface stat {
         index: number;
@@ -168,6 +53,9 @@ export declare namespace Parser {
         path = 7,
         functionCall = 8,
         arrayCall = 9,
+        condition = 10,
+        biCompute = 11,
+        uniCompute = 12
     }
     interface ParserResult {
         start?: Token;
@@ -179,16 +67,16 @@ export declare namespace Parser {
         parent: ParserResult;
         children: ParserResult[];
     }
-    function ands(parsers: parser[]): (b: syntaxer, rslt: ParserResult) => boolean;
-    function ors(parsers: parser[]): <parse>(b: syntaxer, result: ParserResult) => boolean;
-    function _ors(parsers: parser[]): <parse>(b: syntaxer, result: ParserResult) => boolean;
+    function ands(parsers: parser[]): (b: syntaxer, _rslt: ParserResult) => boolean;
+    function ors(parsers: parser[]): (b: syntaxer, _result: ParserResult) => boolean;
+    function _ors(parsers: parser[]): (b: syntaxer, result: ParserResult) => boolean;
     enum oper {
         or = 0,
         and = 1,
         xor = 2,
         eq = 3,
         neq = 4,
-        dot = 5,
+        dot = 5
     }
     interface Term {
         oper: oper;
@@ -210,11 +98,12 @@ export declare namespace Parser {
         eq(p: parser, neq?: boolean): this;
         neq(p: parser, neq?: boolean): this;
         readonly Parser: parser;
-        private exect(term, b);
+        private exect;
     }
     class syntaxer {
         src: string;
         readonly CurrentString: string;
+        getCurrentString(left: number, right: number): string;
         readonly ShiftIndex: number;
         static opers: number[];
         static whites: number[];
@@ -225,6 +114,7 @@ export declare namespace Parser {
         save(): stat;
         restore(s?: stat): false;
         readonly current: Token;
+        getToken(offset: number): Token;
         readonly previous: Token;
         next(): Token;
         back(): Token;
@@ -232,36 +122,30 @@ export declare namespace Parser {
         unshift(): true;
         JumpBy(length: number): void;
         JumpTo(index: number): void;
-        private static getToken(c);
+        private static getToken;
         constructor(src: string);
         currentNode: ParserResult;
+        _cache_: {
+            [index: number]: Map<parser, ParserResult>;
+        };
+        private getFromCache;
+        private setIntoCache;
         exec(p: parser, nonstrorable?: boolean): ParserResult;
         fastExec(p: (...args: any[]) => boolean, ths?: any, args?: any[]): boolean;
         getChar(): string;
         testChar(chr: string): boolean;
         getNextChar(inc: any): string;
         get(shift: number): string;
-        private static IsHexDigit(c);
         static IsDigit(character: any): boolean;
-        private ScanNumber(leadChar, val);
         ScanString(o: string): string | false;
-        private IsUnicode();
-        private ScanIdentifier();
         isChar(t: Token): boolean;
-        private SkipToEndOfLine();
-        private IsLineTerminator(c, increment);
-        private SkipMultilineComment();
-        private static spaceSeparators;
-        private static spaceSeparatorsChars;
-        private static IsBlankSpace(c);
-        protected _getNextToken(val?: ref<any>): JSToken;
     }
     namespace parsers {
         namespace expr {
             function Term(s: syntaxer, rslt: ParserResult): boolean;
-            function parent(s: syntaxer, rslt: ParserResult): boolean;
+            function parent(s: syntaxer, _rslt: ParserResult): boolean;
             function Expre(): void;
-            function chain(s: parser): void;
+            function chain(_s: parser): void;
         }
         function _keyword(strm: syntaxer, word: string, rslt: ParserResult, token?: string | CToken): boolean;
         function whitespace(strm: syntaxer, rslt: ParserResult): boolean;
@@ -281,11 +165,33 @@ export declare namespace Parser {
         function bindscope(b: syntaxer, rslt: ParserResult): boolean;
         function stringChainedScop(b: syntaxer, rslt: ParserResult): boolean;
         function composedPath(b: syntaxer, rslt: ParserResult): boolean;
+        const _parent1: (b: syntaxer, result: ParserResult) => boolean;
         function parent(b: syntaxer, rslt: ParserResult): boolean;
+        function condtion(b: syntaxer, rslt: ParserResult): boolean;
         function expression(b: syntaxer, rslt: ParserResult): boolean;
+        interface BiComputeResult {
+            a: ParserResult;
+            o: {
+                fn: ifn;
+                oper: string;
+            };
+            b: ParserResult;
+        }
+        interface UniComputeResult {
+            o: {
+                fn: ifn;
+                oper: string;
+            };
+            a: ParserResult;
+        }
         interface FunctionResult {
             caller: ParserResult;
             args: ParserResult[];
+        }
+        interface ConditionResult {
+            condition: ParserResult;
+            success: ParserResult;
+            fail: ParserResult;
         }
         interface ArrayResult {
             caller: ParserResult;
@@ -301,7 +207,7 @@ export declare namespace Parser {
             namedscop = 4,
             anonymousscop = 5,
             thisscope = 6,
-            keyword = 7,
+            keyword = 7
         }
     }
     interface IComposePath {
@@ -322,21 +228,6 @@ export declare namespace Parser {
     function Execute(code: string, parser: Parser.parser): ParserResult;
 }
 export declare namespace Parser {
-    class JSKeyword<T extends string> {
-        readonly token: JSToken;
-        readonly name: T;
-        private static keywors;
-        static get<T extends string>(s: T): JSKeyword<T>;
-        constructor(token: JSToken, name: T, next?: JSKeyword<any>);
-        static InitKeywords(): void;
-    }
-    class AST extends Parser.syntaxer {
-        private currentContext;
-        getNextToken(): JSToken;
-        private ParseStatement(fSourceElement, skipImportantComment?);
-    }
-}
-export declare namespace Parser {
     interface ICode {
         Code: string;
         scop?: bind.Scop;
@@ -353,13 +244,12 @@ export declare namespace Parser {
         private readonly currentChar;
         private readonly nextChar;
         private readonly MoveNext;
-        private init(code);
-        private getString();
-        private _toStack();
+        private init;
+        private getString;
+        private _toStack;
         Compile(code: string): (string | ICode)[];
         static default: StringTemplate;
         static Compile(code: string): (string | ICode)[];
-        private static toRegString(s);
         static GenearteString(stack: (string | ICode)[]): string;
     }
 }

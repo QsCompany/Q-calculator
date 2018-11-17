@@ -1,6 +1,7 @@
-import { net, bind, basic, collection, encoding, reflection } from './Corelib';
-export declare type RequestMethodShema = net.RequestMethodShema;
+import { net, bind, basic, collection, encoding } from './Corelib';
+import { reflection } from './runtime';
 export declare module Controller {
+    type RequestMethodShema = net.RequestMethodShema;
     function Register(service: IService): void;
     function decorator<C>(ClassDefinition: C): C;
     abstract class Api<T> {
@@ -36,11 +37,11 @@ export declare module Controller {
     class ProxyCallback<T> extends net.RequestParams<T, net.QueeDownloader> {
         param: any;
         api: Api<T>;
-        context: encoding.SerializationContext;
-        callBack: (s: ProxyCallback<T>, result: T, success: boolean, req?: net.WebRequest) => void;
-        method: net.WebRequestMethod;
+        context?: encoding.SerializationContext;
+        callBack?: (s: ProxyCallback<T>, result: T, success: boolean, req?: net.WebRequest) => void;
+        method?: net.WebRequestMethod;
         constructor(data: T, param: any, api: Api<T>, context?: encoding.SerializationContext, callBack?: (s: ProxyCallback<T>, result: T, success: boolean, req?: net.WebRequest) => void, method?: net.WebRequestMethod);
-        private static parse(json);
+        private static parse;
         Callback(sender: net.QueeDownloader, result: net.WebRequest): void;
         OutputData(): string;
     }
@@ -52,7 +53,7 @@ export declare module Controller {
         Crypto: basic.ICrypto;
         constructor(crpt: basic.ICrypto, isCostume: boolean);
         Register<T>(api: Api<any>): void;
-        private static getMethod(api, m);
+        private static getMethod;
         Costume<T>(url: net.IRequestUrl, data: T, parms: net.IRequestParams, callback: (s: ProxyCallback<T>, result: T, success: boolean, req?: net.WebRequest) => void, objectStat: any): void;
         Request<T>(type: Function | reflection.GenericType, method: string | net.RequestMethodShema | net.WebRequestMethod, data?: T, params?: net.IRequestParams, callback?: RequestCallback<T>, costumize?: RequestCostumize<T>, beforRequest?: (req: net.IRequestUrl) => void, objectStat?: any): void;
         Push<T>(type: Function | reflection.GenericType, data: T, param: any, callBack?: RequestCallback<T>, method?: net.WebRequestMethod, costumize?: RequestCostumize<T>, serializer?: encoding.SerializationContext, beforRequest?: (req: net.IRequestUrl) => void, params?: net.IRequestParams): void;
@@ -73,7 +74,7 @@ export declare module sdata {
         Updating = 4,
         Uploading = 8,
         Updated = 16,
-        Frozed = 32,
+        Frozed = 32
     }
     interface INew {
         CreateNew(id: number): DataRow;
@@ -171,6 +172,4 @@ export declare module base {
         static __fields__(): bind.DProperty<number, NumberVecteur>[];
         Check(val: number): boolean;
     }
-}
-export declare namespace System {
 }

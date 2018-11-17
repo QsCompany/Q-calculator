@@ -1,21 +1,23 @@
 {
-  "compileOnSave": true,
-  "compilerOptions": {
-    "module": "amd",
-    "noEmitOnError": false,
-    "noImplicitAny": false,
-    "outDir": "./",
-    "removeComments": true,
-    "sourceMap": true,
-    "target": "es5",
-    "experimentalDecorators": true,"emitDecoratorMetadata": true,"forceConsistentCasingInFileNames": true
-  },
-  "exclude": [
-    "node_modules",
-    "wwwroot",
-    "bin",
-    "lib",
-    "q",
-    "EntryPoint.js"
-  ] 
+    "compileOnSave": true,
+    "compilerOptions": {
+        "module": "amd",
+        "noEmitOnError": false,
+        "noImplicitAny": false,
+        "outDir": "./dist/",
+        "removeComments": true,
+        "sourceMap": true,
+        "target": "es5",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "exclude": [
+        "node_modules",
+        "wwwroot",
+        "bin",
+        "lib",
+        "q",
+        "EntryPoint.js"
+    ]
 }

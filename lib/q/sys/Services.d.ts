@@ -1,2 +1,4 @@
 import { Controller } from './System';
-export declare function Load(_requester: Controller.ProxyData): void;
+export declare namespace services {
+    function LoadServices(_requester: Controller.ProxyData): void;
+}

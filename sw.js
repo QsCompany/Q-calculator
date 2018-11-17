@@ -1,0 +1,1 @@
+importScripts('./lib/q/assets/modules//sw.js')

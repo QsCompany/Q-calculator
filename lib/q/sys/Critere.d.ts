@@ -1,5 +1,6 @@
-import { bind, reflection, utils } from "./Corelib";
+import { bind, utils } from "./Corelib";
 import { UI } from "./UI";
+import { reflection } from './runtime';
 export declare namespace Critere {
     abstract class Critere<T> extends utils.Filter<T, utils.IPatent<T>> implements utils.IPatent<T> {
         Check(s: T): boolean;
@@ -26,7 +27,7 @@ export declare namespace Critere {
         protected static getTypeOf(type: Function | reflection.GenericType | reflection.DelayedType): Function;
         protected smartClear(): void;
         static ctor(): void;
-        static Register(PropertyType: Function, CritereType: Function, Properties: any, CreateView: (owner: Critere<any>, prop: bind.DProperty<any, any>, CritereMVC, params: {
+        static Register(PropertyType: Function, CritereType: Function, Properties: any, CreateView: (owner: Critere<any>, prop: bind.DProperty<any, any>, CritereMVC: any, params: {
             [n: string]: any;
         }) => Critere<any>): void;
         static Get(type: Function | reflection.GenericType | reflection.DelayedType, strict?: boolean): CritereMVC;

@@ -20,10 +20,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./calc.css", "template|./calc.html", "./lib/q/Core", "context"], function (require, exports, css1, css, calc_html_1, Core_1, context_1) {
+define(["require", "exports", "../lib/q/Core"], function (require, exports, Core_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    ValidateImport(css, css1);
     var CalcData = (function (_super) {
         __extends(CalcData, _super);
         function CalcData() {
@@ -55,8 +54,19 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
                 this.hasDot = true;
                 this.ndec = 1;
             }
-            else if (c == 'c')
+            else if (c == 'c' || c == "Escape")
                 return this.clear();
+            else if (c == "Backspace") {
+                if (this.Num == 0)
+                    return;
+                var x = this.Num.toString();
+                x = x.substr(0, x.length - 1);
+                var v = parseFloat(x);
+                ;
+                this.Num = isNaN(v) ? 0 : v;
+                this.Stream = this.Stream.substr(0, this.Stream.length - 1);
+                return;
+            }
             else {
                 var cfn = CalcData.opers[c];
                 if (!cfn)
@@ -67,7 +77,7 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
                     this.Oper = c;
                     return;
                 }
-                if (c == '=') {
+                if (c == '=' || c == 'Enter') {
                     if (fn)
                         var r = fn(this.Result, this.Num);
                     return this.clear(r, c);
@@ -101,92 +111,31 @@ define(["require", "exports", "style|./lib/q/assets/style/bundle.css", "style|./
         };
         CalcData.opers = {
             '': function (a, b) { return b; },
-            '=': function (a, b) { return a; },
+            '=': function (a, b) { return b; },
+            'Enter': function (a, b) { return b; },
             '+': function (a, b) { return a + b; },
             '-': function (a, b) { return a - b; },
             '*': function (a, b) { return a * b; },
             '/': function (a, b) { return a / b; }
         };
         __decorate([
-            Core_1.attributes.property1(Number, { StaticName: "DPResult" }),
+            Core_1.bind.property1(Number, { StaticName: "DPResult" }),
             __metadata("design:type", Number)
         ], CalcData.prototype, "Result", void 0);
         __decorate([
-            Core_1.attributes.property(String, ''),
+            Core_1.bind.property(String, ''),
             __metadata("design:type", String)
         ], CalcData.prototype, "Oper", void 0);
         __decorate([
-            Core_1.attributes.property(Number, 0),
+            Core_1.bind.property(Number, 0),
             __metadata("design:type", Number)
         ], CalcData.prototype, "Num", void 0);
         __decorate([
-            Core_1.attributes.property(String, ''),
+            Core_1.bind.property(String, ''),
             __metadata("design:type", String)
         ], CalcData.prototype, "Stream", void 0);
         return CalcData;
     }(Core_1.bind.DObject));
     exports.CalcData = CalcData;
-    var Calc = (function (_super) {
-        __extends(Calc, _super);
-        function Calc() {
-            var _this = _super.call(this, calc_html_1.template.get("calcView"), Core_1.UI.TControl.Me) || this;
-            _this.Value = new CalcData();
-            _this.Value.OnPropertyChanged(CalcData.DPResult, function (s, e) {
-                _this.rslt.style.fontSize = (50 - (((e._new || 0)).toString().length * 1.25)) + 'px';
-            });
-            return _this;
-        }
-        Calc.prototype.OnKeyDown = function (e) {
-            this.Value.append(e);
-        };
-        Calc.prototype.setName = function (e, d) {
-            if (e === 'rslt')
-                this.rslt = d;
-        };
-        __decorate([
-            Core_1.attributes.property(Number),
-            __metadata("design:type", Number)
-        ], Calc.prototype, "fontSize", void 0);
-        return Calc;
-    }(Core_1.UI.TControl));
-    exports.Calc = Calc;
-    var App = (function (_super) {
-        __extends(App, _super);
-        function App() {
-            var _this = _super.call(this, document.createElement('div')) || this;
-            _this.modal = new Core_1.UI.Modal();
-            _this.calculator = new Calc();
-            require('style|./lib/q/assets/style/bundle.css', void 0, void 0, context_1.context);
-            _this.addEventListener('click', function (s, e, p) {
-                if (_this.modal.IsOpen)
-                    return;
-                _this.modal.Open();
-            }, _this);
-            return _this;
-        }
-        App.prototype.Check = function () {
-        };
-        App.prototype.showPage = function () {
-            Core_1.UI.Desktop.Current.Add(this);
-            Core_1.UI.Desktop.Current.CurrentApp = this;
-        };
-        App.prototype.initialize = function () {
-            var _this = this;
-            _super.prototype.initialize.call(this);
-            this.modal.OnInitialized = function (m) {
-                _this.modal.Content = _this.calculator;
-                m.OkTitle("Close");
-                m.Canceltitle(null);
-            };
-        };
-        App.prototype.ShowApp = function () {
-            Core_1.UI.Desktop.Current.Add(this);
-            Core_1.UI.Desktop.Current.CurrentApp = this;
-            this.modal.Open();
-            Core_1.UI.Spinner.Default.Pause();
-        };
-        return App;
-    }(Core_1.UI.Layout));
-    (new App()).ShowApp();
 });
-//# sourceMappingURL=calc.js.map
+//# sourceMappingURL=calc-logic.js.map

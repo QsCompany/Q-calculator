@@ -14,7 +14,6 @@ export declare namespace AI {
         }
         class Iterator {
             private runner;
-            private array;
             Read(): number;
             Write(): void;
         }
@@ -50,7 +49,7 @@ export declare namespace AI {
         }
         function mul_mod(a: number, b: number, m: number): number;
         function PowMod(base: number, exp: number, modulus: number): number;
-        function getRandomPrime(cond: (p) => boolean, maxIndex?: number): number;
+        function getRandomPrime(cond: (p: any) => boolean, maxIndex?: number): number;
         function get_common_denom(e: number, PHI: number): number;
         function GCD(a1: number, b1: number): number;
         function ExGCD(a1: number, b1: number, rem?: number): {
@@ -91,7 +90,4 @@ export declare namespace AI {
         function GenerateRSAKey(sourceMaxByte: number, transformedMaxByte: number): RSACrypter;
         function test(f: Function, iter: number, args: any[]): number;
     }
-}
-export declare namespace DataBindingQuee {
-    function Exec(owner: any): void;
 }

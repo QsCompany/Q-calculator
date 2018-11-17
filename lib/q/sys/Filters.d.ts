@@ -10,13 +10,12 @@ export declare module filters {
         }
         class ListFilter<T> extends bind.Filter<collection.List<T>, collection.ExList<T, list.StringPatent<T>>> {
             private p;
-            private fl;
+            private fl?;
             private isConst;
-            constructor(s: bind.Scop, m: bind.BindingMode, p: string, fl?: collection.ExList<T, filters.list.StringPatent<T>>);
-            private sourceBind;
-            private getFilter(s);
-            private getSource(s);
-            private getPatent(s);
+            constructor(s: bind.Scop, p: string, fl?: collection.ExList<T, filters.list.StringPatent<T>>);
+            private getFilter;
+            private getSource;
+            private getPatent;
             protected Convert(data: collection.List<T>): collection.ExList<T, any>;
             protected ConvertBack(data: collection.ExList<T, any>): collection.List<T>;
             Initialize(): void;
@@ -29,6 +28,8 @@ export declare module filters {
             constructor(start: number, end: number);
             Check(i: any): boolean;
             equals(p: SubListPatent): boolean;
+            Refresh(): this;
+            private _refresh;
         }
         class StringPatent<T> implements utils.IPatent<T> {
             private p;
@@ -45,8 +46,6 @@ export declare module filters {
         }
         class PropertyFilter<T extends bind.DObject> extends utils.Filter<T, PropertyPatent<T>> {
             DP: bind.DProperty<any, any>;
-            private deb;
-            private fin;
             private _skip;
             Begin(deb: number, count: number): void;
             IsMatch(i: number, item: T): any;
@@ -54,8 +53,6 @@ export declare module filters {
             constructor(DP: bind.DProperty<any, any>);
         }
         class StringFilter<T> extends utils.Filter<T, StringPatent<T>> {
-            private deb;
-            private fin;
             Begin(deb: number, count: number): void;
             IsMatch(i: number, item: T): boolean;
             protected convertFromString(x: string): StringPatent<T>;
@@ -68,7 +65,6 @@ export declare module filters {
             protected convertFromString(x: string): StringPatent<T>;
         }
         class DObjectPatent implements utils.IPatent<bind.DObject> {
-            private p;
             private o;
             constructor(s: string);
             Check(s: bind.DObject): boolean;

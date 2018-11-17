@@ -20,6 +20,32 @@ declare var $: (selector: any, context: any) => void;
 declare var $defineProperty: (o: any, p: string, attributes: PropertyDescriptor & ThisType<any>, onError?: (o: any, p: string, attributes: PropertyDescriptor & ThisType<any>) => any) => any;
 declare var $bench: (f: () => any, timeSpan: number) => number;
 declare var w: Window;
+
+declare var DEBUG: boolean;
+/*declare interface MapIteratorValue<K, V> {
+    value: [K, V];
+    done: true;
+}
+declare interface MapIterator<K, V> {
+    next(): MapIteratorValue<K, V>;
+}
+declare interface IMap<Key, Value> {
+    entries(): MapIterator<Key, Value>;
+    get(key: Key): Value;
+    set(key: Key, value: Value): this;
+    delete(key: Key): boolean;
+    size: number;
+    clear();
+}
+declare class Map implements IMap<any, any> {
+    entries(): MapIterator<any, any>;
+    size: number;
+    clear();
+    new(): any;
+    get(key: any): any;
+    set(key: any, value: any): any;
+    delete(key: any): boolean;
+}*/
 declare var chrome: {
     storage: {
         local: {
@@ -183,7 +209,7 @@ declare namespace System {
             constructor();
             method: 0 | WebRequestMethod.Post | WebRequestMethod.Head | WebRequestMethod.Put | WebRequestMethod.Delete | WebRequestMethod.Options | WebRequestMethod.Connect;
             ResponseType: ResponseType;
-            _onprogress(e: any): void;
+            _onprogress(_e: any): void;
             readonly IsSuccess: boolean;
             Download<T>(url: basics.IUrl, data: downloadCallback<T>): void;
             readonly Response: any;
@@ -213,7 +239,7 @@ declare namespace System {
             OnFinish: EventListener;
             constructor();
             readonly Request: WebRequest;
-            DownloadComplete(xmlRequest: any): void;
+            DownloadComplete(_xmlRequest: any): void;
             Push<T>(url: basics.IUrl, data: downloadCallback<T>): void;
             Start(): void;
             Next(): void;
@@ -241,6 +267,8 @@ interface IContext {
     OnGStat(stat: ModuleStat, callback: (me: string, target: string, cstat: ModuleStat, stat: ModuleStat) => void): any;
     SetSuperVisor(callback: (url: IUrl) => boolean): any;
     Assemblies: any;
+    ExecuteModule(success: boolean): any;
+    HandleExecution(): any;
 }
 interface IEnum {
     [n: string]: number;
@@ -260,6 +288,8 @@ declare module "context" {
     function OnGStat(stat: ModuleStat, callback: (me: string, target: string, cstat: ModuleStat, stat: ModuleStat) => void): any;
     function SetSuperVisor(callback: (url: IUrl) => boolean): any;
     var Assemblies: any;
+    function ExecuteModule(success: boolean): any;
+    function HandleExecution(): any;
 }
 declare interface ITemplateModule {
     get(name: string): HTMLTemplateElement;
@@ -282,8 +312,8 @@ declare module "json|*" {
 declare module "html|*" {
     const value: any;
     export default value;
-    function Validate(): any;
-    var context: IContext;
+    export function Validate(): any;
+    export var context: IContext;
 }
 declare module "style|*" {
     function require(path: string, callback: (e: any) => void, onError: () => void): any;
@@ -357,3 +387,4 @@ interface ITemplatePlugin {
     Validate(): any;
     context: IContext;
 }
+//# sourceMappingURL=qloader.d.ts.map
