@@ -1,20 +1,13 @@
-import { basic, bind } from "./Corelib";
-export declare function parseTarget(dom: Element): {
+import { bind } from "./Corelib";
+import { basic } from "./utils";
+export declare function ParseTarget(dom: Element): {
     depth: number;
     href: string;
 };
-export declare function getTarget(dom: Element, depth: number, id: any): Element;
-export declare function getTargetFrom(dom: Element): Element;
+export declare function GetTarget(dom: Element, depth: number, id: any): Element;
+export declare function GetTarget1(dom: Element): Element;
+export declare function GetTarget2(ji: bind.JobInstance): HTMLElement;
 export declare module Jobs {
-    function InputChecks(): void;
-    function Load(): void;
-    class interpolation implements basic.IJob {
-        Name: string;
-        Todo(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-        OnError(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-        OnInitialize(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-        OnScopDisposing(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-    }
     class CheckBox implements basic.IJob {
         Name: string;
         Todo(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
@@ -39,24 +32,6 @@ export declare module Jobs {
         callback(): void;
         OnScopDisposing(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
     }
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var textboxJob: basic.IJob;
-    var LabelJob: basic.IJob;
     var ratingJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var LabelJob: basic.IJob;
-    var TextJob: basic.IJob;
-    var TextJob: basic.IJob;
-    var TextJob: basic.IJob;
-    var CheckJob: basic.IJob;
 }
+//# sourceMappingURL=Jobs.d.ts.map

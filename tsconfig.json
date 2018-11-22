@@ -1,6 +1,7 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
+        "strict": false,
         "module": "amd",
         "noEmitOnError": false,
         "noImplicitAny": false,
@@ -10,7 +11,10 @@
         "target": "es5",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "skipDefaultLibCheck": true,
+        "skipLibCheck": true,
+        "noLib": false
     },
     "exclude": [
         "node_modules",

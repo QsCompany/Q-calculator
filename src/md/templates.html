@@ -1,0 +1,132 @@
+<templates>
+    <template>
+        <div class="md-checkbox" db-class="{{$mdActiveTheme}} {{checkClasses}}">
+            <div class="md-checkbox-container" on-click.stop="toggleCheck">
+                <md-ripple md-centered p:md-active="rippleActive" p:md-disabled="disabled">
+                    <input :id="id" type="checkbox" :="<-attrs" :indeterminate="indeterminate">
+                </md-ripple>
+            </div>
+
+            <label :for="id" class="md-checkbox-label" if="$slots.default" on-click.prevent="toggleCheck">
+                <slot />
+            </label>
+        </div>
+    </template>
+    <template name="md-bottom-bar-item">
+        <md-button class="md-bottom-bar-item" db-class="itemClasses" :id="id" :disabled="mdDisabled" :md-ripple="MdBottomBar.type == 'fixed'" v-bind="attrs" v-on="$listeners" @click="setActiveItem">
+            <slot v-if="$slots.default"></slot>
+
+            <template v-else>
+                <md-icon class="md-bottom-bar-icon" v-if="isAssetIcon(mdIcon)" :md-src="mdIcon"></md-icon>
+                <md-icon class="md-bottom-bar-icon" v-else>{{ mdIcon }}</md-icon>
+                <span class="md-bottom-bar-label">{{ mdLabel }}</span>
+            </template>
+        </md-button>
+    </template>
+    <template name="md-avatar">
+        <div class="md-avatar" debugger db-class="- {{$mdActiveTheme}}" on-click="window.alert('Achour')">
+            <slot />
+        </div>
+    </template>
+    <template name="md-badge">
+        <div class="md-badge-content" if="this.hasDefaultSlot">
+            <slot></slot>
+            <md-badge-standalone debugger db-class="{{badgeClasses}}" db-style="{{styles}}">
+                <div>
+                    {{data.mdContent}}
+                </div>
+            </md-badge-standalone>
+        </div>
+        <md-badge-standalone db-class="{{badgeClasses}}" db-style="{{styles}}" else>
+            {{mdContent}}
+        </md-badge-standalone>
+    </template>
+    <template name="md-badge-standalone">
+        <div class="md-badge" db-class="{{$mdActiveTheme}}">
+            <slot />
+        </div>
+    </template>
+    <template name="md-svg-loader">
+        <i class="md-svg-loader" db-exec="[html]this.html">
+            <slot />
+        </i>
+    </template>
+    <template name="md-button">
+        <button type="button" :is="$mdActiveTheme" class="md-button" db-class="{{$mdActiveTheme}}" :="attrs">
+            <div class="md-ripple">
+                <div class="md-button-content">
+                    <slot />
+                </div>
+            </div>
+        </button>
+    </template>
+    <template name="md-icon">
+        <div>
+            <i class="md-icon md-icon-font" db-class="{{$mdActiveTheme}}" db-bind="this.Name" db-job="show">{{data}}
+                <slot />
+            </i>
+            <md-svg-loader class="md-icon md-icon-image" db-bind="this.mdSrc" db-class="{{$mdActiveTheme}}" db-job="show" on-loaded="this.$emit('md-loaded')"></md-svg-loader>
+        </div>
+    </template>
+    <template name="md-card-actions">
+        <div class="md-card-actions" db-class="md-alignment-{{this.mdAlignment}}">
+            <slot />
+        </div>
+    </template>
+    <template name="md-ripple">
+        <div class="md-ripple">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-area">
+        <div class="md-card-area" db-class="{{this.areaClasses}}">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-content">
+        <div class="md-card-content">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-expand">
+        <div class="md-card-expand">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-expand-content">
+        <div class="md-card-expand-content" db-style="{{this.contentStyles}}">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-header">
+        <div class="md-card-header">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-header-text">
+        <div class="md-card-header-text">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-media">
+        <div class="md-card-media" db-class="{{this.mediaClasses}}">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-media-actions">
+        <div class="md-card-media-actions">
+            <slot />
+        </div>
+    </template>
+    <template name="md-card-media-cover">
+        <div class="md-card-media-cover" db-class="{{this.coverClasses}}">
+            <slot name='backdrop' />
+            <div class="md-card-backdrop" db-style="{{this.coverStyles}}" db-exec="[show]this.mdTextScrim" db-name="backdrop"></div>
+        </div>
+    </template>
+    <template name="md-card">
+        <div class="md-card" db-class="{{$mdActiveTheme}} {{this.cardClasses}}" on-dblclick:stop-e="window.alert()">
+            <slot />
+        </div>
+    </template>
+</templates>

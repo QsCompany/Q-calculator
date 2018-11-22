@@ -1,4 +1,5 @@
-import { bind, utils } from "./Corelib";
+import { bind } from "./Corelib";
+import { utils } from './collections';
 import { UI } from "./UI";
 import { reflection } from './runtime';
 export declare namespace Critere {
@@ -128,3 +129,4 @@ export declare namespace Critere {
         critereProperties: Array<bind.DProperty<any, any>>;
     }
 }
+//# sourceMappingURL=Critere.d.ts.map

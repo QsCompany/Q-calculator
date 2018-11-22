@@ -1,22 +1,25 @@
 import { bind } from "./Corelib";
 import { Controller } from "./Dom";
-export declare var x: any;
+import { defs } from "./defs";
+import { UI } from "./UI";
 export declare namespace helper {
+    var MaxSafeInteger: number;
+    function detach(node: any): (nnode?: any) => void;
     function TryCatch<T>(owner: any, Try: (...args: any[]) => T, Catch?: (e: Error, ...args: any[]) => T, params?: any[]): T;
     function $defineProperty(o: any, p: string, attributes: PropertyDescriptor & ThisType<any>, onError?: (o: any, p: string, attributes: PropertyDescriptor & ThisType<any>) => any): any;
 }
-declare module basic {
-    interface IBindable {
-        Owner?: any;
-        Invoke(...args: any[]): any;
-    }
-    interface ITBindable<T extends (...args: any[]) => void> extends IBindable {
-        Invoke: T;
-    }
-    type Invoker<T extends (...args: any[]) => void> = ITBindable<T> | T;
-}
 export declare namespace reflection {
     type GFunction = Function | reflection.GenericType | reflection.DelayedType;
+    namespace basic {
+        interface IBindable {
+            Owner?: any;
+            Invoke(...args: any[]): any;
+        }
+        interface ITBindable<T extends (...args: any[]) => void> extends IBindable {
+            Invoke: T;
+        }
+        type Invoker<T extends (...args: any[]) => void> = ITBindable<T> | T;
+    }
     interface ICallHistory {
         caller: any;
         arguments: any[];
@@ -82,6 +85,16 @@ export declare namespace reflection {
     function IsClass(obj: ObjectConstructor): boolean;
     function IsPrototype(obj: any): boolean;
     function IsInstance(obj: any): boolean;
+    enum NativeTypes {
+        Nullable = 0,
+        Boolean = 1,
+        Number = 2,
+        String = 3,
+        Function = 4,
+        Array = 5,
+        Object = 6,
+        DObject = 7
+    }
 }
 export declare namespace Attributes {
     interface Attribute<T> extends Function {
@@ -150,6 +163,17 @@ export declare namespace PaintThread {
     function OnPaint(task: task2): void;
 }
 export declare namespace Dom {
+    interface ISlot {
+        nextSible: Node;
+        parent: Node;
+        children: Node[];
+    }
+    interface SlotChildrenMap {
+        [s: string]: Node[];
+    }
+    interface SlotsMap {
+        [s: string]: ISlot;
+    }
     function OnNodeInserted(controller: Controller, dom: Node): void;
     function RemoveListener(dom: Node): void;
     function pushToIdl(f: any): void;
@@ -267,4 +291,13 @@ export declare namespace mvc {
         static Foreach(callback: (tmplate: Template) => boolean): void;
     }
 }
-export { };
+export declare namespace Msg {
+    function register(api: defs.ModalApi, name?: string): void;
+    function getModalApi(name?: string): defs.ModalApi;
+    function New(name?: string, args?: any[]): defs.$UI.IModal;
+    function ShowDialog(name: string, title: string, msg: string | HTMLElement | UI.JControl, callback?: (e: UI.MessageEventArgs) => void, ok?: string, cancel?: string, abort?: string): defs.$UI.IModal;
+    function NextZIndex(): number;
+    function getApiNames(): string[];
+    function defaultApi(): defs.ModalApi;
+}
+//# sourceMappingURL=runtime.d.ts.map

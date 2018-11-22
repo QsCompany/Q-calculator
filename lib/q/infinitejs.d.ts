@@ -1,136 +1,6 @@
 /// <reference path="F:/Q Framework/TypeScript/Infinite/qloader.d.ts" />
 /// <reference path="F:/Q Framework/TypeScript/Infinite/es2015.collection.d.ts" />
 /// <reference path="F:/Q Framework/TypeScript/Infinite/es2015.iterable.d.ts" />
-declare module "sys/Filters" {
-    import { utils, bind, collection } from "sys/Corelib";
-    export module filters {
-        namespace scopic {
-            interface IListFilterParam {
-                Filter: string;
-                Source: string;
-                Patent: string;
-                shift: string;
-                max: string;
-            }
-            class ListFilter<T> extends bind.Filter<collection.List<T>, collection.ExList<T, list.StringPatent<T>>> {
-                private p;
-                private fl?;
-                private isConst;
-                constructor(s: bind.Scop, p: string, fl?: collection.ExList<T, filters.list.StringPatent<T>>);
-                private getFilter;
-                private getSource;
-                private getPatent;
-                protected Convert(data: collection.List<T>): collection.ExList<T, any>;
-                protected ConvertBack(data: collection.ExList<T, any>): collection.List<T>;
-                Initialize(): void;
-            }
-        }
-        namespace list {
-            class SubListPatent implements utils.IPatent<any> {
-                Start: number;
-                End: number;
-                constructor(start: number, end: number);
-                Check(i: any): boolean;
-                equals(p: SubListPatent): boolean;
-                Refresh(): this;
-                private _refresh;
-            }
-            class StringPatent<T> implements utils.IPatent<T> {
-                private p;
-                private o;
-                constructor(s: string);
-                Check(s: any): boolean;
-                equals(p: StringPatent<any>): boolean;
-            }
-            class PropertyPatent<T> implements utils.IPatent<T> {
-                s: T;
-                constructor(s: T);
-                Check(s: any): boolean;
-                equals(p: PropertyPatent<any>): boolean;
-            }
-            class PropertyFilter<T extends bind.DObject> extends utils.Filter<T, PropertyPatent<T>> {
-                DP: bind.DProperty<any, any>;
-                private _skip;
-                Begin(deb: number, count: number): void;
-                IsMatch(i: number, item: T): any;
-                protected convertFromString(x: string): PropertyPatent<T>;
-                constructor(DP: bind.DProperty<any, any>);
-            }
-            class StringFilter<T> extends utils.Filter<T, StringPatent<T>> {
-                Begin(deb: number, count: number): void;
-                IsMatch(i: number, item: T): boolean;
-                protected convertFromString(x: string): StringPatent<T>;
-            }
-            class BoundStringFilter<T> extends utils.Filter<T, StringPatent<T>> {
-                private deb;
-                private fin;
-                Begin(deb: number, count: number): void;
-                IsMatch(i: number, item: T): boolean;
-                protected convertFromString(x: string): StringPatent<T>;
-            }
-            class DObjectPatent implements utils.IPatent<bind.DObject> {
-                private o;
-                constructor(s: string);
-                Check(s: bind.DObject): boolean;
-                equals(p: DObjectPatent): boolean;
-            }
-            class DObjectFilter<T> extends utils.Filter<T, StringPatent<T>> {
-                Begin(deb: number, count: number): void;
-                IsMatch(i: number, item: T): boolean;
-                protected convertFromString(x: string): StringPatent<T>;
-            }
-            abstract class PatentGroup<T> implements utils.IPatent<T> {
-                left: utils.IPatent<T>;
-                right: utils.IPatent<T>;
-                constructor(left: utils.IPatent<T>, right: utils.IPatent<T>);
-                abstract Clone(): any;
-                abstract Check(item: T): any;
-                equals(p: utils.IPatent<T>): boolean;
-                protected areEquals(a: utils.IPatent<T>, b: utils.IPatent<T>): boolean;
-            }
-            class ANDPatentGroup<T> extends PatentGroup<T> {
-                Check(item: T): boolean;
-                Clone(): ANDPatentGroup<T>;
-            }
-            class ORPatentGroup<T> extends PatentGroup<T> {
-                Clone(): ORPatentGroup<T>;
-                Check(item: T): boolean;
-            }
-            class FilterGroup<T> extends utils.Filter<T, PatentGroup<T>> {
-                constructor(patent: PatentGroup<T>);
-                Begin(deb: number, count: number): void;
-                IsMatch(i: number, item: T): any;
-                protected convertFromString(x: string): PatentGroup<T>;
-                LeftPatent: utils.IPatent<T>;
-                RightPatent: utils.IPatent<T>;
-            }
-            class LStringFilter<T> extends utils.Filter<T, StringPatent<T>> {
-                private deb;
-                private count;
-                Begin(deb: number, count: number): void;
-                IsMatch(i: number, item: T): boolean;
-                protected convertFromString(x: string): StringPatent<T>;
-            }
-            class SubListFilter<T> extends utils.Filter<T, SubListPatent> {
-                private deb;
-                private count;
-                Begin(deb: number, count: number): void;
-                IsMatch(i: number, item: T): boolean;
-                protected convertFromString(x: string): SubListPatent;
-            }
-            function indexdFilter(source: collection.List<any>, count: number): {
-                update(): void;
-                reset(): void;
-                next(): void;
-                previouse(): void;
-                readonly List: collection.ExList<any, utils.IPatent<any>>;
-                readonly numPages: number;
-                Index: number;
-                CountPerPage: number;
-            };
-        }
-    }
-}
 declare module "sys/Syntaxer" {
     import { bind } from "sys/Corelib";
     export namespace Parser {
@@ -294,6 +164,7 @@ declare module "sys/Syntaxer" {
             function word(strm: syntaxer, rslt: ParserResult): boolean;
             function pint(b: syntaxer, rslt: ParserResult): boolean;
             function anonymouseScop(s: syntaxer, rslt: ParserResult): boolean;
+            function attributeScop(s: syntaxer, rslt: ParserResult): boolean;
             function namedScop(s: syntaxer, rslt: ParserResult): boolean;
             function subScop(s: syntaxer, rslt: ParserResult): boolean;
             function typedScop(s: syntaxer, rslt: ParserResult): boolean;
@@ -393,10 +264,11 @@ declare module "sys/Syntaxer" {
     }
 }
 declare module "sys/Dom" {
-    import { bind, basic } from "sys/Corelib";
     import { UI } from "sys/UI";
-    import { Attributes, thread } from "sys/runtime";
+    import { Attributes, Dom } from "sys/runtime";
     import { Parser } from "sys/Syntaxer";
+    import { basic } from "sys/utils";
+    import { bind } from "sys/Corelib";
     export namespace Processor {
         class debug {
             private static lst;
@@ -423,7 +295,7 @@ declare module "sys/Dom" {
             stat: Stat;
             value: any;
             instance: Def;
-            manager: Manager;
+            manager: DerictivesExtractor;
         }
         interface ComponentCreator {
             Def: Def;
@@ -431,7 +303,8 @@ declare module "sys/Dom" {
             context: IContext;
             TagName: string;
         }
-        class Manager {
+        class DerictivesExtractor {
+            private dom;
             private static _processors;
             private static enumerator;
             static maxPriority: number;
@@ -439,24 +312,21 @@ declare module "sys/Dom" {
             static getPrcessorByAttribute(name: string): Def;
             static stringIsNullOrWhiteSpace(s: string): boolean;
             static registerComponent(p: attributes.ComponentArgs): void;
-            static register(p: Def): void;
+            static register(p: Def): Def;
             private static orderDefs;
             private static orderInstances;
             enumerator: Instance[];
-            events: {
-                [s: string]: string;
-            };
-            notifies: {
-                [s: string]: string;
-            };
             ComponentCreator: Instance;
             getProcessorByAttribute(processor: string): Instance;
-            constructor(dom: Node);
+            constructor(dom: HTMLElement, _attributes: Attr[], skipTag: any, insertAttributes: any);
+            static CompileDerictives(x: Tree): Processor.Tree;
+            private Compile;
         }
         class Tree {
             e: bind.IJobScop;
             parent: Tree;
             controller: Controller;
+            creteScopBuilderEventArgs(mode?: bind.BindingMode): bind.ScopBuilderEventArg;
             readonly Scop: bind.Scop;
             readonly ParentScop: bind.Scop;
             readonly Control: UI.JControl;
@@ -467,8 +337,15 @@ declare module "sys/Dom" {
             static New(dom: Node, parent: Tree, controller: Controller): Tree;
             static Root(dom: Node, Scop: bind.Scop, Control: UI.JControl, controller?: Controller): Tree;
             New(dom: Node): Tree;
+            NewScop(scop: bind.Scop): Tree;
+            NewControlScop(scop: bind.Scop): Tree;
             readonly Depth: any;
             ContinueInto: Element;
+            skipProcessingChildren: boolean;
+            componentData: {
+                attributes: Attr[];
+                slots: Dom.SlotChildrenMap;
+            };
         }
         class TreeWalker {
             static ParseBinding(data: Processor.Tree): Processor.Tree;
@@ -480,41 +357,44 @@ declare module "sys/Dom" {
         }
         function register(p: Def): void;
         class Compiler {
-            private static initEvents;
-            static Compile(x: Tree): Processor.Tree;
         }
-        function Register(p: Processor.Def): void;
+        function Register(p: Processor.Def): Def;
         function Compile(x: Tree): Tree;
     }
     export namespace attributes {
         enum ContentType {
-            premitive = 0,
-            multiple = 1,
+            multiple = 0,
+            premitive = 1,
             signle = 2,
             costum = 3
         }
         interface ContentEventArgs {
             child: Processor.Tree;
             parent: Processor.Tree;
+            slot: string;
         }
         interface ContentArgs {
-            type: ContentType;
+            type?: ContentType;
             handler: string | ((e: ContentEventArgs) => void);
             IsProperty?: boolean;
             selector?(e: ContentEventArgs): any;
             target?: typeof UI.JControl;
             getHandler?(cnt: UI.JControl): (e: ContentEventArgs) => void;
+            keepInTree?: boolean;
         }
         interface contentDecl extends Attributes.Attribute<ContentArgs> {
             (param: ContentArgs): any;
         }
         var Content: contentDecl;
+        function ContentHandler(keepInTree: boolean): (target: any, propertyKey: string, des?: PropertyDescriptor) => void;
     }
     export namespace attributes {
         interface ComponentEventArgs {
             node: Processor.Tree;
             instance: Processor.Instance;
             Services: any[];
+            processChildrens: boolean;
+            nodesToProcess: Node[];
         }
         interface ComponentArgs {
             name: string;
@@ -526,6 +406,27 @@ declare module "sys/Dom" {
             (param: ComponentArgs): any;
         }
         var Component: componentType;
+        function ComponentHandler(name: string, initializer?: (ins: Processor.Instance, dom: HTMLElement) => void): (target: any, _propertyKey: string, des?: PropertyDescriptor) => void;
+        function PushTest(title: string, fn: Function, owner?: any, ...args: any[]): void;
+        function PushMultiTest(title: string, fn: Function, owner?: any, ...args: any[]): void;
+        function Test(title: string, owner?: any, ...args: any[]): (target: any, _propertyKey: string, des?: PropertyDescriptor) => void;
+        function MultiTest(title: string, owner?: any, ...args: any[][]): (target: any, _propertyKey: string, des?: PropertyDescriptor) => void;
+        function runTests(): ITestData[];
+        interface ITestData {
+            test: Itest;
+            args: any[];
+            result?: any;
+            start: number;
+            end?: number;
+            success?: boolean;
+        }
+        interface Itest {
+            fn: Function;
+            args: any[];
+            owner: any;
+            title: string;
+            multiTest?: boolean;
+        }
     }
     export namespace attributes {
         type Prototype = any;
@@ -549,16 +450,12 @@ declare module "sys/Dom" {
         const Event: EventAttribute;
     }
     export namespace attributes {
-        interface ComponentEventArgs {
-            node: Processor.Tree;
-            instance: Processor.Instance;
-            Services: any[];
-        }
         interface ComponentArgs {
             name: string;
             handler: string | ((e: ComponentEventArgs) => Processor.Tree);
             Serices?: Array<Function | string>;
             target?: typeof UI.JControl;
+            initialize?: (string | ((ins: Processor.Instance, dom: HTMLElement) => void));
         }
         interface componentType extends Attributes.Attribute<ComponentArgs> {
             (param: ComponentArgs): any;
@@ -574,30 +471,8 @@ declare module "sys/Dom" {
             handler?: bind.ScopBuilderHandler;
             target?: typeof bind.Scop;
         }
-        const ScopHandler: ScopHandlerAttribute;
-    }
-    export module help {
-        class EventData {
-            events: events;
-            interpolation: string;
-            scop?: bind.Scop;
-            constructor(events: events, interpolation: string);
-            readonly dom: Node;
-            readonly controller: Controller;
-            readonly parentScop: bind.Scop;
-        }
-        class events implements basic.IJob, EventListenerObject {
-            xx: Processor.Tree;
-            private events;
-            Name: string;
-            Todo?(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-            Register(eventType: string, v: string): void;
-            private getScop;
-            handleEvent(e: Event): void;
-            private exec;
-            constructor(xx: Processor.Tree);
-            scop: bind.Scop;
-        }
+        const Parser2Scop: ScopHandlerAttribute;
+        function Parser2ScopHandler(token: Parser.CToken | string): (target: any, propertyKey: string, des?: PropertyDescriptor) => void;
     }
     export enum ProcessStat {
         NotProcessed = 0,
@@ -618,7 +493,7 @@ declare module "sys/Dom" {
         static __feilds__(): bind.DProperty<HTMLElement, Controller>[];
         static DPView: bind.DProperty<HTMLElement, Controller>;
         View: HTMLElement;
-        JCParent: UI.JControl[];
+        private _JCParent;
         private _onCompiled;
         OnCompiled: basic.ITBindable<(t: this) => void>;
         private _onCompiling;
@@ -631,37 +506,56 @@ declare module "sys/Dom" {
         private ProcessBinding;
         private static pb;
         Scop: bind.Scop;
-        static explorerJob: thread.JobParam;
-        readonly CurrentControl: UI.JControl;
+        CurrentControl: UI.JControl;
+        OldControl: UI.JControl;
         instances: bind.JobInstance[];
-        CompileChild(dom: Node, scop: bind.Scop, control: UI.JControl): Processor.Tree;
         private processEvent;
         constructor(cnt: UI.JControl);
         PDispose(): void;
         Dispose(): void;
         createJobInstance(name: string, x: Processor.Tree): bind.JobInstance;
     }
+    export class xNode<T> {
+        node: Node;
+        param: T;
+        unknown?: xNode<T>[];
+        children: xNode<T>[];
+        parent: xNode<T>;
+        constructor(node: Node, param: T, unknown?: xNode<T>[]);
+        add(node: Node, param: T): xNode<T>;
+        __add(v: xNode<T>): xNode<T>;
+        Validate(): this;
+        ReValidate(callback: (node: xNode<T>) => void): void;
+        get(node: Node): xNode<T>;
+        private _add;
+        remove(node: Node): xNode<T>;
+        hasChild(node: Node): xNode<T>;
+        foreach(callback: (parent: xNode<T>, child: xNode<T>) => number, parent?: xNode<T>): number;
+    }
 }
 declare module "sys/runtime" {
     import { bind } from "sys/Corelib";
     import { Controller } from "sys/Dom";
-    export var x: any;
+    import { defs } from "sys/defs";
+    import { UI } from "sys/UI";
     export namespace helper {
+        var MaxSafeInteger: number;
+        function detach(node: any): (nnode?: any) => void;
         function TryCatch<T>(owner: any, Try: (...args: any[]) => T, Catch?: (e: Error, ...args: any[]) => T, params?: any[]): T;
         function $defineProperty(o: any, p: string, attributes: PropertyDescriptor & ThisType<any>, onError?: (o: any, p: string, attributes: PropertyDescriptor & ThisType<any>) => any): any;
     }
-    namespace basic {
-        interface IBindable {
-            Owner?: any;
-            Invoke(...args: any[]): any;
-        }
-        interface ITBindable<T extends (...args: any[]) => void> extends IBindable {
-            Invoke: T;
-        }
-        type Invoker<T extends (...args: any[]) => void> = ITBindable<T> | T;
-    }
     export namespace reflection {
         type GFunction = Function | reflection.GenericType | reflection.DelayedType;
+        namespace basic {
+            interface IBindable {
+                Owner?: any;
+                Invoke(...args: any[]): any;
+            }
+            interface ITBindable<T extends (...args: any[]) => void> extends IBindable {
+                Invoke: T;
+            }
+            type Invoker<T extends (...args: any[]) => void> = ITBindable<T> | T;
+        }
         interface ICallHistory {
             caller: any;
             arguments: any[];
@@ -727,6 +621,16 @@ declare module "sys/runtime" {
         function IsClass(obj: ObjectConstructor): boolean;
         function IsPrototype(obj: any): boolean;
         function IsInstance(obj: any): boolean;
+        enum NativeTypes {
+            Nullable = 0,
+            Boolean = 1,
+            Number = 2,
+            String = 3,
+            Function = 4,
+            Array = 5,
+            Object = 6,
+            DObject = 7
+        }
     }
     export namespace Attributes {
         interface Attribute<T> extends Function {
@@ -795,6 +699,17 @@ declare module "sys/runtime" {
         function OnPaint(task: task2): void;
     }
     export namespace Dom {
+        interface ISlot {
+            nextSible: Node;
+            parent: Node;
+            children: Node[];
+        }
+        interface SlotChildrenMap {
+            [s: string]: Node[];
+        }
+        interface SlotsMap {
+            [s: string]: ISlot;
+        }
         function OnNodeInserted(controller: Controller, dom: Node): void;
         function RemoveListener(dom: Node): void;
         function pushToIdl(f: any): void;
@@ -912,2038 +827,19 @@ declare module "sys/runtime" {
             static Foreach(callback: (tmplate: Template) => boolean): void;
         }
     }
+    export namespace Msg {
+        function register(api: defs.ModalApi, name?: string): void;
+        function getModalApi(name?: string): defs.ModalApi;
+        function New(name?: string, args?: any[]): defs.$UI.IModal;
+        function ShowDialog(name: string, title: string, msg: string | HTMLElement | UI.JControl, callback?: (e: UI.MessageEventArgs) => void, ok?: string, cancel?: string, abort?: string): defs.$UI.IModal;
+        function NextZIndex(): number;
+        function getApiNames(): string[];
+        function defaultApi(): defs.ModalApi;
+    }
 }
-declare module "sys/UI" {
-    import { basic, bind, collection, utils, BuckupList } from "sys/Corelib";
-    import { defs } from "sys/defs";
-    import { filters } from "sys/Filters";
-    import { reflection, mvc } from "sys/runtime";
-    import { attributes, help as _help, Controller } from "sys/Dom";
-    import { Parser } from "sys/Syntaxer";
-    export type conv2template = mvc.ITemplate | string | Function | UI.Template | HTMLElement;
-    export module UI {
-        enum KeyboardControllerResult {
-            Handled = 0,
-            Release = -1,
-            ByPass = 2
-        }
-        enum Keys {
-            Enter = 13,
-            Tab = 9,
-            Esc = 27,
-            Escape = 27,
-            Up = 38,
-            Down = 40,
-            Left = 37,
-            Right = 39,
-            PgDown = 34,
-            PageDown = 34,
-            PgUp = 33,
-            PageUp = 33,
-            End = 35,
-            Home = 36,
-            Insert = 45,
-            Delete = 46,
-            Backspace = 8,
-            Space = 32,
-            Meta = 91,
-            Win = 91,
-            Mac = 91,
-            Multiply = 106,
-            Add = 107,
-            Subtract = 109,
-            Decimal = 110,
-            Divide = 111,
-            Scrollock = 145,
-            Pausebreak = 19,
-            Numlock = 144,
-            "5numlocked" = 12,
-            Shift = 16,
-            Capslock = 20,
-            F1 = 112,
-            F2 = 113,
-            F3 = 114,
-            F4 = 115,
-            F5 = 116,
-            F6 = 117,
-            F7 = 118,
-            F8 = 119,
-            F9 = 120,
-            F10 = 121,
-            F11 = 122,
-            F12 = 123,
-            AltLeft = 18,
-            AltRight = 18,
-            ShiftLeft = 18,
-            ShiftRight = 18,
-            ControlLeft = 17,
-            ControlRight = 17,
-            MetaLeft = 91,
-            MetaRight = 91
-        }
-        enum Controlkeys {
-            Alt = 18,
-            Shift = 16,
-            Control = 17,
-            Meta = 91
-        }
-        enum Events {
-            keydown = 2,
-            keyup = 3,
-            keypress = 5
-        }
-        enum ListType {
-            Ordred = 0,
-            UnOrdred = 1
-        }
-        enum MetricType {
-            Pixel = 0,
-            Percentage = 1,
-            Inch = 2,
-            Em = 3
-        }
-        enum ButtonStyle {
-            Default = 0,
-            Primary = 1,
-            success = 2,
-            Info = 3,
-            Warning = 4,
-            Danger = 5,
-            Link = 6,
-            Block = 7
-        }
-        enum SearchActionMode {
-            None = 0,
-            Validated = 1,
-            Instantany = 2,
-            NoSearch = 3
-        }
-        enum Icons {
-            Bar = 0,
-            Next = 1,
-            Prev = 2
-        }
-        enum Glyphs {
-            none = 0,
-            asterisk = 1,
-            plus = 2,
-            eur = 3,
-            euro = 4,
-            minus = 5,
-            cloud = 6,
-            envelope = 7,
-            pencil = 8,
-            glass = 9,
-            music = 10,
-            search = 11,
-            heart = 12,
-            star = 13,
-            starEmpty = 14,
-            user = 15,
-            film = 16,
-            thLarge = 17,
-            th = 18,
-            thList = 19,
-            ok = 20,
-            remove = 21,
-            zoomIn = 22,
-            zoomOut = 23,
-            off = 24,
-            signal = 25,
-            cog = 26,
-            trash = 27,
-            home = 28,
-            file = 29,
-            time = 30,
-            road = 31,
-            downloadAlt = 32,
-            download = 33,
-            upload = 34,
-            inbox = 35,
-            playCircle = 36,
-            repeat = 37,
-            refresh = 38,
-            listAlt = 39,
-            lock = 40,
-            flag = 41,
-            headphones = 42,
-            volumeOff = 43,
-            volumeDown = 44,
-            volumeUp = 45,
-            qrcode = 46,
-            barcode = 47,
-            tag = 48,
-            tags = 49,
-            book = 50,
-            bookmark = 51,
-            print = 52,
-            camera = 53,
-            font = 54,
-            bold = 55,
-            italic = 56,
-            textHeight = 57,
-            textWidth = 58,
-            alignLeft = 59,
-            alignCenter = 60,
-            alignRight = 61,
-            alignJustify = 62,
-            list = 63,
-            indentLeft = 64,
-            indentRight = 65,
-            facetimeVideo = 66,
-            picture = 67,
-            mapMarker = 68,
-            adjust = 69,
-            tint = 70,
-            edit = 71,
-            share = 72,
-            check = 73,
-            move = 74,
-            stepBackward = 75,
-            fastBackward = 76,
-            backward = 77,
-            play = 78,
-            pause = 79,
-            stop = 80,
-            forward = 81,
-            fastForward = 82,
-            stepForward = 83,
-            eject = 84,
-            chevronLeft = 85,
-            chevronRight = 86,
-            plusSign = 87,
-            minusSign = 88,
-            removeSign = 89,
-            okSign = 90,
-            questionSign = 91,
-            infoSign = 92,
-            screenshot = 93,
-            removeCircle = 94,
-            okCircle = 95,
-            banCircle = 96,
-            arrowLeft = 97,
-            arrowRight = 98,
-            arrowUp = 99,
-            arrowDown = 100,
-            shareAlt = 101,
-            resizeFull = 102,
-            resizeSmall = 103,
-            exclamationSign = 104,
-            gift = 105,
-            leaf = 106,
-            fire = 107,
-            eyeOpen = 108,
-            eyeClose = 109,
-            warningSign = 110,
-            plane = 111,
-            calendar = 112,
-            random = 113,
-            comment = 114,
-            magnet = 115,
-            chevronUp = 116,
-            chevronDown = 117,
-            retweet = 118,
-            shoppingCart = 119,
-            folderClose = 120,
-            folderOpen = 121,
-            resizeVertical = 122,
-            resizeHorizontal = 123,
-            hdd = 124,
-            bullhorn = 125,
-            bell = 126,
-            certificate = 127,
-            thumbsUp = 128,
-            thumbsDown = 129,
-            handRight = 130,
-            handLeft = 131,
-            handUp = 132,
-            handDown = 133,
-            circleArrowRight = 134,
-            circleArrowLeft = 135,
-            circleArrowUp = 136,
-            circleArrowDown = 137,
-            globe = 138,
-            wrench = 139,
-            tasks = 140,
-            filter = 141,
-            briefcase = 142,
-            fullscreen = 143,
-            dashboard = 144,
-            paperclip = 145,
-            heartEmpty = 146,
-            link = 147,
-            phone = 148,
-            pushpin = 149,
-            usd = 150,
-            gbp = 151,
-            sort = 152,
-            sortByAlphabet = 153,
-            sortByAlphabetAlt = 154,
-            sortByOrder = 155,
-            sortByOrderAlt = 156,
-            sortByAttributes = 157,
-            sortByAttributesAlt = 158,
-            unchecked = 159,
-            expand = 160,
-            collapseDown = 161,
-            collapseUp = 162,
-            logIn = 163,
-            flash = 164,
-            logOut = 165,
-            newWindow = 166,
-            record = 167,
-            save = 168,
-            open = 169,
-            saved = 170,
-            import = 171,
-            export = 172,
-            send = 173,
-            floppyDisk = 174,
-            floppySaved = 175,
-            floppyRemove = 176,
-            floppySave = 177,
-            floppyOpen = 178,
-            creditCard = 179,
-            transfer = 180,
-            cutlery = 181,
-            header = 182,
-            compressed = 183,
-            earphone = 184,
-            phoneAlt = 185,
-            tower = 186,
-            stats = 187,
-            sdVideo = 188,
-            hdVideo = 189,
-            subtitles = 190,
-            soundStereo = 191,
-            soundDolby = 192,
-            sound$5$1 = 193,
-            sound$6$1 = 194,
-            sound$7$1 = 195,
-            copyrightMark = 196,
-            registrationMark = 197,
-            cloudDownload = 198,
-            cloudUpload = 199,
-            treeConifer = 200,
-            treeDeciduous = 201,
-            cd = 202,
-            saveFile = 203,
-            openFile = 204,
-            levelUp = 205,
-            copy = 206,
-            paste = 207,
-            alert = 208,
-            equalizer = 209,
-            king = 210,
-            queen = 211,
-            pawn = 212,
-            bishop = 213,
-            knight = 214,
-            babyFormula = 215,
-            tent = 216,
-            blackboard = 217,
-            bed = 218,
-            apple = 219,
-            erase = 220,
-            hourglass = 221,
-            lamp = 222,
-            duplicate = 223,
-            piggyBank = 224,
-            scissors = 225,
-            bitcoin = 226,
-            btc = 227,
-            xbt = 228,
-            yen = 229,
-            jpy = 230,
-            ruble = 231,
-            rub = 232,
-            scale = 233,
-            iceLolly = 234,
-            iceLollyTasted = 235,
-            education = 236,
-            optionHorizontal = 237,
-            optionVertical = 238,
-            menuHamburger = 239,
-            modalWindow = 240,
-            oil = 241,
-            grain = 242,
-            sunglasses = 243,
-            textSize = 244,
-            textColor = 245,
-            textBackground = 246,
-            objectAlignTop = 247,
-            objectAlignBottom = 248,
-            objectAlignHorizontal = 249,
-            objectAlignLeft = 250,
-            objectAlignVertical = 251,
-            objectAlignRight = 252,
-            triangleRight = 253,
-            triangleLeft = 254,
-            triangleBottom = 255,
-            triangleTop = 256,
-            console = 257,
-            superscript = 258,
-            subscript = 259,
-            menuLeft = 260,
-            menuRight = 261,
-            menuDown = 262,
-            menuUp = 263
-        }
-        enum MessageResult {
-            Exit = 0,
-            ok = 1,
-            cancel = 2,
-            abort = 3
-        }
-        enum NotifyType {
-            Focuse = 0,
-            UnFocus = 1
-        }
-        enum ServiceType {
-            Main = 0,
-            Stackable = 1,
-            Instantany = 3
-        }
-        interface IContextMenuItem {
-            Title: string;
-            Shortcut?: string;
-            Icon?: string;
-        }
-        enum Location {
-            Left = 1,
-            Top = 2,
-            Right = 4,
-            Bottom = 8,
-            HCenter = 5,
-            VCenter = 10,
-            Center = 15,
-            TopLeft = 3
-        }
-        interface IContextMenuEventArgs<T> {
-            ObjectStat?: any;
-            e: MouseEvent;
-            x: number;
-            y: number;
-            selectedItem?: T;
-            cancel?: boolean;
-            callback(e: IContextMenuEventArgs<T>): any;
-        }
-        interface IContextMenu<T> {
-            getTarget(): JControl;
-            OnAttached(e: IContextMenuEventArgs<T>): any;
-            OnClosed(result: T, e: IContextMenuEventArgs<T>): boolean;
-            getView(): UI.JControl;
-        }
-        interface IService {
-            GetLeftBar(): JControl;
-            GetRightBar(): JControl;
-            Handler?: EventTarget;
-            ServiceType: ServiceType;
-            Notify?: bind.EventListener<(s: IService, notifyTYpe: NotifyType) => void>;
-            Callback(args: any): any;
-            Handled(): boolean;
-        }
-        interface INavEventArgs {
-            List: NavPage;
-            Item: NavPanel;
-        }
-        interface IKeyCombinerTarget extends basic.ITBindable<(k: keyCominerEvent, e: IKeyCombinerTarget) => void> {
-            target?: Node | JControl;
-        }
-        interface IKeyA {
-            [s: string]: IKeyCombinerTarget[];
-        }
-        interface IKeyboardControllerEventArgs {
-            e?: KeyboardEvent;
-            Result?: UI.KeyboardControllerResult;
-            Controller: IKeyboardController;
-        }
-        interface IKeyboardController {
-            owner?: any;
-            invoke(e: IKeyboardControllerEventArgs): any;
-            onResume?(e: IKeyboardControllerEventArgs): boolean;
-            onPause?(e: IKeyboardControllerEventArgs): boolean;
-            onStop?(e: IKeyboardControllerEventArgs): boolean;
-            stackable?: boolean;
-            params?: any[];
-        }
-        interface IItem {
-            Tag: any;
-            Content: string | HTMLElement | JControl;
-            Url: string;
-            OnItemSelected(menuItem: MenuItem): any;
-        }
-        enum HorizontalAlignement {
-            Left = 0,
-            Center = 1,
-            Right = 2
-        }
-        enum VerticalAlignement {
-            Top = 0,
-            Center = 1,
-            Bottom = 2
-        }
-    }
-    export module UI {
-        class HotKey {
-            private _key;
-            private __ctrl;
-            Key: Keys;
-            Control: Controlkeys;
-            IsPressed(e: KeyboardEvent): boolean;
-            private checkKey;
-            private checkControl;
-        }
-    }
-    export module UI {
-        function processHTML(dom: HTMLElement, data?: any): TControl<any>;
-        class DragableElement implements EventListenerObject {
-            element: HTMLElement;
-            header: HTMLElement;
-            pos1: number;
-            pos2: number;
-            pos3: number;
-            pos4: number;
-            private closeDragElementHandler;
-            private elementDragHandler;
-            elementDrag(e: MouseEvent): void;
-            closeDragElement(): void;
-            handleEvent(e: MouseEvent): void;
-            constructor(element: HTMLElement, header: HTMLElement);
-            initialize(element: HTMLElement, header: HTMLElement): void;
-            Dispose(): void;
-        }
-        class keyCominerEvent {
-            Owner: any;
-            OnComined: bind.EventListener<(owner: this, e: IKeyCombinerTarget) => void>;
-            private _keyA;
-            private _keyB;
-            private handlers;
-            sort(ar: IKeyCombinerTarget[]): undefined;
-            sort1(ar: Node[]): void;
-            KeyA: KeyboardEvent;
-            KeyB: KeyboardEvent;
-            constructor(Owner: any);
-            private elementInViewport1;
-            private elementInViewport;
-            Cancel: boolean;
-            private _stopEvent;
-            private _rise;
-            reset(): void;
-            handleEvent(e: KeyboardEvent): void;
-            private isValid;
-            On(keyA: string, keyB: string, handle: (s: keyCominerEvent, e: IKeyCombinerTarget) => void, target?: JControl | Node, owner?: any): IKeyCombinerTarget;
-            Off(keyA: string, keyB: string, e: IKeyCombinerTarget): void;
-            private _pause;
-            protected dom: HTMLElement;
-            pause(): void;
-            resume(): void;
-            attachTo(dom: HTMLElement): void;
-            stopPropagation(): void;
-        }
-        class DesktopKeyboardManager extends keyCominerEvent {
-            protected desk: Desktop;
-            constructor(desk: Desktop);
-            dom: HTMLElement;
-            attachTo(v: HTMLElement): void;
-        }
-        class KeyboardControllerManager {
-            Desktop: UI.Desktop;
-            private _controllers;
-            _current: IKeyboardController;
-            constructor(Desktop: UI.Desktop);
-            Current(): IKeyboardController;
-            GetController(nc: IKeyboardController): boolean;
-            Release(c: IKeyboardController): boolean;
-            ResumeStack(): boolean;
-            Invoke(e: KeyboardEvent): UI.KeyboardControllerResult;
-        }
-    }
-    export module UI {
-        abstract class JControl extends bind.Scop implements EventListenerObject {
-            protected _view: HTMLElement;
-            Is(toke: string | Parser.CToken): boolean;
-            private _parentScop;
-            getParent(): bind.Scop;
-            protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
-            setParent(v: bind.Scop): boolean;
-            CombinatorKey(keyA: string, keyB: string, callback: (this: this, e: keyCominerEvent) => void): IKeyCombinerTarget;
-            SearchParents<T extends JControl>(type: Function): T;
-            static LoadCss(url: any): HTMLLinkElement;
-            static __fields__(): any[];
-            readonly InnerHtml: string;
-            Float(v: HorizontalAlignement): void;
-            Clear(): void;
-            protected parent: JControl;
-            _presenter: JControl;
-            private _hotKey;
-            _onInitialize: bind.EventListener<(s: JControl) => void>;
-            OnInitialized: (s: this) => void;
-            Presenter: JControl;
-            setAttribute(name: any, value: any): this;
-            OnKeyDown(e: KeyboardEvent): any | void;
-            OnContextMenu(e: MouseEvent): any;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any | void;
-            setAttributes(attributes: {
-                [s: string]: string;
-            }): this;
-            applyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
-            applyStyle(a: string, b: string, c: string, d: string, e: string): any;
-            applyStyle(a: string, b: string, c: string, d: string): any;
-            applyStyle(a: string, b: string, c: string): any;
-            applyStyle(a: string, b: string): any;
-            applyStyle(a: string): any;
-            disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string, x: string): any;
-            disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
-            disapplyStyle(a: string, b: string, c: string, d: string, e: string): any;
-            disapplyStyle(a: string, b: string, c: string, d: string): any;
-            disapplyStyle(a: string, b: string, c: string): any;
-            disapplyStyle(a: string, b: string): any;
-            disapplyStyle(a: string): any;
-            private _display;
-            Visible: boolean;
-            Wait: boolean;
-            Enable: boolean;
-            Parent: JControl;
-            private static counter;
-            private _id;
-            private init;
-            readonly IsInit: boolean;
-            protected OnFullInitialized(): void;
-            protected OnPaint: (this: this, n: this) => void;
-            protected instantanyInitializeParent(): boolean;
-            ToolTip: string;
-            readonly View: HTMLElement;
-            constructor(_view: HTMLElement);
-            protected _hasValue_(): boolean;
-            protected abstract initialize(): any;
-            static createDiv(): HTMLDivElement;
-            addEventListener<T>(event: string, handle: (sender: this, e: Event, param: T) => void, param: T, owner?: any): basic.DomEventHandler<any, any>;
-            private static _handle;
-            AddRange(chidren: JControl[]): this;
-            Add(child: JControl): this;
-            IndexOf(child: JControl): void;
-            Insert(child: JControl, to: number): this;
-            Remove(child: JControl, dispose?: boolean): boolean;
-            protected getTemplate(child: JControl): JControl;
-            readonly Id: number;
-            Dispose(): void;
-            protected OnHotKey(): void;
-            HotKey: HotKey;
-            handleEvent(e: Event): void;
-            private _events;
-            private isEventRegistred;
-            private registerEvent;
-            static toggleClass(dom: any, className: any): void;
-            private _events_;
-            watch(name: string, callback: (e: attributes.EventEventArgs<this, any>) => void, owner?: any): this;
-            protected notify(name: string, e: attributes.EventEventArgs<this, any>): void;
-            unwatch(name: string, callback: (e: attributes.EventEventArgs<any, any>) => void, owner?: any): void;
-        }
-        interface IContentControl extends JControl {
-            Content: JControl;
-        }
-        abstract class Control<T extends JControl> extends JControl {
-            private _c;
-            readonly Children: T[];
-            Add(child: T): this;
-            NativeAdd(child: JControl): void;
-            Insert(child: T, to: number): this;
-            Remove(child: T, dispose?: boolean): boolean;
-            RemoveAt(i: number, dispose: boolean): boolean;
-            protected abstract Check(child: T): any;
-            protected readonly HasTemplate: boolean;
-            protected getTemplate(child: T): JControl;
-            protected OnChildAdded(child: T): void;
-            getChild(i: number): T;
-            IndexOf(item: T): number;
-            constructor(view: HTMLElement);
-            readonly Count: number;
-            CloneChildren(): void;
-            Clear(dispose?: boolean): void;
-            Dispose(): void;
-        }
-        class Desktop extends Control<App> {
-            WrapPage(e: attributes.ContentEventArgs): void;
-            static DPCurrentApp: bind.DProperty<App, Desktop>;
-            static DPCurrentLayout: bind.DProperty<JControl, Desktop>;
-            CurrentLayout: JControl;
-            Logout(): any;
-            OpenSignin(): void;
-            isReq: number;
-            KeyCombiner: keyCominerEvent;
-            CurrentApp: defs.$UI.IApp;
-            static ctor(): void;
-            private _currentLayoutChanged;
-            private selectApp;
-            static __fields__(): bind.DProperty<JControl, Desktop>[];
-            AuthStatChanged(v: boolean): void;
-            private apps;
-            IsSingleton: boolean;
-            constructor();
-            initialize(): void;
-            private observer;
-            private mouseController;
-            KeyboardManager: UI.KeyboardControllerManager;
-            private _keyboardControllers;
-            private _keyboardController;
-            private KeyboardController;
-            GetKeyControl(owner: any, invoke: (e: KeyboardEvent, ...params: any[]) => UI.KeyboardControllerResult, params: any[]): void;
-            ReleaseKeyControl(): void;
-            private focuser;
-            private handleTab;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): void;
-            defaultKeys: string;
-            OnKeyDown(e: KeyboardEvent): void;
-            handleEvent(e: Event): any;
-            OnContextMenu(e: MouseEvent): any;
-            private ShowStart;
-            static readonly Current: Desktop;
-            Check(v: defs.$UI.IApp): boolean;
-            Show(app: defs.$UI.IApp): void;
-            private to;
-            private loadApp;
-            Add(i: defs.$UI.IApp): this;
-            Register(app: defs.$UI.IApp): void;
-            AuthenticationApp: defs.$UI.IAuthApp;
-            private Redirect;
-            OnUsernameChanged(job: any, e: any): void;
-        }
-        class Container extends Control<JControl> {
-            constructor();
-            initialize(): void;
-            Check(child: JControl): boolean;
-        }
-        class Glyph extends JControl {
-            private isIcon?;
-            static AllGlyphs(panel: JControl): void;
-            static Test(): any;
-            static CreateGlyphDom(glyph: UI.Glyphs, toolTip: string, cssClass?: string): HTMLSpanElement;
-            private static GetGlyphCSS;
-            private static GetIconCSS;
-            private getStyle;
-            constructor(glyph: Glyphs | Icons, isIcon?: boolean, toolTip?: string);
-            initialize(): void;
-            private v;
-            Type: Glyphs | Icons;
-        }
-        class Button extends JControl {
-            Focus(): any;
-            private v;
-            Style: ButtonStyle;
-            initialize(): void;
-            constructor();
-            private _text;
-            private _content;
-            Text: string;
-            Content: Node;
-            Type: string;
-            private reset;
-        }
-        class GlyphButton extends Button {
-            initialize(): void;
-            AddGlyphs(isIcon: (i: number) => boolean, ...glyphs: (Glyphs | Icons)[]): void;
-            AddGlyph(glyph: Glyphs | Icons, isIcon?: boolean): Glyph;
-            protected Check(child: JControl): boolean;
-            private target;
-            CollapsedZone: JControl;
-        }
-        class Dom extends JControl {
-            constructor(tagName: string | HTMLElement, classList?: string[]);
-            initialize(): void;
-        }
-        class Anchore extends JControl {
-            constructor(content?: string | HTMLElement | JControl, href?: string);
-            initialize(): void;
-            Add(child: JControl): this;
-            Remove(child: JControl): boolean;
-            Text: string;
-            Href: string;
-        }
-        class Label extends JControl {
-            constructor(text: string);
-            initialize(): void;
-            Text: string;
-        }
-        class Text extends JControl {
-            constructor(text: string);
-            initialize(): void;
-            Text: string;
-        }
-        class Textbox extends JControl {
-            constructor(text?: string);
-            Focus(): void;
-            initialize(): void;
-            Add(child: JControl): this;
-            Remove(child: JControl): boolean;
-            Text: string;
-            PlaceHolder: string;
-        }
-        class List extends Control<JControl> {
-            constructor(type?: ListType);
-            initialize(): void;
-            Check(child: JControl): boolean;
-            readonly HasTemplate: boolean;
-            getTemplate(child: JControl | HTMLElement | string): JControl;
-            AddText(item: string): Div;
-            protected OnChildAdded(child: JControl): void;
-            private _si;
-            SelectedIndex: number;
-        }
-        class DivControl extends Control<JControl> {
-            constructor(tag?: string | HTMLElement);
-            initialize(): void;
-            Check(child: JControl): boolean;
-        }
-        class Div extends Control<JControl> {
-            constructor();
-            initialize(): void;
-            Check(item: JControl): boolean;
-        }
-        class ServiceNavBar<T extends IItem> extends JControl {
-            App: defs.$UI.IApp;
-            private autoInitializePanels;
-            constructor(App: defs.$UI.IApp, autoInitializePanels: boolean);
-            initialize(): void;
-            private _lefttabs;
-            private _righttabs;
-            private bi;
-            LeftTabs: Navbar<T>;
-            RightTabs: Navbar<T>;
-            private createItem;
-            OnPageSelected: (page: T) => void;
-            OnClick(page: T): void;
-            Add(child: JControl): this;
-            AddRange(child: JControl[]): this;
-            Remove(child: JControl): boolean;
-            serviceNotified(s: IService, n: NotifyType): void;
-            private services;
-            private readonly currentStack;
-            private CurrentService;
-            PushGBar(ser: IService): void;
-            PopGBar(ser: IService): void;
-            ExitBar(): void;
-            PushBar(ser: IService): void;
-            PopBar(): void;
-            private HideCurrentService;
-            private ShowCurrentService;
-            Push(s: IService): void;
-            private Has;
-            Pop(s?: IService): void;
-            Register(service: IService): void;
-            private _services;
-        }
-        class Navbar<T extends IItem> extends List {
-            private _items;
-            constructor();
-            initialize(): void;
-            private oicd;
-            private ItemsChanged;
-            private createItem;
-            selectable: boolean;
-            private _selectedItem;
-            readonly SelectedItem: MenuItem;
-            private onClick;
-            Float(v: HorizontalAlignement): void;
-            private CClear;
-            readonly Items: collection.ExList<T, any>;
-            OnSelectedItem: bind.EventListener<(item: T) => void>;
-        }
-        class NavbarHeader extends JControl {
-            Title: string;
-            private _brand;
-            private _brandContainer;
-            private _toggleButton;
-            readonly Brand: JControl;
-            readonly ToggleButton: GlyphButton;
-            constructor();
-            initialize(): void;
-            IsFixedTop: boolean;
-            IsHeader: boolean;
-        }
-        class MenuItem extends Anchore implements EventListenerObject, basic.IDisposable {
-            Source: IItem;
-            constructor(Source: IItem);
-            propChanged(p: bind.PropBinding, e: bind.EventArgs<string, Page>): void;
-            handleEvent(e: Event): void;
-            OnClick: (page: IItem, sender: MenuItem) => void;
-            Dispose(): void;
-        }
-        class ContentControl extends JControl implements IContentControl {
-            constructor(dom?: HTMLElement);
-            initialize(): void;
-            private _content;
-            Content: JControl;
-            OnKeyDown(e: any): any;
-            OnContextMenu(e: any): any;
-        }
-        class Input extends JControl {
-            Disable(disable: any): void;
-            constructor(dom?: any);
-            initialize(): void;
-            Placeholder: string;
-            Text: string;
-            Blur(): void;
-            handleEvent(e: FocusEvent): void;
-            OnFocusIn(e: FocusEvent): void;
-            OnKeyPressed(e: KeyboardEvent): UI.KeyboardControllerResult;
-            OnFocusOut(e: FocusEvent): void;
-        }
-        class ActionText extends JControl {
-            private btn_ok;
-            private txtInput;
-            readonly Box: Input;
-            readonly Icon: Button;
-            OnAction: bind.EventListener<(sender: ActionText, oldText: string, newText: string) => void>;
-            Bur(): void;
-            constructor(input?: HTMLInputElement);
-            initialize(): void;
-            private ia;
-            AutoAction: SearchActionMode;
-            btnClicked(ev: Event): void;
-            txtChanged(ev: Event): void;
-            handleEvent(e: Event): void;
-            private isExecuting;
-            private tout;
-            private job;
-            private ls;
-            Text: string;
-            Focus(): void;
-        }
-        class CItem implements IItem {
-            Tag: any;
-            Content: string | HTMLElement | JControl;
-            Url: string;
-            private onselect;
-            OnPropertyChanged(e: bind.DProperty<string, any>, m: (p: bind.PropBinding, e: bind.EventArgs<string, Page>) => void): void;
-            constructor(Tag: any, Content: string | HTMLElement | JControl, Url: string, onselect: basic.ITBindable<(menuItem: MenuItem) => void>);
-            OnItemSelected(menuItem: MenuItem): void;
-        }
-        class QBar<T extends IItem> extends JControl {
-            private top;
-            private _header;
-            private _container;
-            private _lefttabs;
-            private _righttabs;
-            private _colapsedZone;
-            private bi;
-            LeftTabs: Navbar<T>;
-            RightTabs: Navbar<T>;
-            readonly Header: NavbarHeader;
-            constructor(top: boolean);
-            private createItem;
-            initialize(): void;
-            Open(on?: boolean): void;
-            OnPageSelected: (page: T) => void;
-            OnClick(page: T): void;
-            Add(child: JControl): this;
-            Remove(child: JControl): boolean;
-        }
-        class Head<T extends IItem> extends JControl {
-            private top;
-            private _container;
-            private _header;
-            private _tabs;
-            private _stabs;
-            readonly Menu: Navbar<T>;
-            readonly SubsMenu: Navbar<T>;
-            private _colapsedZone;
-            readonly Header: NavbarHeader;
-            readonly Container: Container;
-            constructor(top: boolean);
-            private createItem;
-            static __fields__(): any;
-            Clear(): void;
-            private CClear;
-            initialize(): void;
-            OnClick(item: T): void;
-            static DPSelectedItem: bind.DProperty<IItem, Head<IItem>>;
-            SelectedItem: T;
-        }
-        class Foot extends JControl {
-            constructor();
-            initialize(): void;
-            Check(c: JControl): boolean;
-        }
-        class Page extends Control<JControl> implements defs.$UI.IPage, basic.IDisposable, IService, IItem {
-            protected app: App;
-            Name: string;
-            Tag: any;
-            Callback(args: any): void;
-            _fl: boolean;
-            FloatLeft: boolean;
-            static DPTitle: bind.DProperty<string | HTMLElement | JControl, Page>;
-            getDPTitle(): bind.DProperty<string | HTMLElement | JControl, Page>;
-            getDPUrl(): bind.DProperty<string, {}>;
-            Content: string | HTMLElement | JControl;
-            ServiceType: ServiceType;
-            Notify: bind.EventListener<(s: IService, notifyTYpe: NotifyType) => void>;
-            static DPUrl: bind.DProperty<string, {}>;
-            Url: string;
-            static __fields__(): (bind.DProperty<string | HTMLElement | JControl, Page> | bind.DProperty<string, {}>)[];
-            HasSearch: UI.SearchActionMode;
-            getSuggessions(): collection.List<any>;
-            OnSearche(oldPatent: string, newPatent: string): void;
-            initialize(): void;
-            Update(): void;
-            private readonly intern;
-            Check(c: Page): boolean;
-            constructor(app: App, title: string | HTMLElement | JControl, Name: string);
-            Dispose(): void;
-            GetLeftBar(): JControl | QBar<any>;
-            GetRightBar(): any;
-            OnItemSelected(menuItem: MenuItem): void;
-            _onSelected: bind.EventListener<(p: this) => void>;
-            readonly OnSelected: bind.EventListener<(p: this) => void>;
-            ContextMenu: ContextMenu;
-            Handled(): boolean;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            OnKeyDown(e: KeyboardEvent): any;
-            OnPrint(): any;
-            OnDeepSearche(): void;
-            OnContextMenu(e: MouseEvent): boolean;
-        }
-        class BarStack {
-            private _current;
-            private others;
-            constructor(current: IService);
-            readonly Current: IService;
-            Push(s: IService): void;
-            Pop(): IService;
-            Has(s: IService): number;
-            Exit(): void;
-        }
-        class Point {
-            x: number;
-            y: number;
-            constructor(x: number, y: number);
-        }
-        class Metric {
-            Value: number;
-            Type: MetricType;
-            constructor(value: number | string, type?: MetricType);
-            minus(v: any): Metric;
-            toString(): string;
-            fromString(s: string): void;
-        }
-        class Error extends JControl {
-            IsInfo: boolean;
-            private container;
-            private _text;
-            Message: string;
-            Expire: number;
-            constructor();
-            initialize(): void;
-            handleEvent(e: any): void;
-            Push(): void;
-            private timeout;
-            Pop(): void;
-            Dispose(): void;
-        }
-        class InfoArea extends Control<JControl> {
-            static readonly Default: InfoArea;
-            constructor();
-            initialize(): void;
-            Check(j: JControl): boolean;
-            static push(msg: string, isInfo?: boolean, expire?: number): void;
-        }
-        class Size {
-            w: Metric;
-            h: Metric;
-            constructor(w: Metric | string | number, h: Metric | number | string);
-        }
-        class Badge extends JControl {
-            constructor();
-            initialize(): void;
-            Content: any;
-        }
-        class DragManager {
-            private handler;
-            private target;
-            private View;
-            private loc;
-            constructor(handler: JControl, target: JControl);
-            private mouseloc;
-            private cntloc;
-            handleEvent(e: DragEvent): void;
-            Location: Point;
-            private RelocationJob;
-            reLocation(hr: boolean, vr: boolean): void;
-        }
-        class FixedPanel extends JControl {
-            private ha;
-            private va;
-            private loc;
-            private body;
-            private size;
-            constructor(view?: HTMLElement);
-            initialize(): void;
-            Check(i: any): boolean;
-            private mouseloc;
-            private cntloc;
-            handleEvent(e: DragEvent): void;
-            private static resizeBody;
-            Height: Metric;
-            Width: Metric;
-            HorizontalAlignement: HorizontalAlignement;
-            VerticalAlignement: VerticalAlignement;
-            Location: Point;
-            Size: Size;
-            private RelocationJob;
-            private reLocation;
-            Add(child: JControl): this;
-            AddRange(childs: JControl[]): this;
-        }
-        abstract class Layout<T extends defs.$UI.IPage> extends Control<T> implements defs.$UI.IApp {
-            readonly IsAuthentication: boolean;
-            protected OnPageChanging(e: bind.EventArgs<T, this>): void;
-            protected OnPageChanged(e: bind.EventArgs<T, this>): void;
-            static DPSelectedPage: bind.DProperty<defs.$UI.IPage, Layout<any>>;
-            static DPCurrentModal: bind.DProperty<Modal, Layout<any>>;
-            CurrentModal: Modal;
-            SelectedPage: T;
-            static __fields__(): (bind.DProperty<defs.$UI.IPage, Layout<any>> | bind.DProperty<Modal, Layout<any>>)[];
-            Name: string;
-            Foot: ServiceNavBar<IItem>;
-            SearchBox: ActionText;
-            Pages: collection.List<T>;
-            protected abstract showPage(page: T): any;
-            protected Check(child: T): boolean;
-            Logout(): void;
-            constructor(view: any);
-            protected silentSelectPage(oldPage: T, page: T): void;
-            Open(page: T): void;
-            private PagesChanged;
-            OpenPage(pageNme: string): boolean;
-            AddPage(child: T): void;
-            SelectNaxtPage(): void;
-            SelectPrevPage(): void;
-            private opcd;
-            Update(): void;
-            OnKeyDown(e: KeyboardEvent): void;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            OnPrint(): any;
-            OnDeepSearche(): void;
-            OnContextMenu(e: MouseEvent): void;
-            handleEvent(e: KeyboardEvent): void;
-            Show(): void;
-            initialize(): void;
-            protected static getView(): HTMLElement;
-            protected searchActioned(s: ActionText, o: string, n: string): void;
-            OnAttached(): void;
-            OnDetached(): void;
-            OpenModal(m: Modal): void;
-            CloseModal(m: Modal): void;
-            _onCurrentModalChanged(e: bind.EventArgs<Modal, Layout<any>>): any;
-            private openedModal;
-            private zIndex;
-            OpenContextMenu<T>(cm: IContextMenu<T>, e: IContextMenuEventArgs<T>): boolean;
-            CloseContextMenu<T>(r?: T): boolean;
-            private _contextMenuLayer;
-            private _currentContextMenu;
-            private _currentContextMenuEventArgs;
-            private _contextMenuZIndex;
-        }
-        class App extends Layout<Page> {
-            private name;
-            static DPTitle: bind.DProperty<String, App>;
-            Title: String;
-            static DPBadge: bind.DProperty<String, App>;
-            Badge: String;
-            private static Apps;
-            static readonly CurrentApp: defs.$UI.IApp;
-            readonly Name: string;
-            Head: Head<Page>;
-            private AppBody;
-            Foot: ServiceNavBar<IItem>;
-            PageBody: ContentControl;
-            private AppTitle;
-            private _search;
-            slogant: Dom;
-            readonly SearchBox: ActionText;
-            createTitle(t: string): ContentControl;
-            constructor(name: string);
-            protected showPage(page: Page): void;
-            protected OnPageChanged(e: bind.EventArgs<Page, this>): void;
-            initialize(): void;
-            IsTopNavBarhidden(): boolean;
-            HideTopNavBar(v: boolean): boolean;
-            ToggleTitle(): void;
-            IsTitleBringged(): boolean;
-            private intern;
-            Check(page: any): boolean;
-            Add(child: Page | Head<IItem> | Foot | QBar<IItem> | ContentControl | ServiceNavBar<IItem>): this;
-            static __fields__(): any;
-        }
-        abstract class AuthApp extends App implements defs.$UI.IAuthApp {
-            readonly IsAuthentication: boolean;
-            constructor(key: any, b: bind.EventListener<(v: boolean) => void>);
-            abstract IsLogged<T>(callback: (v: boolean, param: T) => void, param: T): any;
-            abstract RedirectApp: defs.$UI.IApp;
-            OnStatStatChanged: bind.EventListener<(auth: this, isLogged: boolean) => void>;
-        }
-        class Modal extends JControl {
-            Content: UI.JControl;
-            protected focuser: basic.focuser;
-            private _searchBox;
-            private abonment;
-            private getSearchBox;
-            private callBack;
-            onSearch: (modal: this, s: ProxyAutoCompleteBox<any>, oldValue: any, newValue: any) => void;
-            OnSearch(i: (modal: this, s: ProxyAutoCompleteBox<any>, oldValue: any, newValue: any) => void): void;
-            private _container;
-            private _container1;
-            private _fm;
-            private _head;
-            private _body;
-            private _foot;
-            OkTitle(v: string): this;
-            AbortTitle(v: string): this;
-            Canceltitle(v: string): this;
-            Title(v: string): this;
-            Search(d: collection.List<any>): void;
-            private asSearch;
-            private drgmngr;
-            SetDialog(title: string, content: JControl): void;
-            private static zIndex;
-            static NextZIndex(): number;
-            readonly IsOpen: boolean;
-            Open(): void;
-            targetApp: defs.$UI.IApp;
-            protected silentClose(): void;
-            Close(msg: MessageResult): void;
-            constructor();
-            initialize(): void;
-            private lastRect;
-            private _dtitle;
-            private _ts;
-            protected createHeader(head: JControl): void;
-            protected createFoot(foot: JControl): void;
-            private events;
-            private static casses;
-            private _setText;
-            SetVisible(role: MessageResult, visible: boolean): void;
-            private createBtn;
-            private _initBtn;
-            private _btnClicked;
-            Add(child: JControl): this;
-            Remove(child: JControl): boolean;
-            Insert(child: JControl, i: number): this;
-            Dispose(): void;
-            private _onClick;
-            readonly OnClosed: bind.EventListener<(e: MessageEventArgs) => void>;
-            OnKeyDown(e: KeyboardEvent): any;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            Clear(): void;
-            static _ShowDialog(title: string, msg: string | HTMLElement | JControl, callback?: (r: any, m: Modal) => void, ok?: string, cancel?: string): (msg: any) => void | void;
-            private static closedMessages;
-            static ShowDialog(title: string, msg: string | HTMLElement | JControl, callback?: (e: MessageEventArgs) => void, ok?: string, cancel?: string, abort?: string): Modal;
-            setStyle(name: string, value: string): this;
-            setWidth(value: string): this;
-            setHeight(value: string): this;
-            IsMaterial: boolean;
-            OnContextMenu(e: any): any;
-        }
-        class MessageEventArgs {
-            Modal: Modal;
-            Result: MessageResult;
-            msg: string;
-            private _stayOpen;
-            readonly stayOpen: boolean;
-            StayOpen(): void;
-            Close(): void;
-            constructor(Modal: Modal, Result: MessageResult, msg: string);
-        }
-        class Image extends JControl {
-            Source: string;
-            constructor();
-            initialize(): void;
-        }
-        class CarouselItem extends JControl {
-            Indicator: any;
-            private _image;
-            private _caption;
-            constructor(url: string, caption: any);
-            initialize(): void;
-            Active: boolean;
-        }
-        class Carousel extends Control<CarouselItem> {
-            private _items;
-            private _indecators;
-            private _inner;
-            private leftButton;
-            private rightButton;
-            constructor();
-            initialize(): void;
-            private opcd;
-            private fromInit;
-            protected createButton(isLeft: boolean): any;
-            private createIndecator;
-            private b;
-            private ItemsChanged;
-            private selectNext;
-            Clear(): void;
-            Check(child: CarouselItem): boolean;
-            Add(child: CarouselItem): this;
-            Remove(child: CarouselItem): boolean;
-            RemoveAt(i: number): boolean;
-        }
-        class PaginationSurf extends JControl {
-            private isNext?;
-            private anchore;
-            private span;
-            private text;
-            constructor(isNext?: boolean);
-            initialize(): void;
-            Icon: string;
-            Title: string;
-            OnClick: (e: PaginationSurf) => void;
-            handleEvent(e: MouseEvent): void;
-        }
-        class BiPagination extends JControl {
-            static __fields__(): bind.DProperty<number, BiPagination>[];
-            private isc;
-            static DPIndex: bind.DProperty<number, BiPagination>;
-            Index: number;
-            Max: number;
-            static DPMax: bind.DProperty<number, BiPagination>;
-            private prev;
-            private next;
-            private list;
-            private actionText;
-            constructor();
-            initialize(): void;
-            handleEvent(e: Event): void;
-            static ctor(): void;
-            _onIndexChanged(e: bind.EventArgs<number, this>): void;
-        }
-        class Pagination extends JControl {
-            private prev;
-            private next;
-            private items;
-            static DPRange: bind.DProperty<number, Pagination>;
-            static DPStartIndex: bind.DProperty<number, Pagination>;
-            static DPCount: bind.DProperty<number, Pagination>;
-            readonly SelectedRange: number;
-            readonly Count: number;
-            StartIndex: number;
-            private OnCountChanged;
-            private OnRangeChanged;
-            private OnStartIndexChanged;
-            constructor();
-            AddItem(page: PaginationSurf): void;
-            initialize(): void;
-            private opcd;
-            private sp;
-            OnClick(e: PaginationSurf): void;
-            private isInRange;
-            private convert;
-            private OnItemsChanged;
-        }
-        class NumericUpDown extends JControl {
-            private f;
-            Value: number;
-            protected checkValue(e: any): void;
-            protected _valueChanged(e: bind.EventArgs<number, NumericUpDown>): void;
-            private minValue;
-            private defaultValue;
-            private maxvalue;
-            private sleft;
-            private sright;
-            private text;
-            protected _hasValue_(): boolean;
-            constructor();
-            initialize(): void;
-            private textChanged;
-            Focus(): void;
-            SelectAll(): void;
-        }
-        class NavPanel extends JControl implements IService {
-            Name: string;
-            OnPrint(): any;
-            private title;
-            private container;
-            private caption;
-            HasSearch: UI.SearchActionMode;
-            readonly CaptionControl: Button;
-            Title: string | HTMLElement;
-            Caption: string;
-            constructor(Name: string, caption: string);
-            initialize(): void;
-            ToolTip: string;
-            Add(item: JControl): this;
-            AddRange(items: JControl[]): this;
-            Remove(item: JControl): boolean;
-            RemoveAt(i: number, dispose?: boolean): boolean;
-            Clear(): void;
-            Update(): void;
-            GetLeftBar(): any;
-            GetRightBar(): any;
-            Handled(): boolean;
-            readonly ServiceType: ServiceType;
-            Callback(): void;
-            OnBringIntoFront(): void;
-            IsActive: boolean;
-            OnKeyDown(e: KeyboardEvent): void;
-            OnSearche(oldPatent: string, newPatent: string): void;
-            OnDeepSearch(): void;
-            getHelp(t: Object): void;
-        }
-        class IContent extends JControl {
-            private navPage;
-            constructor(navPage: NavPage);
-            initialize(): void;
-            Check(item: JControl): boolean;
-            Add(p: NavPanel): this;
-            Remove(p: NavPanel): boolean;
-        }
-        class NavPage extends UI.Page {
-            static DPSelectedItem: bind.DProperty<NavPanel, NavPage>;
-            static __fields__(): any;
-            private _onSelectedItemChanged;
-            private con;
-            private nav;
-            private caption;
-            Caption: string;
-            constructor(app: App, title: string | HTMLElement | JControl, name: string);
-            private islocal;
-            initialize(): void;
-            ToggleNav(): void;
-            Add(c: JControl): this;
-            AddRange(c: JControl[]): this;
-            Check(j: JControl): boolean;
-            SelectedItem: NavPanel;
-            private children;
-            SetPanel(panel: NavPanel): void;
-            GetPanelOf(type: typeof NavPanel): NavPanel;
-            GetPanelsOf(type: typeof NavPanel): NavPanel[];
-            SetSeparator(): void;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            OnKeyDown(e: KeyboardEvent): void;
-            OnContextMenu(e: MouseEvent): boolean;
-            OnPrint(): any;
-            private static _onItemSelected;
-            private events;
-            Select(name: string): boolean;
-            GetLeftBar(): any;
-            HasSearch: UI.SearchActionMode;
-            GetRightBar(): any;
-            Update(): void;
-            private panels;
-            OnSearche(oldPatent: string, newPatent: string): void;
-            OnDeepSearche(): void;
-        }
-    }
-    export module UI {
-        interface ITemplateShadow {
-            setDataContext(data: any): any;
-            getDataContext(): any;
-        }
-        abstract class TemplateShadow extends JControl implements ITemplateShadow {
-            abstract setDataContext(data: any): any;
-            abstract getDataContext(): any;
-            static Create(item: any): ScopicTemplateShadow;
-            abstract getScop(): bind.Scop;
-            abstract readonly Controller: Controller;
-        }
-        class ScopicTemplateShadow extends TemplateShadow {
-            private scop?;
-            readonly Controller: Controller;
-            private cnt;
-            setDataContext(data: any): void;
-            getDataContext(): any;
-            constructor(dom: HTMLElement, scop?: bind.Scop, cnt?: UI.JControl);
-            initialize(): void;
-            Check(c: JControl): boolean;
-            readonly Scop: bind.Scop;
-            getScop(): bind.Scop;
-            Dispose(): void;
-        }
-        class EScopicTemplateShadow {
-            private control;
-            private scop?;
-            readonly Controller: Controller;
-            private cnt;
-            setDataContext(data: any): void;
-            getDataContext(): any;
-            constructor(control: JControl, scop?: bind.Scop);
-            initialize(): void;
-            Check(c: JControl): boolean;
-            readonly Scop: bind.Scop;
-            getScop(): bind.Scop;
-        }
-        interface ITemplate {
-            CreateShadow<T>(data: T | bind.Scop, cnt: UI.JControl): TemplateShadow;
-        }
-        abstract class Template implements ITemplate {
-            abstract CreateShadow<T>(data?: T | bind.Scop, cnt?: UI.JControl): TemplateShadow;
-            static ToTemplate(itemTemplate: conv2template, asTemplate: boolean): Template;
-        }
-        class HtmlTemplate implements Template {
-            dom: HTMLElement;
-            private asTemplate;
-            constructor(dom: HTMLElement, asTemplate?: boolean);
-            CreateShadow<T>(data?: T | bind.Scop, cnt?: UI.JControl): TemplateShadow;
-        }
-        class ScopicTemplate implements Template {
-            private template;
-            CreateShadow<T>(data?: T | bind.Scop, cnt?: UI.JControl): TemplateShadow;
-            constructor(templatePath: string | mvc.ITemplate);
-        }
-        class TControl<T> extends JControl {
-            private data;
-            static DPData: bind.DProperty<any, TControl<any>>;
-            Data: T;
-            static Me: any;
-            constructor(itemTemplate: mvc.ITemplate | string | Function | Template | HTMLElement, data: T | bind.Scop);
-            protected OnFullInitialized(): void;
-            private _onTemplateCompiled;
-            protected OnCompileEnd(cnt: Controller): void;
-            private Shadow;
-            getScop(): bind.Scop;
-            private _template;
-            initialize(): void;
-            _onCompiled: bind.EventListener<(s: this, cnt: Controller) => void>;
-            private compiled;
-            OnCompiled: (s: this) => void;
-            readonly IsCompiled: boolean;
-            OnDataChanged(e: bind.EventArgs<T, this>): void;
-        }
-        interface ListAdapterEventArgs<T, P> {
-            sender: ListAdapter<T, P>;
-            index: number;
-            template: TemplateShadow;
-            oldIndex?: number;
-            oldTemplate?: TemplateShadow;
-            Cancel?: boolean;
-            Event?: Event;
-        }
-        class ListAdapter<T, P> extends TControl<P> {
-            instantanyInitializeParent(): boolean;
-            private garbage;
-            static __fields__(): bind.DProperty<any, ListAdapter<any, any>>[];
-            static DPSource: bind.DProperty<collection.List<any>, ListAdapter<any, any>>;
-            Source: collection.List<T>;
-            static DPSelectedIndex: bind.DProperty<number, ListAdapter<any, any>>;
-            private __checkSelectedIndex;
-            AcceptNullValue: boolean;
-            private swap;
-            SelectedIndex: number;
-            static DPItemStyle: bind.DProperty<string[], ListAdapter<any, any>>;
-            ItemStyle: string[];
-            static DPTemplate: bind.DProperty<ITemplate, ListAdapter<any, any>>;
-            Template: ITemplate;
-            OnItemSelected: bind.EventListener<(s: ListAdapter<T, P>, index: number, template: TemplateShadow, oldIndex?: number, oldTemplate?: TemplateShadow) => void>;
-            OnItemInserted: bind.EventListener<(s: ListAdapter<T, P>, index: number, data: T, template: TemplateShadow) => void>;
-            OnItemRemoved: bind.EventListener<(s: ListAdapter<T, P>, index: number, data: T, template: TemplateShadow) => void>;
-            OnChildClicked: bind.EventListener<(e: ListAdapterEventArgs<T, P>) => void>;
-            static DPSelectedItem: bind.DProperty<any, ListAdapter<any, any>>;
-            private _content;
-            readonly Content: Control<TemplateShadow>;
-            _selectedItem: TemplateShadow;
-            readonly SelectedChild: TemplateShadow;
-            SelectedItem: T;
-            activateClass: string;
-            private OnSelectedIndexChanged;
-            private riseItemSelectedEvent;
-            Select(t: TemplateShadow): void;
-            SelectItem(t: T): void;
-            static _getTemplate(template: mvc.ITemplate | string | Function): mvc.ITemplate;
-            static _getTemplateShadow(template: mvc.ITemplate | string | Function | HTMLElement): HTMLElement;
-            static ctor(): void;
-            constructor(template: conv2template, itemTemplate?: conv2template, data?: P | bind.Scop, getSourceFromScop?: boolean);
-            private params;
-            private initTemplate;
-            private static getFirstChild;
-            private static getTemplate;
-            private sli;
-            private getSourceFromScop;
-            private CmdExecuter;
-            private AttachSelectedItem;
-            private CmdAttacheSelectedItemExecuter;
-            private RlSourceScop;
-            initialize(): void;
-            private OnSourceChanged;
-            private ReSelect;
-            private _scop;
-            private readonly Scop;
-            BindTo(scop: bind.Scop): void;
-            private OnScopValueChanged;
-            OnItemClicked(s: TemplateShadow, e: Event, t: ListAdapter<any, any>): void;
-            protected getItemShadow(item: T, i: number): TemplateShadow;
-            protected disposeItemShadow(item: T, child: TemplateShadow, i: number): TemplateShadow;
-            protected disposeItemsShadow(items: T[], child: TemplateShadow[]): void;
-            private _insert;
-            private _remove;
-            private count;
-            private OnAdd;
-            private OnSet;
-            private OnClear;
-            private OnRemove;
-            private OnReplace;
-            private Reset;
-            protected clearGarbage(): void;
-            private Recycle;
-            Dispose(): void;
-            Add(child: JControl): this;
-            AddRange(children: JControl[]): this;
-            Remove(child: JControl, dispose: boolean): boolean;
-            RemoveAt(i: number, dispose: boolean): boolean;
-            Clear(dispose?: boolean): void;
-            Insert(c: JControl, i: number): this;
-            CloneChildren(): void;
-            Check(c: JControl): boolean;
-            OnKeyDown(e: KeyboardEvent): boolean;
-        }
-        class Spinner extends JControl {
-            private container;
-            private circle;
-            private message;
-            constructor(test: any);
-            initialize(): void;
-            private isStarted;
-            Start(logo: string): void;
-            Pause(): void;
-            Message: string;
-            static Default: Spinner;
-        }
-        class RichMenu<T> extends JControl {
-            private menu;
-            private adapter;
-            private itemTemplate;
-            constructor(itemTemplate?: conv2template, data?: T[], parent?: JControl);
-            handleEvent(e: any): void;
-            initialize(): void;
-            private timeout;
-            private isOpen;
-            private i;
-            private toInt;
-            Open(e: MouseEvent, callback: basic.ITBindable<(r: RichMenu<T>, si: T) => void>, left: boolean, bottom: boolean): void;
-            Close(imediate: boolean): void;
-            Data: any[];
-        }
-        class ExContextMenu extends JControl {
-            static DPTitle: bind.DProperty<string, ExContextMenu>;
-            static DPItems: bind.DProperty<collection.List<IContextMenuItem>, ExContextMenu>;
-            Title: string;
-            Items: collection.List<IContextMenuItem>;
-            static __fields__(): (bind.DProperty<string, ExContextMenu> | bind.DProperty<collection.List<IContextMenuItem>, ExContextMenu>)[];
-            private dic;
-            private list;
-            private static zIndex;
-            static readonly NextZIndex: number;
-            constructor(items?: IContextMenuItem[]);
-            initialize(): void;
-            private OnItemSelected;
-            private OnItemInserted;
-            private OnItemRemoved;
-            private Action;
-            OnAction: bind.EventListener<(sender: this, selected: IContextMenuItem) => void>;
-            location: Location;
-            ShowForTarget(): void;
-            Show(x: any, y: any): void;
-            private toInt;
-            private readonly HorizontalFraction;
-            private readonly VerticalFraction;
-            handleEvent(e: MouseEvent): void;
-            private _OnContextMenu;
-            Close(): void;
-            Target: JControl | HTMLElement;
-            private target;
-        }
-        class ContextMenu extends JControl {
-            private dic;
-            Items: collection.List<CItem>;
-            constructor(items?: (CItem | string)[]);
-            initialize(): void;
-            private itemChangedDlg;
-            private SourceChanged;
-            private add;
-            private OnItemSelected;
-            OnMenuItemSelected: bind.EventListener<(s: ContextMenu, i: MenuItem) => void>;
-            private remove;
-            private replace;
-            private clear;
-            reset(): void;
-            Add(j: JControl): this;
-            AddRange(citem: JControl[]): this;
-            Remove(j: JControl, dispose: boolean): boolean;
-            Show(x: any, y: any): void;
-            private thrid;
-            private dateout;
-            handleEvent(e: MouseEvent): void;
-            private _OnContextMenu;
-            private timeout;
-            Target: JControl;
-            private target;
-        }
-        class Gage {
-            initialize(): void;
-            static deg2str(diam: number, n: number): number;
-            static createDashArray(diam: number, degs: number[]): void;
-        }
-        class CostumizedShadow extends TemplateShadow {
-            private data?;
-            Controller: any;
-            setDataContext(data: any): void;
-            getDataContext(): any;
-            constructor(dom: HTMLOptionElement, data?: any);
-            initialize(): void;
-            getScop(): bind.Scop;
-        }
-        class CostumizedTemplate extends Template {
-            constructor();
-            CreateShadow(data: any): TemplateShadow;
-        }
-        class ComboBox extends ListAdapter<any, any> {
-            constructor(dom: HTMLSelectElement, DataSource: collection.List<any>);
-        }
-        class TreeComboBox<T> extends JControl {
-            private tree;
-            private getString;
-            constructor(tree: utils.Tree<T>, getString: (v: T) => string);
-            initialize(): void;
-            Reset(): void;
-            private add;
-        }
-        module help {
-            function createHeader<Owner>(hd: HTMLTableRowElement, cols: IColumnTableDef[], orderBy?: basic.ITBindable<(sender: Owner, orderBy: string, col: IColumnCellHeaderDef, view: HTMLTableHeaderCellElement) => void>): HTMLTableRowElement;
-            function createTemplate(cols: IColumnTableDef[], tmp?: HTMLTableRowElement): HTMLTableRowElement;
-            function generateCell<T extends HTMLTableHeaderCellElement | HTMLTableDataCellElement>(h: IColumnCellDef<T>, stype: 'th' | 'td'): T;
-            interface IAttribute {
-                values: string[];
-                spliter: string;
-            }
-            interface IColumnCellDef<T extends HTMLTableHeaderCellElement | HTMLTableDataCellElement> {
-                Attributes?: {
-                    [s: string]: IAttribute | string;
-                };
-                TdAttributes?: {
-                    [s: string]: IAttribute | string;
-                };
-                Content?: string | T | Node;
-                ContentAsHtml?: boolean;
-            }
-            interface IColumnCellHeaderDef extends IColumnCellDef<HTMLTableHeaderCellElement> {
-                OrderBy?: string;
-            }
-            interface IColumnCellDataDef extends IColumnCellDef<HTMLTableDataCellElement> {
-            }
-            interface IColumnTableDef {
-                Header: IColumnCellHeaderDef | string;
-                Cell: IColumnCellDataDef;
-                editable?: boolean;
-            }
-        }
-    }
-    export module UI {
-        interface IAutoCompleteBox {
-            Box: Input;
-            DataSource: collection.List<any>;
-            View: HTMLElement;
-            IsChanged: boolean;
-            Value: any;
-            PrintSelection?: boolean;
-            AutoPopup: boolean;
-            Blur(): any;
-            Template: ITemplate;
-        }
-        class AutoCompleteBox extends ActionText implements IAutoCompleteBox {
-            Box: Input;
-            View: HTMLElement;
-            PrintSelection?: boolean;
-            Template: ITemplate;
-            AutoPopup: boolean;
-            private dataSource;
-            IsChanged: boolean;
-            DataSource: collection.List<any>;
-            constructor(input?: HTMLInputElement);
-            initialize(): void;
-            Value: any;
-            Blur(): void;
-        }
-        type AutoCompleteCallback<T> = (box: IAutoCompleteBox, oldValue: T, newValue: T) => void;
-        class ProxyAutoCompleteBox<T> implements IAutoCompleteBox {
-            Box: Input;
-            Template: ITemplate;
-            PrintSelection?: boolean;
-            Blur(): void;
-            AutoPopup: boolean;
-            private callback;
-            private _value;
-            DataSource: collection.List<any>;
-            OnValueChanged(owner: any, invoke: AutoCompleteCallback<T>): void;
-            readonly View: HTMLElement;
-            Value: T;
-            IsChanged: boolean;
-            constructor(Box: Input, source: collection.List<T>);
-            initialize(): this;
-        }
-    }
-    export module UI {
-        class Paginator<T> extends JControl {
-            countPerPage: number;
-            private full?;
-            static InputScop: bind.Scop;
-            private content;
-            private paginator;
-            private paginationFilter;
-            readonly Filter: filters.list.SubListFilter<T>;
-            constructor(countPerPage: number, dom?: HTMLElement, full?: boolean);
-            initialize(): void;
-            Refresh(): void;
-            private _cnt;
-            Content: JControl;
-            private whenIndexChanged;
-            OnIndexChanged(ev: (b: bind.PropBinding, e: bind.EventArgs<number, BiPagination>) => void): bind.PropBinding;
-            OffIndexChanged(b: bind.PropBinding): boolean;
-            Max: number;
-            BindMaxToSourceCount(x: collection.List<any>): void;
-            UnbindMaxFromSourceCount(x: collection.List<T>): void;
-            private bm2sc;
-            Next(): void;
-            Previous(): void;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            OnKeyDown(e: KeyboardEvent): any;
-            static DPInput: bind.DProperty<collection.List<any>, Paginator<any>>;
-            Input: collection.List<T>;
-            static DPOutput: bind.DProperty<collection.ExList<any, filters.list.SubListPatent>, Paginator<any>>;
-            readonly Output: collection.ExList<T, filters.list.SubListPatent>;
-            private bindInputToMax;
-            private OnInputChanged;
-            private bindScopToInput;
-            InputScop: bind.Scop;
-            static __fields__(): bind.DProperty<collection.List<any>, Paginator<any>>[];
-            static createPaginator<T, P>(adapter: ListAdapter<T, P>, dataSource: collection.List<T>, max?: number): Paginator<T>;
-        }
-    }
-    export module UI {
-        interface IStrechyButtonItemData {
-            Title: string;
-            Icon?: string;
-        }
-        class StrechyButtonItemData extends bind.DObject {
-            Title: string;
-            static DPTitle: bind.DProperty<string, StrechyButtonItemData>;
-            static DPIcon: bind.DProperty<string, StrechyButtonItemData>;
-            Icon: string;
-            static __fields__(): bind.DProperty<string, StrechyButtonItemData>[];
-            constructor(Title: string);
-        }
-        class StrechyButton extends UI.ListAdapter<IStrechyButtonItemData, collection.List<IStrechyButtonItemData>> {
-            private __data?;
-            private triggerButton;
-            private listDom;
-            private itemTemplate;
-            private IsOpen;
-            constructor(__data?: collection.List<IStrechyButtonItemData>);
-            initialize(): void;
-            private static EventCloseIsRegistered;
-            private static OpenedStrechyButtons;
-            private static RegisterEvents;
-            static CloseAll(enableEvent: boolean): void;
-            Open(): void;
-            Close(): void;
-            private simpleClose;
-            private simpleOpen;
-            static handleEvent(event: any): void;
-            handleEvent(event: Event): void;
-        }
-        class UISearch extends UI.JControl {
-            inputEl: HTMLInputElement;
-            constructor(el: HTMLElement);
-            OnSearch: (data: string) => void;
-            initialize(): void;
-            handleEvent(e: KeyboardEvent): void;
-            private validate;
-            IsOpen: boolean;
-            open(): void;
-            close(): void;
-        }
-        function showSPTooltips(v: boolean): void;
-    }
-    export module UI.Modals {
-        function CreateGlyph(dom: any, icon: any, title: any, type: any, attri: any): any;
-        type EModalAction<T extends bind.DObject> = (sender: EModalEditer<T>, e?: ModalEditorEventArgs<T>) => void;
-        type EModalEditorHandler<T extends bind.DObject> = basic.ITBindable<EModalAction<T>>;
-        type ModalAction<T> = (product: T, isNew: boolean, err?: basic.DataStat, e?: MessageEventArgs) => boolean;
-        type ModalEditorResult<T> = basic.ITBindable<ModalAction<T>>;
-        type ModalListAction<T> = (s: ModalList<T>, selected: T, result: MessageResult, e: MessageEventArgs) => void;
-        class ModalEditorEventArgs<T extends bind.DObject> {
-            IsNew: boolean;
-            Data: T;
-            BackupData: BuckupList<T>;
-            Owner?: any;
-            CommitOrBackupHandled?: boolean;
-            Editor: EModalEditer<T>;
-            Error?: basic.DataStat;
-            E: MessageEventArgs;
-            IsDataChanged: boolean;
-        }
-        type EModalEditorCallback<T extends bind.DObject> = reflection.Method<void, (s: EModalEditer<T>, e: ModalEditorEventArgs<T>) => void>;
-        abstract class BasicModalEditor<T extends bind.DObject> extends UI.Modal {
-            static __fields__(): bind.DProperty<boolean, BasicModalEditor<any>>[];
-            static DPIsEditable: bind.DProperty<boolean, BasicModalEditor<any>>;
-            protected scop: bind.Scop;
-            ChangedStatControled: boolean;
-            IsEditable: boolean;
-            Data: T;
-            OnKeyDown(e: KeyboardEvent): any;
-        }
-        class EModalEditer<T extends bind.DObject> extends BasicModalEditor<T> {
-            private templateName;
-            allowEditNullVaue: boolean;
-            action: reflection.Method<void, (s: this, e: ModalEditorEventArgs<T>) => void>;
-            constructor(templateName: string, allowEditNullVaue: boolean);
-            initialize(): void;
-            private IsNew;
-            private backupData;
-            private _isOpen;
-            edit(data: T, isNew: boolean, action: EModalEditorCallback<T>, editable?: boolean): void;
-            Open(): void;
-            Close(msg: MessageResult): void;
-            NativeClose(msg: MessageResult, commit: boolean): void;
-            silentClose(): void;
-        }
-        class ModalEditer<T extends bind.DObject> extends BasicModalEditor<T> {
-            private templateName;
-            constructor(templateName: string);
-            initialize(): void;
-            private IsNew;
-            private backupData;
-            edit(product: T, isNew: boolean, action: IEditorAction<T>, editable?: boolean): void;
-            Open(): void;
-            private Action;
-        }
-        interface IEditorAction<T> {
-            OnSuccess?: ModalEditorResult<T>;
-            OnError?: ModalEditorResult<T>;
-        }
-        interface IEEditorAction<T extends bind.DObject> {
-            OnSuccess?: EModalEditorHandler<T>;
-            OnError?: EModalEditorHandler<T>;
-        }
-        class EditorAction<T> implements IEditorAction<T> {
-            private proxyAction;
-            private callback;
-            private invoke;
-            OnSuccess: ModalEditorResult<T>;
-            OnError: ModalEditorResult<T>;
-            constructor(proxyAction: IEditorAction<T>, callback: DBCallback<T>);
-            onSuccess(p: T, isNew: boolean): boolean;
-            onError(p: T, isNew: boolean): boolean;
-            Clone(callback: DBCallback<T>): EditorAction<T>;
-            static Create<T>(_this: any, onSuccess: ModalAction<T>, onError: ModalAction<T>, defaltCallback?: DBCallback<T>): EditorAction<T>;
-        }
-        type DBCallback<T> = (data: T, isNew: boolean, error_data_notsuccess_iss?: basic.DataStat) => void | boolean;
-    }
-    export module UI.Modals {
-        class ModalList<T> extends UI.Modal {
-            private source;
-            private tableTmplate;
-            private itemTemplate;
-            private datas?;
-            private asScopic?;
-            isMatch?: (p: utils.IPatent<T>, item: T) => boolean;
-            private paginator;
-            private Datacontext;
-            constructor(source: collection.List<T>, tableTmplate: string, itemTemplate: string, datas?: any, asScopic?: boolean, isMatch?: (p: utils.IPatent<T>, item: T) => boolean);
-            static IsMatch<T>(p: utils.IPatent<T>, item: T): boolean;
-            IsMatch: (p: utils.IPatent<T>, item: T) => boolean;
-            initialize(): void;
-            private static createPaginator;
-            SelectedItem: T;
-            show(onc: UI.Modals.ModalListAction<T>, list?: collection.List<T>): void;
-            Source: collection.List<T>;
-            Open(): void;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            OnKeyDown(e: KeyboardEvent): any;
-            Close(msg: any): void;
-            private onc;
-            _exList: collection.ExList<T, any>;
-            private createFilter;
-        }
-    }
-    export module UI {
-        interface ITabControlData<OwnerClassType, ContentType> {
-            Title: string;
-            Content: ContentType;
-            OnSelected?(sender: OwnerClassType, item: this): any;
-        }
-        interface ITabControlItem extends ITabControlData<TabControl, JControl> {
-            Title: string;
-            Content: JControl;
-            OnSelected?(sender: TabControl, item: this): any;
-        }
-        class TabControl extends UI.NavPanel {
-            static DPItems: bind.DProperty<collection.List<ITabControlItem>, TabControl>;
-            Items: collection.List<ITabControlItem>;
-            private static DPTabNav;
-            private TabNav;
-            private static DPTabContent;
-            private TabContent;
-            static DPSelectedItem: bind.DProperty<ITabControlItem, TabControl>;
-            SelectedItem: ITabControlItem;
-            static __fields__(): any;
-            initialize(): void;
-            OnBringIntoFront(): void;
-            constructor(name: string, caption: string, items: ITabControlItem[]);
-            private onSelectedTabChanged;
-            private Reslect;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            OnKeyDown(e: KeyboardEvent): any;
-            CloseTab(e: Event, dt: _help.EventData, scopValue: bind.Scop, events: _help.events): void;
-        }
-        class UniTabControl<T> extends UI.NavPanel {
-            private content;
-            private onSelectedItemChanged;
-            static DPItems: bind.DProperty<collection.List<ITabControlData<UniTabControl<any>, any>>, UniTabControl<any>>;
-            Items: collection.List<ITabControlData<this, T>>;
-            private static DPTabNav;
-            private TabNav;
-            private static DPTabContent;
-            private TabContent;
-            static DPSelectedItem: bind.DProperty<ITabControlData<UniTabControl<any>, any>, UniTabControl<any>>;
-            SelectedItem: ITabControlData<this, T>;
-            static __fields__(): any;
-            initialize(): void;
-            constructor(name: string, caption: string, items: collection.List<ITabControlData<UniTabControl<T>, T>>, content: JControl, onSelectedItemChanged: (s: UniTabControl<T>, cnt: JControl, selected: ITabControlData<UniTabControl<T>, T>) => string);
-            private onSelectedTabChanged;
-            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
-            OnKeyDown(e: KeyboardEvent): any;
-            CloseTab(e: Event, dt: _help.EventData, scopValue: bind.Scop, events: _help.events): void;
-            OnTabSelected: bind.EventListener<(e: ITabControlEventArgs<T>) => void>;
-            OnTabClosed: bind.EventListener<(e: ITabControlEventArgs<T>) => void>;
-            GetLeftBar(): any;
-            GetRightBar(): any;
-            OnPrint(): any;
-            Update(): void;
-            OnSearche(oldPatent: string, newPatent: string): void;
-            OnDeepSearch(): void;
-            readonly HasSearch: SearchActionMode;
-        }
-        interface ITabControlEventArgs<T> {
-            Sender: UniTabControl<T>;
-            Cancel: boolean;
-            Target: ITabControlData<ITabControlData<UniTabControl<T>, T>, T>;
-            Stat: 'opened' | 'closing' | 'closed';
-        }
-        class TabControlItem<OwnerType, ContentType> extends bind.DObject implements ITabControlData<OwnerType, ContentType> {
-            Title: string;
-            Content: ContentType;
-            static DPTitle: bind.DProperty<string, TabControlItem<any, any>>;
-            static DPContent: bind.DProperty<any, TabControlItem<any, any>>;
-            static __fields__(): bind.DProperty<any, TabControlItem<any, any>>[];
-            constructor(Title: string, Content: ContentType);
-        }
-    }
-    export var LoadDefaultCSS: (callback?: any, onerror?: any) => void;
-}
-declare module "sys/Corelib" {
-    import { UI } from "sys/UI";
-    import { Parser } from "sys/Syntaxer";
-    import { reflection } from "sys/runtime";
-    import { Controller } from "sys/Dom";
+declare module "sys/utils" {
+    import { bind } from "sys/Corelib";
+    import { collection } from "sys/collections";
     export namespace html {
         function fromText(t: string): Element;
         function indexOf(node: Node): number;
@@ -3014,9 +910,6 @@ declare module "sys/Corelib" {
         function round1(_n: any, x: any): string;
         function round(_n: any, x: any): string;
     }
-    export namespace string {
-        function IsPrintable(keyCode: number, charCode: number): boolean;
-    }
     export namespace basic {
         namespace Settings {
             function get(name: any): any;
@@ -3043,19 +936,6 @@ declare module "sys/Corelib" {
             SDecrypt(data: string): string;
         }
         const Crypto: ICrypto;
-        function setGuidRange(start: number, end: number): void;
-        function New(): number;
-        class GuidManager {
-            vars: any;
-            static readonly current: number;
-            constructor(vars: any);
-            static readonly isValid: boolean;
-            static readonly Next: number;
-            static New<T>(callback: (id: number, param: T) => void, pram: T): void;
-            static t: net.WebRequest;
-            static isLoading: boolean;
-            static update<T>(callback?: (id: number, param: T) => void, pram?: T): void;
-        }
         function isFocused(v: Element): boolean;
         class focuser {
             bound: HTMLElement;
@@ -3184,37 +1064,6 @@ declare module "sys/Corelib" {
             Index: number;
         }
         function CompileString(s: string, getString?: (value: any, param: any) => string, params?: any): StringCompile;
-        class CodeCompiler {
-            private script;
-            constructor();
-            private toRegString;
-            private static params;
-            generateFn(stack: (string | Parser.ICode)[], hasNoReturn?: boolean): IReg;
-            private _push;
-            push(code: string | string[]): any[] | IReg;
-            Compile(): void;
-            reset(): void;
-            private _onload;
-            private _onerror;
-            private OnFnSuccess;
-            onFnLoad: (fn: Function, t: IReg) => void;
-            onload: (t: this) => void;
-            onerror: (t: this) => void;
-            remove(t: IReg): void;
-        }
-        class EvalCode {
-            static Compile(code: string, callback?: Function, onerror?: Function, stat?: any): void;
-            static CompileExpression(expression: string, params: string[], callback?: (exprFn: Function, stat: any) => void, stat?: any, exludeReturn?: boolean): void;
-        }
-        interface IReg {
-            name: string;
-            stat?: any;
-            callback: (exprFn: Function, IReg: this) => void;
-            onError?: (stat: any) => void;
-            code: string;
-            evalCode?: Function;
-            IsString?: boolean;
-        }
         class StringCompile {
             protected indexer: (string | SIndex)[];
             private getString;
@@ -3396,6 +1245,1336 @@ declare module "sys/Corelib" {
         function $$(dom: Node | Node[]): __ | _;
     }
     export function $$(dom: Node | Node[]): query.__ | query._;
+    export namespace basic {
+        class DomEventHandler<T extends Event, P> implements IEventHandler, EventListenerObject {
+            dom: Element;
+            event: string;
+            private owner;
+            private handle;
+            private param?;
+            Started: boolean;
+            constructor(dom: Element, event: string, owner: any, handle: (eh: DomEventHandler<T, P>, ev: T, param: P) => void, param?: P);
+            Start(): void;
+            Pause(): void;
+            Dispose(): void;
+            Reset(): void;
+            handleEvent(evt: Event): void;
+            static Dispose(dom: EventTarget, event?: string): void;
+        }
+    }
+}
+declare module "sys/Encoding" {
+    import { reflection } from "sys/runtime";
+    export module serialization {
+        interface colReader {
+            value: string;
+            cursor: charReader;
+            EOF: boolean;
+        }
+        interface charReader {
+            cursor: number;
+            value: string;
+            len?: number;
+            newLine?: boolean;
+            EOF?: boolean;
+        }
+        interface CsvEventArgs {
+            csv: CSV;
+            index?: number;
+            value?: any;
+            set(this: CsvEventArgs, value: any, index: number): CsvEventArgs;
+        }
+        interface fillArgs {
+            csv?: CSV;
+            parser?: (e: CsvEventArgs) => any;
+            header?: string[];
+            cols?: Object | any[];
+            e?: CsvEventArgs;
+        }
+        class CSV {
+            private input;
+            private autoParse;
+            private asJson;
+            static separator: string;
+            static emptyArray: string[];
+            private e;
+            Columns: any[];
+            private _cursor;
+            private _startCursor;
+            static ReadAllLines(s: string): string[];
+            private parse;
+            private static isEmptyLine;
+            private static trim;
+            private static nextChar;
+            private static readString;
+            private static readColumn;
+            private static clear;
+            private static fillColumns;
+            private static readLine;
+            constructor(input: string, autoParse: boolean, asJson: any);
+            ColumnName(index: number): string;
+            ColumnIndex(name: string): number;
+            private _current;
+            readonly Cursor: charReader;
+            Reset(): this;
+            AllowNullValue: boolean;
+            Next(e?: fillArgs): boolean;
+            swapArgs(e: fillArgs): fillArgs;
+            private jsonParser;
+            readonly Current: any[] | Object;
+            Field(name_index: string | number): any;
+        }
+    }
+    export module encoding {
+        interface IPath<OB, DP> {
+            Owner: OB;
+            Property: DP;
+            Set<T>(value: T): T;
+            executed: boolean;
+        }
+        interface Serialization<T> {
+            FromJson(json: any, context: SerializationContext, ref: IRef): T;
+            ToJson(data: T, context: SerializationContext, indexer: encoding.IIndexer): any;
+        }
+        interface IRef {
+            __ref__: number;
+        }
+        interface IIndexer {
+            ref: IRef;
+            json: any;
+            valid: boolean;
+        }
+        class SerializationContext {
+            static GlobalContext: SerializationContext;
+            private _store;
+            private _ext;
+            RequireNew: (json: any, type: Function | reflection.GenericType) => boolean;
+            Dispose(): void;
+            constructor(isDefault: boolean);
+            Register<T>(type: Function, ser: Serialization<T>): void;
+            UnRegister<T>(type: Function): Serialization<any>;
+            GetRegistration(type: Function): Serialization<any>;
+            Append(con: SerializationContext): void;
+            Get(type: Function): Serialization<any>;
+            private indexer;
+            private refs;
+            get(ref: number, path: IPath<any, any>): any;
+            set(ref: number, obj: any): void;
+            private cnt;
+            getJson(obj: any): IIndexer;
+            reset(): this;
+            static getType(type: Function): Function;
+            FromJson(json: any, type: Function | reflection.GenericType, path: IPath<any, any>): any;
+            ToJson(obj: any): any;
+            private _toJson;
+            toString(): void;
+            _arrayToJson(arr: Array<any>, ret: IIndexer): {
+                "__type__": reflection.NativeTypes;
+                "__value__": any[];
+                "@ref": number;
+            };
+        }
+    }
+}
+declare module "sys/collections" {
+    import { basic } from "sys/utils";
+    import { bind } from "sys/Corelib";
+    import { reflection } from "sys/runtime";
+    import { encoding } from "sys/Encoding";
+    export namespace utils {
+        class ListEventArgs<P, T> implements basic.IDisposable {
+            oldItem: T;
+            newItem: T;
+            startIndex: P;
+            event: collection.CollectionEvent;
+            collection?: T[];
+            constructor(oldItem: T, newItem: T, startIndex: P, event: collection.CollectionEvent, collection?: T[]);
+            Dispose(): void;
+            static readonly ResetEvent: any;
+            private static _r;
+        }
+        interface IPatent<T> {
+            Check(s: T): boolean;
+            equals(p: IPatent<T>): boolean;
+        }
+        abstract class Filter<T, P extends IPatent<T>> extends bind.DObject {
+            protected _patent: P;
+            Patent: P | string;
+            protected abstract convertFromString(x: string): P;
+            abstract Begin(deb: number, count: number): any;
+            private _store;
+            constructor();
+            OnChanged(callback: (filter: Filter<T, P>, data: any) => void, data: any, name?: string): number;
+            OffChanged(name_id: string | number): void;
+            protected _ismath(str: string[]): boolean;
+            abstract IsMatch(index: number, item: T): any;
+        }
+        class CostumeFilter<T, P extends IPatent<T>> extends Filter<T, P> {
+            _isMatch: (patent: P, item: T) => boolean;
+            constructor(_isMatch: (patent: P, item: T) => boolean);
+            IsMatch(index: number, item: T): boolean;
+            convertFromString(x: string): P;
+            Begin(deb: number, count: number): void;
+        }
+        class filterCallback<T, P extends IPatent<T>> {
+            callback: (filter: utils.Filter<T, P>, data: any) => void;
+            data: any;
+            name?: string;
+            id?: number;
+            constructor(callback: (filter: utils.Filter<T, P>, data: any) => void, data: any, name?: string, id?: number);
+        }
+        interface Node<T> {
+            Depth: number;
+            Value: T;
+            param?: any;
+            children: Node<T>[];
+            Parent: Node<T>;
+        }
+        class Tree<T> {
+            private source;
+            private getParent;
+            private dic;
+            constructor(source: collection.List<T>, getParent: (item: T) => T, listen: (base: Node<T>, target: Node<T>, add_remove_clear: boolean) => void);
+            Remove(c: T): void;
+            Add(c: T): void;
+            Clear(): void;
+            Reset(): void;
+            _new(target: T): Node<T>;
+            private getOrAdd;
+            private OnAdd;
+            getNodes(): IterableIterator<Node<T>>;
+            getBases(): Node<T>[];
+            private OnRemove;
+            private OnClear;
+            OnChange: bind.EventListener<(base: Node<T>, target: Node<T>, add_remove_clear: boolean) => void>;
+        }
+    }
+    export namespace collection {
+        enum CollectionEvent {
+            Added = 0,
+            Removed = 1,
+            Replace = 2,
+            Cleared = 3,
+            Reset = 4,
+            Setted = 5
+        }
+        type ListEventInvoker<T> = (e: utils.ListEventArgs<number, T>) => void;
+        type ListEventHandler<T> = ListEventInvoker<T> | (basic.ITBindable<ListEventInvoker<T>>);
+        type ListEventBindable<T> = basic.ITBindable<ListEventInvoker<T>>;
+        class List<T> extends bind.DObject {
+            protected argType: Function;
+            static __fields__(): any[];
+            static DPCount: bind.DProperty<number, List<any>>;
+            private UCount;
+            protected _list: T[];
+            readonly ArgType: Function;
+            GetType(): Function | reflection.GenericType;
+            constructor(argType: Function, array?: T[]);
+            AsList(): T[];
+            Order(comp: (a: T, b: T) => boolean | number): void;
+            OrderBy(comp: (a: T, b: T) => number): void;
+            Filtred(filter: utils.Filter<T, utils.IPatent<T>>): ExList<T, utils.IPatent<T>>;
+            Set(i: number, item: T): boolean;
+            Get(i: number): T;
+            Insert(i: number, item: T): boolean;
+            Add(item: T): this;
+            AddRange(items: T[]): void;
+            CheckIndex(i: number): boolean;
+            Remove(item: T | number): boolean;
+            RemoveAt(item: number): boolean;
+            Clear(): void;
+            readonly Count: number;
+            IndexOf(item: T): number;
+            Listen: ListEventHandler<T>;
+            Unlisten: ListEventHandler<T>;
+            private OnChanged;
+            private _changed;
+            private _changing;
+            protected getArgType(json: any): Function;
+            ToJson(x: encoding.SerializationContext, indexer: encoding.IIndexer): any;
+            FromJson(json: any, x: encoding.SerializationContext, update?: boolean, callback?: (prop: string, val: any) => Object): this;
+            OnDeserialize(list: T[]): void;
+            private static getType;
+            UpdateDelegate: () => T[];
+            static GenType(T: Function): Function | reflection.GenericType;
+        }
+        interface IKeyValuePair<T, P> {
+            Key: T;
+            Value: P;
+        }
+        class Dictionary<T, P> extends bind.DObject {
+            Name: string;
+            ReadOnly?: boolean;
+            private keys;
+            private values;
+            constructor(Name: string, ReadOnly?: boolean);
+            GetKeyAt(i: number): T;
+            GetValueAt(i: number): P;
+            readonly Count: number;
+            Clear(): void;
+            IndexOf(key: T, fromIndex?: number): number;
+            IndexOfValue(val: P, fromIndex?: number): number;
+            Set(key: T, value: P): void;
+            Remove(key: T): P;
+            RemoveAllValues(val: P): T[];
+            RemoveAt(i: number): IKeyValuePair<T, P>;
+            getValues(): P[];
+            Get(key: T): P;
+            GetOrAdd(key: T, value?: P): P;
+            GetOrCreate<S>(key: T, New: (key: T, param?: S) => P, param?: S): P;
+            GetKeyOf(val: P): T;
+            Listen: (e: utils.ListEventArgs<T, P>) => void;
+            Unlisten: (e: utils.ListEventArgs<T, P>) => void;
+            private OnChanged;
+            private _changed;
+            UpdateDelegate: () => T[];
+        }
+        class ExList<T, P extends utils.IPatent<T>> extends List<T> {
+            static DPSource: bind.DProperty<List<any>, ExList<any, any>>;
+            Source: List<T>;
+            static DPFilter: bind.DProperty<utils.Filter<any, any>, ExList<any, any>>;
+            Filter: utils.Filter<T, P>;
+            static DPMaxResult: bind.DProperty<number, ExList<any, any>>;
+            MaxResult: number;
+            static DPShift: bind.DProperty<number, ExList<any, any>>;
+            Shift: number;
+            static __fields__(): (bind.DProperty<utils.Filter<any, any>, ExList<any, any>> | bind.DProperty<number, ExList<any, any>> | bind.DProperty<List<any>, ExList<any, any>>)[];
+            private _fid;
+            private filterChanged;
+            private sourceChanged;
+            private sicd;
+            private MaxResultChanged;
+            static New<T, P extends utils.IPatent<T>>(source: List<T>, filter: utils.Filter<T, P>, argType?: Function): ExList<T, P>;
+            constructor(argType: Function);
+            private static patentChanged;
+            private sourceItemChanged;
+            private isMatch;
+            start: number;
+            Reset(): void;
+        }
+        interface Converter<A, B> {
+            ConvertA2B(sender: TransList<A, B>, index: number, a: A, d: any): B;
+            ConvertB2A(sender: TransList<A, B>, index: number, b: B, d: any): A;
+        }
+        class TransList<From, To> extends List<To> {
+            private converter;
+            private stat?;
+            static __fields__(): bind.DProperty<List<any>, TransList<any, any>>[];
+            private sli;
+            private SourceChanged;
+            static DPSource: bind.DProperty<List<any>, TransList<any, any>>;
+            Source: List<any>;
+            constructor(argType: Function, converter: Converter<From, To>, stat?: any);
+            private _internal;
+            private OnSourceChanged;
+            private Reset;
+            Add(t: To): this;
+            Remove(x: To): boolean;
+            Insert(i: number, item: To): boolean;
+            Clear(): void;
+            Order(n: (a: To, b: To) => boolean): void;
+            OrderBy(n: (a: To, b: To) => number): void;
+            Set(i: number, item: To): boolean;
+        }
+        abstract class Binding<T> {
+            GetType(): typeof Binding;
+            private _dataContext;
+            DataContext: collection.List<T>;
+            constructor(dataContext: collection.List<T>);
+            abstract OnItemAdded(item: T, index: number): any;
+            abstract OnItemRemoved(item: T, index: number): any;
+            abstract OnSourceCleared(): any;
+            abstract OnSourceInitialized(_old: collection.List<T>, _nex: collection.List<T>): any;
+            abstract OnSourceReset(): any;
+            abstract OnSourceReplace(oldItem: T, newItem: T, index: number): any;
+            private initChanged;
+        }
+        abstract class Render<T, P> extends Binding<T> {
+            GetType(): typeof Render;
+            private _rendredList;
+            readonly RendredList: collection.List<P>;
+            constructor(dataContext: collection.List<T>);
+            abstract Render(item: T): P;
+            OnItemAdded(item: T, index: number): void;
+            OnItemRemoved(item: T, index: number): void;
+            OnSourceCleared(): void;
+            OnSourceInitialized(_old: collection.List<T>, _nex: collection.List<T>): void;
+        }
+        class SyncQuee<T> extends bind.DObject {
+            handler: basic.ITBindable<(e: QueeEventArgs<T>) => void>;
+            private quee;
+            private _isExecuting;
+            CurrentData: T;
+            push(data: T): void;
+            constructor(handler: basic.ITBindable<(e: QueeEventArgs<T>) => void>);
+            EndOperation(e: QueeEventArgs<T>): void;
+        }
+        interface QueeEventArgs<T> {
+            quee: SyncQuee<T>;
+            data: T;
+        }
+    }
+}
+declare module "sys/Filters" {
+    import { bind } from "sys/Corelib";
+    import { collection, utils } from "sys/collections";
+    export module filters {
+        namespace scopic {
+            interface IListFilterParam {
+                Filter: string;
+                Source: string;
+                Patent: string;
+                shift: string;
+                max: string;
+            }
+            class ListFilter<T> extends bind.Filter<collection.List<T>, collection.ExList<T, list.StringPatent<T>>> {
+                private p;
+                private fl?;
+                private isConst;
+                constructor(s: bind.Scop, p: string, fl?: collection.ExList<T, filters.list.StringPatent<T>>);
+                private getFilter;
+                private getSource;
+                private getPatent;
+                protected Convert(data: collection.List<T>): collection.ExList<T, any>;
+                protected ConvertBack(data: collection.ExList<T, any>): collection.List<T>;
+                Initialize(): void;
+            }
+        }
+        namespace list {
+            class SubListPatent implements utils.IPatent<any> {
+                Start: number;
+                End: number;
+                constructor(start: number, end: number);
+                Check(i: any): boolean;
+                equals(p: SubListPatent): boolean;
+                Refresh(): this;
+                private _refresh;
+            }
+            class StringPatent<T> implements utils.IPatent<T> {
+                private p;
+                private o;
+                constructor(s: string);
+                Check(s: any): boolean;
+                equals(p: StringPatent<any>): boolean;
+            }
+            class PropertyPatent<T> implements utils.IPatent<T> {
+                s: T;
+                constructor(s: T);
+                Check(s: any): boolean;
+                equals(p: PropertyPatent<any>): boolean;
+            }
+            class PropertyFilter<T extends bind.DObject> extends utils.Filter<T, PropertyPatent<T>> {
+                DP: bind.DProperty<any, any>;
+                private _skip;
+                Begin(deb: number, count: number): void;
+                IsMatch(i: number, item: T): any;
+                protected convertFromString(x: string): PropertyPatent<T>;
+                constructor(DP: bind.DProperty<any, any>);
+            }
+            class StringFilter<T> extends utils.Filter<T, StringPatent<T>> {
+                Begin(deb: number, count: number): void;
+                IsMatch(i: number, item: T): boolean;
+                protected convertFromString(x: string): StringPatent<T>;
+            }
+            class BoundStringFilter<T> extends utils.Filter<T, StringPatent<T>> {
+                private deb;
+                private fin;
+                Begin(deb: number, count: number): void;
+                IsMatch(i: number, item: T): boolean;
+                protected convertFromString(x: string): StringPatent<T>;
+            }
+            class DObjectPatent implements utils.IPatent<bind.DObject> {
+                private o;
+                constructor(s: string);
+                Check(s: bind.DObject): boolean;
+                equals(p: DObjectPatent): boolean;
+            }
+            class DObjectFilter<T> extends utils.Filter<T, StringPatent<T>> {
+                Begin(deb: number, count: number): void;
+                IsMatch(i: number, item: T): boolean;
+                protected convertFromString(x: string): StringPatent<T>;
+            }
+            abstract class PatentGroup<T> implements utils.IPatent<T> {
+                left: utils.IPatent<T>;
+                right: utils.IPatent<T>;
+                constructor(left: utils.IPatent<T>, right: utils.IPatent<T>);
+                abstract Clone(): any;
+                abstract Check(item: T): any;
+                equals(p: utils.IPatent<T>): boolean;
+                protected areEquals(a: utils.IPatent<T>, b: utils.IPatent<T>): boolean;
+            }
+            class ANDPatentGroup<T> extends PatentGroup<T> {
+                Check(item: T): boolean;
+                Clone(): ANDPatentGroup<T>;
+            }
+            class ORPatentGroup<T> extends PatentGroup<T> {
+                Clone(): ORPatentGroup<T>;
+                Check(item: T): boolean;
+            }
+            class FilterGroup<T> extends utils.Filter<T, PatentGroup<T>> {
+                constructor(patent: PatentGroup<T>);
+                Begin(deb: number, count: number): void;
+                IsMatch(i: number, item: T): any;
+                protected convertFromString(x: string): PatentGroup<T>;
+                LeftPatent: utils.IPatent<T>;
+                RightPatent: utils.IPatent<T>;
+            }
+            class LStringFilter<T> extends utils.Filter<T, StringPatent<T>> {
+                private deb;
+                private count;
+                Begin(deb: number, count: number): void;
+                IsMatch(i: number, item: T): boolean;
+                protected convertFromString(x: string): StringPatent<T>;
+            }
+            class SubListFilter<T> extends utils.Filter<T, SubListPatent> {
+                private deb;
+                private count;
+                Begin(deb: number, count: number): void;
+                IsMatch(i: number, item: T): boolean;
+                protected convertFromString(x: string): SubListPatent;
+            }
+            function indexdFilter(source: collection.List<any>, count: number): {
+                update(): void;
+                reset(): void;
+                next(): void;
+                previouse(): void;
+                readonly List: collection.ExList<any, utils.IPatent<any>>;
+                readonly numPages: number;
+                Index: number;
+                CountPerPage: number;
+            };
+        }
+    }
+}
+declare module "sys/UI" {
+    import { bind } from "sys/Corelib";
+    import { collection } from "sys/collections";
+    import { defs } from "sys/defs";
+    import { mvc, Dom as dom } from "sys/runtime";
+    import { attributes, Controller, Processor } from "sys/Dom";
+    import { Parser } from "sys/Syntaxer";
+    import { basic } from "sys/utils";
+    export type conv2template = mvc.ITemplate | string | Function | UI.Template | HTMLElement;
+    export module UI {
+        enum KeyboardControllerResult {
+            Handled = 0,
+            Release = -1,
+            ByPass = 2
+        }
+        var ms: string[];
+        enum Keys {
+            Enter = 13,
+            Tab = 9,
+            Esc = 27,
+            Escape = 27,
+            Up = 38,
+            Down = 40,
+            Left = 37,
+            Right = 39,
+            PgDown = 34,
+            PageDown = 34,
+            PgUp = 33,
+            PageUp = 33,
+            End = 35,
+            Home = 36,
+            Insert = 45,
+            Delete = 46,
+            Backspace = 8,
+            Space = 32,
+            Meta = 91,
+            Win = 91,
+            Mac = 91,
+            Multiply = 106,
+            Add = 107,
+            Subtract = 109,
+            Decimal = 110,
+            Divide = 111,
+            Scrollock = 145,
+            Pausebreak = 19,
+            Numlock = 144,
+            "5numlocked" = 12,
+            Shift = 16,
+            Capslock = 20,
+            F1 = 112,
+            F2 = 113,
+            F3 = 114,
+            F4 = 115,
+            F5 = 116,
+            F6 = 117,
+            F7 = 118,
+            F8 = 119,
+            F9 = 120,
+            F10 = 121,
+            F11 = 122,
+            F12 = 123,
+            AltLeft = 18,
+            AltRight = 18,
+            ShiftLeft = 18,
+            ShiftRight = 18,
+            ControlLeft = 17,
+            ControlRight = 17,
+            MetaLeft = 91,
+            MetaRight = 91
+        }
+        enum Controlkeys {
+            Alt = 18,
+            Shift = 16,
+            Control = 17,
+            Meta = 91
+        }
+        enum Events {
+            keydown = 2,
+            keyup = 3,
+            keypress = 5
+        }
+        enum MetricType {
+            Pixel = 0,
+            Percentage = 1,
+            Inch = 2,
+            Em = 3
+        }
+        enum SearchActionMode {
+            None = 0,
+            Validated = 1,
+            Instantany = 2,
+            NoSearch = 3
+        }
+        enum MessageResult {
+            Exit = 0,
+            ok = 1,
+            cancel = 2,
+            abort = 3
+        }
+        enum NotifyType {
+            Focuse = 0,
+            UnFocus = 1
+        }
+        enum ServiceType {
+            Main = 0,
+            Stackable = 1,
+            Instantany = 3
+        }
+        interface IContextMenuEventArgs<T> {
+            ObjectStat?: any;
+            e: MouseEvent;
+            x: number;
+            y: number;
+            selectedItem?: T;
+            cancel?: boolean;
+            callback(e: IContextMenuEventArgs<T>): any;
+        }
+        interface IContextMenu<T> {
+            getTarget(): JControl;
+            OnAttached(e: IContextMenuEventArgs<T>): any;
+            OnClosed(result: T, e: IContextMenuEventArgs<T>): boolean;
+            getView(): UI.JControl;
+        }
+        interface IService {
+            GetLeftBar(): JControl;
+            GetRightBar(): JControl;
+            Handler?: EventTarget;
+            ServiceType: ServiceType;
+            Notify?: bind.EventListener<(s: IService, notifyTYpe: NotifyType) => void>;
+            Callback(args: any): any;
+            Handled(): boolean;
+        }
+        interface IKeyCombinerTarget extends basic.ITBindable<(k: keyCominerEvent, e: IKeyCombinerTarget) => void> {
+            target?: Node | JControl;
+        }
+        interface IKeyA {
+            [s: string]: IKeyCombinerTarget[];
+        }
+        interface IKeyboardControllerEventArgs {
+            e?: KeyboardEvent;
+            Result?: UI.KeyboardControllerResult;
+            Controller: IKeyboardController;
+        }
+        interface IKeyboardController {
+            owner?: any;
+            invoke(e: IKeyboardControllerEventArgs): any;
+            onResume?(e: IKeyboardControllerEventArgs): boolean;
+            onPause?(e: IKeyboardControllerEventArgs): boolean;
+            onStop?(e: IKeyboardControllerEventArgs): boolean;
+            stackable?: boolean;
+            params?: any[];
+        }
+        type IItem = defs.IItem;
+        enum HorizontalAlignement {
+            Left = 0,
+            Center = 1,
+            Right = 2
+        }
+        enum VerticalAlignement {
+            Top = 0,
+            Center = 1,
+            Bottom = 2
+        }
+    }
+    export module UI {
+        class Point {
+            x: number;
+            y: number;
+            constructor(x: number, y: number);
+        }
+        class Size {
+            w: Metric;
+            h: Metric;
+            constructor(w: Metric | string | number, h: Metric | number | string);
+        }
+        class Metric {
+            Value: number;
+            Type: MetricType;
+            constructor(value: number | string, type?: MetricType);
+            minus(v: any): Metric;
+            toString(): string;
+            fromString(s: string): void;
+        }
+        class MessageEventArgs {
+            Modal: defs.$UI.IModal;
+            Result: MessageResult;
+            msg: string;
+            private _stayOpen;
+            readonly stayOpen: boolean;
+            StayOpen(): void;
+            Close(): void;
+            constructor(Modal: defs.$UI.IModal, Result: MessageResult, msg: string);
+        }
+        class HotKey {
+            private _key;
+            private __ctrl;
+            Key: Keys;
+            Control: Controlkeys;
+            IsPressed(e: KeyboardEvent): boolean;
+            private checkKey;
+            private checkControl;
+        }
+        function processHTML(dom: HTMLElement, data?: any): TControl<any>;
+        class DragableElement implements EventListenerObject {
+            element: HTMLElement;
+            header: HTMLElement;
+            pos1: number;
+            pos2: number;
+            pos3: number;
+            pos4: number;
+            private closeDragElementHandler;
+            private elementDragHandler;
+            elementDrag(e: MouseEvent): void;
+            closeDragElement(): void;
+            handleEvent(e: MouseEvent): void;
+            constructor(element: HTMLElement, header: HTMLElement);
+            initialize(element: HTMLElement, header: HTMLElement): void;
+            Dispose(): void;
+        }
+        class DragManager {
+            private handler;
+            private target;
+            private View;
+            private loc;
+            constructor(handler: JControl, target: JControl);
+            private mouseloc;
+            private cntloc;
+            handleEvent(e: DragEvent): void;
+            Location: Point;
+            private RelocationJob;
+            reLocation(hr: boolean, vr: boolean): void;
+        }
+        class keyCominerEvent {
+            Owner: any;
+            OnComined: bind.EventListener<(owner: this, e: IKeyCombinerTarget) => void>;
+            private _keyA;
+            private _keyB;
+            private handlers;
+            sort(ar: IKeyCombinerTarget[]): undefined;
+            sort1(ar: Node[]): void;
+            KeyA: KeyboardEvent;
+            KeyB: KeyboardEvent;
+            constructor(Owner: any);
+            private elementInViewport1;
+            private elementInViewport;
+            Cancel: boolean;
+            private _stopEvent;
+            private _rise;
+            reset(): void;
+            handleEvent(e: KeyboardEvent): void;
+            private isValid;
+            On(keyA: string, keyB: string, handle: (s: keyCominerEvent, e: IKeyCombinerTarget) => void, target?: JControl | Node, owner?: any): IKeyCombinerTarget;
+            Off(keyA: string, keyB: string, e: IKeyCombinerTarget): void;
+            private _pause;
+            protected dom: HTMLElement;
+            pause(): void;
+            resume(): void;
+            attachTo(dom: HTMLElement): void;
+            stopPropagation(): void;
+        }
+        class DesktopKeyboardManager extends keyCominerEvent {
+            protected desk: Desktop;
+            constructor(desk: Desktop);
+            dom: HTMLElement;
+            attachTo(v: HTMLElement): void;
+        }
+        class KeyboardControllerManager {
+            Desktop: UI.Desktop;
+            private _controllers;
+            _current: IKeyboardController;
+            constructor(Desktop: UI.Desktop);
+            Current(): IKeyboardController;
+            GetController(nc: IKeyboardController): boolean;
+            Release(c: IKeyboardController): boolean;
+            ResumeStack(): boolean;
+            Invoke(e: KeyboardEvent): UI.KeyboardControllerResult;
+        }
+    }
+    export module UI {
+        abstract class JControl extends bind.Scop implements EventListenerObject {
+            protected _view: HTMLElement;
+            protected $slots: dom.SlotChildrenMap;
+            protected OnTemplateCompiled(node: Processor.Tree): void;
+            Is(toke: string | Parser.CToken): boolean;
+            private _parentScop;
+            getParent(): bind.Scop;
+            protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
+            setParent(v: bind.Scop): boolean;
+            CombinatorKey(keyA: string, keyB: string, callback: (this: this, e: keyCominerEvent) => void): IKeyCombinerTarget;
+            SearchParents<T extends JControl>(type: Function): T;
+            static LoadCss(url: any): HTMLLinkElement;
+            static __fields__(): any[];
+            readonly InnerHtml: string;
+            Float(v: HorizontalAlignement): void;
+            Clear(): void;
+            protected parent: JControl;
+            _presenter: JControl;
+            private _hotKey;
+            _onInitialize: bind.EventListener<(s: JControl) => void>;
+            OnInitialized: (s: this) => void;
+            Presenter: JControl;
+            setAttribute(name: any, value: any): this;
+            OnKeyDown(e: KeyboardEvent): any | void;
+            OnContextMenu(e: MouseEvent): any;
+            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any | void;
+            setAttributes(attributes: {
+                [s: string]: string;
+            }): this;
+            applyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
+            applyStyle(a: string, b: string, c: string, d: string, e: string): any;
+            applyStyle(a: string, b: string, c: string, d: string): any;
+            applyStyle(a: string, b: string, c: string): any;
+            applyStyle(a: string, b: string): any;
+            applyStyle(a: string): any;
+            disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string, x: string): any;
+            disapplyStyle(a: string, b: string, c: string, d: string, e: string, f: string): any;
+            disapplyStyle(a: string, b: string, c: string, d: string, e: string): any;
+            disapplyStyle(a: string, b: string, c: string, d: string): any;
+            disapplyStyle(a: string, b: string, c: string): any;
+            disapplyStyle(a: string, b: string): any;
+            disapplyStyle(a: string): any;
+            private _display;
+            Visible: boolean;
+            Wait: boolean;
+            Enable: boolean;
+            Parent: JControl;
+            private static counter;
+            private _id;
+            private init;
+            readonly IsInit: boolean;
+            protected OnFullInitialized(): void;
+            protected OnPaint: (this: this, n: this) => void;
+            protected OnParentChanged(_old: JControl, _new: JControl): void;
+            protected instantanyInitializeParent(): boolean;
+            ToolTip: string;
+            readonly View: HTMLElement;
+            constructor(_view: HTMLElement);
+            protected _hasValue_(): boolean;
+            protected abstract initialize(): any;
+            static createDiv(): HTMLDivElement;
+            addEventListener<T>(event: string, handle: (sender: this, e: Event, param: T) => void, param: T, owner?: any): basic.DomEventHandler<any, any>;
+            private static _handle;
+            AddRange(chidren: JControl[]): this;
+            Add(child: JControl): this;
+            IndexOf(child: JControl): void;
+            Insert(child: JControl, to: number): this;
+            Remove(child: JControl, dispose?: boolean): boolean;
+            protected getTemplate(child: JControl): JControl;
+            readonly Id: number;
+            Dispose(): void;
+            protected OnHotKey(): void;
+            HotKey: HotKey;
+            handleEvent(e: Event): void;
+            private _events;
+            private isEventRegistred;
+            private registerEvent;
+            static toggleClass(dom: any, className: any): void;
+            private _events_;
+            watch(name: string, callback: (e: attributes.EventEventArgs<this, any>) => void, owner?: any): this;
+            protected notify(name: string, e: attributes.EventEventArgs<this, any>): void;
+            unwatch(name: string, callback: (e: attributes.EventEventArgs<any, any>) => void, owner?: any): void;
+        }
+        interface IContentControl extends JControl {
+            Content: JControl;
+        }
+        abstract class Control<T extends JControl> extends JControl {
+            private _c;
+            readonly Children: T[];
+            Add(child: T): this;
+            NativeAdd(child: JControl): void;
+            Insert(child: T, to: number): this;
+            Remove(child: T, dispose?: boolean): boolean;
+            RemoveAt(i: number, dispose: boolean): boolean;
+            protected abstract Check(child: T): any;
+            protected readonly HasTemplate: boolean;
+            protected getTemplate(child: T): JControl;
+            protected OnChildAdded(child: T): void;
+            getChild(i: number): T;
+            IndexOf(item: T): number;
+            constructor(view: HTMLElement);
+            readonly Count: number;
+            CloneChildren(): void;
+            Clear(dispose?: boolean): void;
+            Dispose(): void;
+        }
+        class Dom extends JControl {
+            constructor(tagName?: string | HTMLElement, classList?: string[]);
+            initialize(): void;
+        }
+        class Div extends UI.Control<JControl> {
+            constructor();
+            initialize(): void;
+            Check(item: JControl): boolean;
+        }
+        class Label extends UI.JControl {
+            constructor(text: string);
+            initialize(): void;
+            Text: string;
+        }
+        class Input extends UI.JControl {
+            Disable(disable: any): void;
+            constructor(dom?: any);
+            initialize(): void;
+            Placeholder: string;
+            Text: string;
+            Blur(): void;
+            handleEvent(e: FocusEvent): void;
+            OnFocusIn(e: FocusEvent): void;
+            OnKeyPressed(e: KeyboardEvent): UI.KeyboardControllerResult;
+            OnFocusOut(e: FocusEvent): void;
+        }
+        class DivControl extends Control<JControl> {
+            constructor(tag?: string | HTMLElement);
+            initialize(): void;
+            Check(child: JControl): boolean;
+        }
+        class ContentControl extends JControl implements IContentControl {
+            constructor(dom?: HTMLElement);
+            initialize(): void;
+            private _content;
+            Content: JControl;
+            OnKeyDown(e: any): any;
+            OnContextMenu(e: any): any;
+        }
+    }
+    export module UI {
+        class Desktop extends Control<defs.$UI.IApp> {
+            WrapPage(e: attributes.ContentEventArgs): void;
+            static DPCurrentApp: bind.DProperty<defs.$UI.IApp, Desktop>;
+            static DPCurrentLayout: bind.DProperty<JControl, Desktop>;
+            CurrentLayout: JControl;
+            Logout(): any;
+            OpenSignin(): void;
+            isReq: number;
+            KeyCombiner: keyCominerEvent;
+            CurrentApp: defs.$UI.IApp;
+            static ctor(): void;
+            private _currentLayoutChanged;
+            private selectApp;
+            static __fields__(): bind.DProperty<JControl, Desktop>[];
+            AuthStatChanged(v: boolean): void;
+            private apps;
+            IsSingleton: boolean;
+            constructor();
+            initialize(): void;
+            private observer;
+            private mouseController;
+            KeyboardManager: UI.KeyboardControllerManager;
+            private _keyboardControllers;
+            private _keyboardController;
+            private KeyboardController;
+            GetKeyControl(owner: any, invoke: (e: KeyboardEvent, ...params: any[]) => UI.KeyboardControllerResult, params: any[]): void;
+            ReleaseKeyControl(): void;
+            private focuser;
+            private handleTab;
+            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): void;
+            defaultKeys: string;
+            OnKeyDown(e: KeyboardEvent): void;
+            handleEvent(e: Event): any;
+            OnContextMenu(e: MouseEvent): any;
+            private ShowStart;
+            static readonly Current: Desktop;
+            Check(v: defs.$UI.IApp): boolean;
+            Show(app: defs.$UI.IApp): void;
+            private to;
+            private loadApp;
+            Add(i: defs.$UI.IApp): this;
+            Register(app: defs.$UI.IApp): void;
+            AuthenticationApp: defs.$UI.IAuthApp;
+            private Redirect;
+            OnUsernameChanged(job: any, e: any): void;
+        }
+        class ServiceNavBar<T extends IItem> extends JControl {
+            App: defs.$UI.IApp;
+            constructor(App: defs.$UI.IApp);
+            initialize(): void;
+            private _lefttabs;
+            private _righttabs;
+            private bi;
+            LeftTabs: defs.INavbar<T>;
+            RightTabs: defs.INavbar<T>;
+            OnPageSelected: (page: T) => void;
+            OnClick(page: T): void;
+            Add(child: JControl): this;
+            AddRange(child: JControl[]): this;
+            Remove(child: JControl): boolean;
+            serviceNotified(s: IService, n: NotifyType): void;
+            private services;
+            private readonly currentStack;
+            private CurrentService;
+            PushGBar(ser: IService): void;
+            PopGBar(ser: IService): void;
+            ExitBar(): void;
+            PushBar(ser: IService): void;
+            PopBar(): void;
+            private HideCurrentService;
+            private ShowCurrentService;
+            Push(s: IService): void;
+            private Has;
+            Pop(s?: IService): void;
+            Register(service: IService): void;
+            private _services;
+        }
+        interface IActionText extends JControl {
+        }
+        class BarStack {
+            private _current;
+            private others;
+            constructor(current: IService);
+            readonly Current: IService;
+            Push(s: IService): void;
+            Pop(): IService;
+            Has(s: IService): number;
+            Exit(): void;
+        }
+        class Error extends JControl {
+            IsInfo: boolean;
+            private container;
+            private _text;
+            Message: string;
+            Expire: number;
+            constructor();
+            initialize(): void;
+            handleEvent(e: any): void;
+            Push(): void;
+            private timeout;
+            Pop(): void;
+            Dispose(): void;
+        }
+        class InfoArea extends Control<JControl> {
+            static readonly Default: InfoArea;
+            constructor();
+            initialize(): void;
+            Check(j: JControl): boolean;
+            static push(msg: string, isInfo?: boolean, expire?: number): void;
+        }
+        abstract class Layout<T extends defs.$UI.IPage> extends Control<T> implements defs.$UI.IApp {
+            readonly IsAuthentication: boolean;
+            protected OnPageChanging(e: bind.EventArgs<T, this>): void;
+            protected OnPageChanged(e: bind.EventArgs<T, this>): void;
+            static DPSelectedPage: bind.DProperty<defs.$UI.IPage, Layout<any>>;
+            static DPCurrentModal: bind.DProperty<defs.$UI.IModal, Layout<any>>;
+            CurrentModal: defs.$UI.IModal;
+            SelectedPage: T;
+            static __fields__(): (bind.DProperty<defs.$UI.IPage, Layout<any>> | bind.DProperty<defs.$UI.IModal, Layout<any>>)[];
+            Name: string;
+            Foot: ServiceNavBar<IItem>;
+            SearchBox: IActionText;
+            Pages: collection.List<T>;
+            protected abstract showPage(page: T): any;
+            protected Check(child: T): boolean;
+            Logout(): void;
+            constructor(view: any);
+            protected silentSelectPage(oldPage: T, page: T): void;
+            Open(page: T): void;
+            private PagesChanged;
+            OpenPage(pageNme: string): boolean;
+            AddPage(child: T): void;
+            SelectNaxtPage(): void;
+            SelectPrevPage(): void;
+            private opcd;
+            Update(): void;
+            OnKeyDown(e: KeyboardEvent): void;
+            OnKeyCombined(e: keyCominerEvent, v: IKeyCombinerTarget): any;
+            OnPrint(): any;
+            OnDeepSearche(): void;
+            OnContextMenu(e: MouseEvent): void;
+            handleEvent(e: KeyboardEvent): void;
+            Show(): void;
+            initialize(): void;
+            protected static getView(): HTMLElement;
+            protected searchActioned(s: IActionText, o: string, n: string): void;
+            OnAttached(): void;
+            OnDetached(): void;
+            OpenModal(m: defs.$UI.IModal): void;
+            CloseModal(m: defs.$UI.IModal): void;
+            _onCurrentModalChanged(e: bind.EventArgs<defs.$UI.IModal, Layout<any>>): any;
+            private openedModal;
+            private zIndex;
+            OpenContextMenu<T>(cm: IContextMenu<T>, e: IContextMenuEventArgs<T>): boolean;
+            CloseContextMenu<T>(r?: T): boolean;
+            private _contextMenuLayer;
+            private _currentContextMenu;
+            private _currentContextMenuEventArgs;
+            private _contextMenuZIndex;
+        }
+        function CurrentDesktop(): Desktop;
+        function CurrentApp(): defs.$UI.IApp;
+    }
+    export module UI {
+        interface ITemplateShadow {
+            setDataContext(data: any): any;
+            getDataContext(): any;
+        }
+        abstract class TemplateShadow extends JControl implements ITemplateShadow {
+            abstract setDataContext(data: any): any;
+            abstract getDataContext(): any;
+            static Create(item: any): ScopicTemplateShadow;
+            abstract getScop(): bind.Scop;
+            abstract readonly Controller: Controller;
+        }
+        class ScopicTemplateShadow extends TemplateShadow {
+            private scop?;
+            readonly Controller: Controller;
+            private cnt;
+            setDataContext(data: any): void;
+            getDataContext(): any;
+            constructor(dom: HTMLElement, scop?: bind.Scop, cnt?: UI.JControl);
+            initialize(): void;
+            Check(c: JControl): boolean;
+            readonly Scop: bind.Scop;
+            getScop(): bind.Scop;
+            Dispose(): void;
+        }
+        class EScopicTemplateShadow {
+            private control;
+            private scop?;
+            readonly Controller: Controller;
+            private cnt;
+            setDataContext(data: any): void;
+            getDataContext(): any;
+            constructor(control: JControl, scop?: bind.Scop);
+            initialize(): void;
+            Check(c: JControl): boolean;
+            readonly Scop: bind.Scop;
+            getScop(): bind.Scop;
+        }
+        interface ITemplate {
+            CreateShadow<T>(data: T | bind.Scop, cnt: UI.JControl): TemplateShadow;
+        }
+        abstract class Template implements ITemplate {
+            abstract CreateShadow<T>(data?: T | bind.Scop, cnt?: UI.JControl): TemplateShadow;
+            static ToTemplate(itemTemplate: conv2template, asTemplate: boolean): Template;
+        }
+        class HtmlTemplate implements Template {
+            dom: HTMLElement;
+            private asTemplate;
+            constructor(dom: HTMLElement, asTemplate?: boolean);
+            CreateShadow<T>(data?: T | bind.Scop, cnt?: UI.JControl): TemplateShadow;
+        }
+        class ScopicTemplate implements Template {
+            private template;
+            CreateShadow<T>(data?: T | bind.Scop, cnt?: UI.JControl): TemplateShadow;
+            constructor(templatePath: string | mvc.ITemplate);
+        }
+        class TControl<T> extends JControl {
+            private data;
+            static DPData: bind.DProperty<any, TControl<any>>;
+            Data: T;
+            static Me: any;
+            constructor(itemTemplate: mvc.ITemplate | string | Function | Template | HTMLElement, data: T | bind.Scop);
+            protected OnFullInitialized(): void;
+            private _onTemplateCompiled;
+            protected OnCompileEnd(cnt: Controller): void;
+            private Shadow;
+            getScop(): bind.Scop;
+            private _template;
+            initialize(): void;
+            _onCompiled: bind.EventListener<(s: this, cnt: Controller) => void>;
+            private compiled;
+            OnCompiled: (s: this) => void;
+            readonly IsCompiled: boolean;
+            OnDataChanged(e: bind.EventArgs<T, this>): void;
+        }
+        interface ListAdapterEventArgs<T, P> {
+            sender: ListAdapter<T, P>;
+            index: number;
+            template: TemplateShadow;
+            oldIndex?: number;
+            oldTemplate?: TemplateShadow;
+            Cancel?: boolean;
+            Event?: Event;
+        }
+        class ListAdapter<T, P> extends TControl<P> {
+            instantanyInitializeParent(): boolean;
+            private garbage;
+            static __fields__(): bind.DProperty<any, ListAdapter<any, any>>[];
+            static DPSource: bind.DProperty<collection.List<any>, ListAdapter<any, any>>;
+            Source: collection.List<T>;
+            static DPSelectedIndex: bind.DProperty<number, ListAdapter<any, any>>;
+            private __checkSelectedIndex;
+            AcceptNullValue: boolean;
+            private swap;
+            SelectedIndex: number;
+            static DPItemStyle: bind.DProperty<string[], ListAdapter<any, any>>;
+            ItemStyle: string[];
+            static DPTemplate: bind.DProperty<ITemplate, ListAdapter<any, any>>;
+            Template: ITemplate;
+            OnItemSelected: bind.EventListener<(s: ListAdapter<T, P>, index: number, template: TemplateShadow, oldIndex?: number, oldTemplate?: TemplateShadow) => void>;
+            OnItemInserted: bind.EventListener<(s: ListAdapter<T, P>, index: number, data: T, template: TemplateShadow) => void>;
+            OnItemRemoved: bind.EventListener<(s: ListAdapter<T, P>, index: number, data: T, template: TemplateShadow) => void>;
+            OnChildClicked: bind.EventListener<(e: ListAdapterEventArgs<T, P>) => void>;
+            static DPSelectedItem: bind.DProperty<any, ListAdapter<any, any>>;
+            private _content;
+            readonly Content: Control<TemplateShadow>;
+            _selectedItem: TemplateShadow;
+            readonly SelectedChild: TemplateShadow;
+            SelectedItem: T;
+            activateClass: string;
+            private OnSelectedIndexChanged;
+            private riseItemSelectedEvent;
+            Select(t: TemplateShadow): void;
+            SelectItem(t: T): void;
+            static _getTemplate(template: mvc.ITemplate | string | Function): mvc.ITemplate;
+            static _getTemplateShadow(template: mvc.ITemplate | string | Function | HTMLElement): HTMLElement;
+            static ctor(): void;
+            constructor(template: conv2template, itemTemplate?: conv2template, data?: P | bind.Scop, getSourceFromScop?: boolean);
+            private params;
+            private initTemplate;
+            private static getFirstChild;
+            private static getTemplate;
+            private sli;
+            private getSourceFromScop;
+            private CmdExecuter;
+            private AttachSelectedItem;
+            private CmdAttacheSelectedItemExecuter;
+            private RlSourceScop;
+            initialize(): void;
+            private OnSourceChanged;
+            private ReSelect;
+            private _scop;
+            private readonly Scop;
+            BindTo(scop: bind.Scop): void;
+            private OnScopValueChanged;
+            OnItemClicked(s: TemplateShadow, e: Event, t: ListAdapter<any, any>): void;
+            protected getItemShadow(item: T, i: number): TemplateShadow;
+            protected disposeItemShadow(item: T, child: TemplateShadow, i: number): TemplateShadow;
+            protected disposeItemsShadow(items: T[], child: TemplateShadow[]): void;
+            private _insert;
+            private _remove;
+            private count;
+            private OnAdd;
+            private OnSet;
+            private OnClear;
+            private OnRemove;
+            private OnReplace;
+            private Reset;
+            protected clearGarbage(): void;
+            private Recycle;
+            Dispose(): void;
+            Add(child: JControl): this;
+            AddRange(children: JControl[]): this;
+            Remove(child: JControl, dispose: boolean): boolean;
+            RemoveAt(i: number, dispose: boolean): boolean;
+            Clear(dispose?: boolean): void;
+            Insert(c: JControl, i: number): this;
+            CloneChildren(): void;
+            Check(c: JControl): boolean;
+            OnKeyDown(e: KeyboardEvent): boolean;
+        }
+        class Spinner extends JControl {
+            private container;
+            private circle;
+            private message;
+            constructor(test: any);
+            initialize(): void;
+            private isStarted;
+            Start(logo: string): void;
+            Pause(): void;
+            Message: string;
+            static Default: Spinner;
+        }
+        class CostumizedShadow extends TemplateShadow {
+            private data?;
+            Controller: any;
+            setDataContext(data: any): void;
+            getDataContext(): any;
+            constructor(dom: HTMLOptionElement, data?: any);
+            initialize(): void;
+            getScop(): bind.Scop;
+        }
+        module help {
+            function createHeader<Owner>(hd: HTMLTableRowElement, cols: IColumnTableDef[], orderBy?: basic.ITBindable<(sender: Owner, orderBy: string, col: IColumnCellHeaderDef, view: HTMLTableHeaderCellElement) => void>): HTMLTableRowElement;
+            function createTemplate(cols: IColumnTableDef[], tmp?: HTMLTableRowElement): HTMLTableRowElement;
+            function generateCell<T extends HTMLTableHeaderCellElement | HTMLTableDataCellElement>(h: IColumnCellDef<T>, stype: 'th' | 'td'): T;
+            interface IAttribute {
+                values: string[];
+                spliter: string;
+            }
+            interface IColumnCellDef<T extends HTMLTableHeaderCellElement | HTMLTableDataCellElement> {
+                Attributes?: {
+                    [s: string]: IAttribute | string;
+                };
+                TdAttributes?: {
+                    [s: string]: IAttribute | string;
+                };
+                Content?: string | T | Node;
+                ContentAsHtml?: boolean;
+            }
+            interface IColumnCellHeaderDef extends IColumnCellDef<HTMLTableHeaderCellElement> {
+                OrderBy?: string;
+            }
+            interface IColumnCellDataDef extends IColumnCellDef<HTMLTableDataCellElement> {
+            }
+            interface IColumnTableDef {
+                Header: IColumnCellHeaderDef | string;
+                Cell: IColumnCellDataDef;
+                editable?: boolean;
+            }
+        }
+    }
+    export module UI {
+        function Init(acb: defs.$UI.IAutoCompleteBox<any>): void;
+        type AutoCompleteCallback<T> = (box: defs.$UI.IAutoCompleteBox<T>, oldValue: T, newValue: T) => void;
+        class ProxyAutoCompleteBox<T> implements defs.$UI.IAutoCompleteBox<T> {
+            Box: Input;
+            Template: ITemplate;
+            PrintSelection?: boolean;
+            Blur(): void;
+            AutoPopup: boolean;
+            private callback;
+            private _value;
+            DataSource: collection.List<any>;
+            OnValueChanged(owner: any, invoke: AutoCompleteCallback<T>): void;
+            readonly View: HTMLElement;
+            Value: T;
+            IsChanged: boolean;
+            constructor(Box: Input, source: collection.List<T>);
+            initialize(): this;
+        }
+    }
+}
+declare module "sys/Corelib" {
+    import { UI } from "sys/UI";
+    import { Parser } from "sys/Syntaxer";
+    import { reflection } from "sys/runtime";
+    import { Controller } from "sys/Dom";
+    import { basic } from "sys/utils";
+    import { encoding } from "sys/Encoding";
     export namespace bind {
         function property<PropertyType, ClassType>(type: Function | reflection.GenericType | reflection.DelayedType, defaultValue?: PropertyType, Name?: string, changed?: (e: bind.EventArgs<PropertyType, ClassType>) => void, check?: (e: bind.EventArgs<PropertyType, ClassType>) => void, attribute?: bind.PropertyAttribute, StaticName?: string, override?: boolean): (target: any, propertyKey: string, descriptor?: PropertyDescriptor) => any;
         function property1<PropertyType, ClassType>(type: Function | reflection.GenericType | reflection.DelayedType, options?: {
@@ -3463,6 +2642,7 @@ declare module "sys/Corelib" {
             DefaultValue?: T;
             Changed?: (e: EventArgs<T, P>) => void;
             Check?: (e: EventArgs<T, P>) => void;
+            setCostumChecker(c: (val: T) => boolean): this;
             Base: DProperty<T, P>;
             AsOverride(): this;
             AsVirtual(): void;
@@ -3634,7 +2814,6 @@ declare module "sys/Corelib" {
             GenType(): typeof Observer;
             xpath: XPath[];
             constructor(me: any, path: string[], controller?: Controller);
-            private calcPrefix;
             private rebuidPath;
             private disposePath;
             getValue(l: number): any;
@@ -3644,7 +2823,6 @@ declare module "sys/Corelib" {
             Dispose(): void;
         }
         interface IJobScop {
-            IsNew: boolean;
             Scop: Scop;
             Jobs: JobInstance[];
             Control: UI.JControl;
@@ -3653,243 +2831,16 @@ declare module "sys/Corelib" {
             ContinueInto?: Element;
         }
     }
-    export namespace utils {
-        interface Node<T> {
-            Depth: number;
-            Value: T;
-            param?: any;
-            children: Node<T>[];
-            Parent: Node<T>;
-        }
-        class Tree<T> {
-            private source;
-            private getParent;
-            private dic;
-            constructor(source: collection.List<T>, getParent: (item: T) => T, listen: (base: Node<T>, target: Node<T>, add_remove_clear: boolean) => void);
-            Remove(c: T): void;
-            Add(c: T): void;
-            Clear(): void;
-            Reset(): void;
-            private OnAdd;
-            getNodes(): Node<T>[];
-            getBases(): Node<T>[];
-            private OnRemove;
-            private OnClear;
-            OnChange: bind.EventListener<(base: Node<T>, target: Node<T>, add_remove_clear: boolean) => void>;
-        }
-        class ListEventArgs<P, T> implements basic.IDisposable {
-            oldItem: T;
-            newItem: T;
-            startIndex: P;
-            event: collection.CollectionEvent;
-            collection?: T[];
-            constructor(oldItem: T, newItem: T, startIndex: P, event: collection.CollectionEvent, collection?: T[]);
-            Dispose(): void;
-            static readonly ResetEvent: any;
-            private static _r;
-        }
-        interface IPatent<T> {
-            Check(s: T): boolean;
-            equals(p: IPatent<T>): boolean;
-        }
-        abstract class Filter<T, P extends IPatent<T>> extends bind.DObject {
-            protected _patent: P;
-            Patent: P | string;
-            protected abstract convertFromString(x: string): P;
-            abstract Begin(deb: number, count: number): any;
-            private _store;
-            constructor();
-            OnChanged(callback: (filter: Filter<T, P>, data: any) => void, data: any, name?: string): number;
-            OffChanged(name_id: string | number): void;
-            protected _ismath(str: string[]): boolean;
-            abstract IsMatch(index: number, item: T): any;
-        }
-        class CostumeFilter<T, P extends IPatent<T>> extends Filter<T, P> {
-            _isMatch: (patent: P, item: T) => boolean;
-            constructor(_isMatch: (patent: P, item: T) => boolean);
-            IsMatch(index: number, item: T): boolean;
-            convertFromString(x: string): P;
-            Begin(deb: number, count: number): void;
-        }
-        class filterCallback<T, P extends IPatent<T>> {
-            callback: (filter: utils.Filter<T, P>, data: any) => void;
-            data: any;
-            name?: string;
-            id?: number;
-            constructor(callback: (filter: utils.Filter<T, P>, data: any) => void, data: any, name?: string, id?: number);
-        }
-    }
-    export namespace collection {
-        enum CollectionEvent {
-            Added = 0,
-            Removed = 1,
-            Replace = 2,
-            Cleared = 3,
-            Reset = 4,
-            Setted = 5
-        }
-        type ListEventInvoker<T> = (e: utils.ListEventArgs<number, T>) => void;
-        type ListEventHandler<T> = ListEventInvoker<T> | (basic.ITBindable<ListEventInvoker<T>>);
-        type ListEventBindable<T> = basic.ITBindable<ListEventInvoker<T>>;
-        class List<T> extends bind.DObject {
-            protected argType: Function;
-            static __fields__(): any[];
-            static DPCount: bind.DProperty<number, List<any>>;
-            private UCount;
-            protected _list: T[];
-            readonly ArgType: Function;
-            GetType(): Function | reflection.GenericType;
-            constructor(argType: Function, array?: T[]);
-            AsList(): T[];
-            Order(comp: (a: T, b: T) => boolean | number): void;
-            OrderBy(comp: (a: T, b: T) => number): void;
-            Filtred(filter: utils.Filter<T, utils.IPatent<T>>): ExList<T, utils.IPatent<T>>;
-            Set(i: number, item: T): boolean;
-            Get(i: number): T;
-            Insert(i: number, item: T): boolean;
-            Add(item: T): this;
-            AddRange(items: T[]): void;
-            CheckIndex(i: number): boolean;
-            Remove(item: T | number): boolean;
-            RemoveAt(item: number): boolean;
-            Clear(): void;
-            readonly Count: number;
-            IndexOf(item: T): number;
-            Listen: ListEventHandler<T>;
-            Unlisten: ListEventHandler<T>;
-            private OnChanged;
-            private _changed;
-            private _changing;
-            protected getArgType(json: any): Function;
-            ToJson(x: encoding.SerializationContext, indexer: encoding.IIndexer): any;
-            FromJson(json: any, x: encoding.SerializationContext, update?: boolean, callback?: (prop: string, val: any) => Object): this;
-            OnDeserialize(list: T[]): void;
-            private static getType;
-            UpdateDelegate: () => T[];
-            static GenType(T: Function): Function | reflection.GenericType;
-        }
-        interface IKeyValuePair<T, P> {
-            Key: T;
-            Value: P;
-        }
-        class Dictionary<T, P> extends bind.DObject {
-            Name: string;
-            ReadOnly?: boolean;
-            private keys;
-            private values;
-            constructor(Name: string, ReadOnly?: boolean);
-            GetKeyAt(i: number): T;
-            GetValueAt(i: number): P;
-            readonly Count: number;
-            Clear(): void;
-            IndexOf(key: T, fromIndex?: number): number;
-            IndexOfValue(val: P, fromIndex?: number): number;
-            Set(key: T, value: P): void;
-            Remove(key: T): P;
-            RemoveAllValues(val: P): T[];
-            RemoveAt(i: number): IKeyValuePair<T, P>;
-            getValues(): P[];
-            Get(key: T): P;
-            GetOrAdd(key: T, value?: P): P;
-            GetOrCreate<S>(key: T, New: (key: T, param?: S) => P, param?: S): P;
-            GetKeyOf(val: P): T;
-            Listen: (e: utils.ListEventArgs<T, P>) => void;
-            Unlisten: (e: utils.ListEventArgs<T, P>) => void;
-            private OnChanged;
-            private _changed;
-            UpdateDelegate: () => T[];
-        }
-        class ExList<T, P extends utils.IPatent<T>> extends List<T> {
-            static DPSource: bind.DProperty<List<any>, ExList<any, any>>;
-            Source: List<T>;
-            static DPFilter: bind.DProperty<utils.Filter<any, any>, ExList<any, any>>;
-            Filter: utils.Filter<T, P>;
-            static DPMaxResult: bind.DProperty<number, ExList<any, any>>;
-            MaxResult: number;
-            static DPShift: bind.DProperty<number, ExList<any, any>>;
-            Shift: number;
-            static __fields__(): (bind.DProperty<utils.Filter<any, any>, ExList<any, any>> | bind.DProperty<number, ExList<any, any>> | bind.DProperty<List<any>, ExList<any, any>>)[];
-            private _fid;
-            private filterChanged;
-            private sourceChanged;
-            private sicd;
-            private MaxResultChanged;
-            static New<T, P extends utils.IPatent<T>>(source: List<T>, filter: utils.Filter<T, P>, argType?: Function): ExList<T, P>;
-            constructor(argType: Function);
-            private static patentChanged;
-            private sourceItemChanged;
-            private isMatch;
-            start: number;
-            Reset(): void;
-        }
-        interface Converter<A, B> {
-            ConvertA2B(sender: TransList<A, B>, index: number, a: A, d: any): B;
-            ConvertB2A(sender: TransList<A, B>, index: number, b: B, d: any): A;
-        }
-        class TransList<From, To> extends List<To> {
-            private converter;
-            private stat?;
-            static __fields__(): bind.DProperty<List<any>, TransList<any, any>>[];
-            private sli;
-            private SourceChanged;
-            static DPSource: bind.DProperty<List<any>, TransList<any, any>>;
-            Source: List<any>;
-            constructor(argType: Function, converter: Converter<From, To>, stat?: any);
-            private _internal;
-            private OnSourceChanged;
-            private Reset;
-            Add(t: To): this;
-            Remove(x: To): boolean;
-            Insert(i: number, item: To): boolean;
-            Clear(): void;
-            Order(n: (a: To, b: To) => boolean): void;
-            OrderBy(n: (a: To, b: To) => number): void;
-            Set(i: number, item: To): boolean;
-        }
-        abstract class Binding<T> {
-            GetType(): typeof Binding;
-            private _dataContext;
-            DataContext: collection.List<T>;
-            constructor(dataContext: collection.List<T>);
-            abstract OnItemAdded(item: T, index: number): any;
-            abstract OnItemRemoved(item: T, index: number): any;
-            abstract OnSourceCleared(): any;
-            abstract OnSourceInitialized(_old: collection.List<T>, _nex: collection.List<T>): any;
-            abstract OnSourceReset(): any;
-            abstract OnSourceReplace(oldItem: T, newItem: T, index: number): any;
-            private initChanged;
-        }
-        abstract class Render<T, P> extends Binding<T> {
-            GetType(): typeof Render;
-            private _rendredList;
-            readonly RendredList: collection.List<P>;
-            constructor(dataContext: collection.List<T>);
-            abstract Render(item: T): P;
-            OnItemAdded(item: T, index: number): void;
-            OnItemRemoved(item: T, index: number): void;
-            OnSourceCleared(): void;
-            OnSourceInitialized(_old: collection.List<T>, _nex: collection.List<T>): void;
-        }
-        class SyncQuee<T> extends bind.DObject {
-            handler: basic.ITBindable<(e: QueeEventArgs<T>) => void>;
-            private quee;
-            private _isExecuting;
-            CurrentData: T;
-            push(data: T): void;
-            constructor(handler: basic.ITBindable<(e: QueeEventArgs<T>) => void>);
-            EndOperation(e: QueeEventArgs<T>): void;
-        }
-        interface QueeEventArgs<T> {
-            quee: SyncQuee<T>;
-            data: T;
-        }
-    }
     export namespace bind {
+        function cloneScopBuilderEventArgs(e: bind.ScopBuilderEventArg, presult: Parser.ParserResult, parentScop: bind.Scop): bind.ScopBuilderEventArg;
+        function cloneScop_Mode(e: bind.ScopBuilderEventArg, mode: BindingMode): bind.ScopBuilderEventArg;
+        function mixIn(src: ScopBuilderEventArg, target: ScopBuilderEventArg): ScopBuilderEventArg;
         interface ScopBuilderEventArg {
             parseResult: Parser.ParserResult;
             parent: bind.Scop;
             bindingMode: bind.BindingMode;
             controller?: Controller;
+            dom: Node;
         }
         type ScopBuilderHandler = (e: ScopBuilderEventArg) => Scop;
         interface IJobCollection {
@@ -3914,19 +2865,19 @@ declare module "sys/Corelib" {
             static __fields__(): DProperty<any, Scop>[];
             static DPValue: DProperty<any, Scop>;
             BindingMode: BindingMode;
+            protected _setPrivateValue(v: any, keepEvent?: boolean): void | EventArgs<any, this>;
+            protected privateValue: any;
             protected _bindingMode: BindingMode;
             constructor(_bindingMode: BindingMode);
             protected valueChanged(sender: bind.PropBinding, e: bind.EventArgs<any, this>): void;
-            private _OnValueChanged_;
             protected abstract _OnValueChanged(e: bind.EventArgs<any, any>): any;
-            static Create(s: string, parent?: Scop, bindingMode?: BindingMode, controller?: Controller): Scop;
+            static Create(s: string, e: bind.ScopBuilderEventArg): Scop;
             private static _scopsRegister;
             static RegisterScop(token: string | Parser.CToken, handler: ScopBuilderHandler): void;
             static GetScopHandler(token: string | Parser.CToken): ScopBuilderHandler;
-            static BuildScop(parseResult: Parser.ParserResult, parent: Scop, bindingMode: bind.BindingMode, controller?: Controller): Scop;
+            static BuildScop(e: bind.ScopBuilderEventArg): Scop;
             setController(controller: Controller): this;
-            static GenerateScop(s: string, _parent?: Scop, bindingMode?: BindingMode, controller?: Controller): Scop;
-            static GetStringScop(s: string, _parent: bind.Scop, controller: Controller): string | StringScop;
+            static GenerateScop(s: string, e: bind.ScopBuilderEventArg): Scop;
             AddJob(job: basic.IJob, dom: Node): JobInstance;
             private __jobs__;
             Dispose(): void;
@@ -3949,23 +2900,21 @@ declare module "sys/Corelib" {
             pb?: bind.PropBinding;
             value?: any;
             Value: any;
-            constructor(arg: Parser.ParserResult, _parent: bind.Scop, controller?: Controller);
+            constructor(e: bind.ScopBuilderEventArg);
             CaptureEvent(callback: (s: bind.PropBinding, ev: bind.EventArgs<any, bind.Scop>) => void, owner: any): this;
         }
-        function GetStringScop(s: string, _parent: bind.Scop, controller: Controller): Scop | string;
+        function GetStringScop(s: string, e: ScopBuilderEventArg): Scop | string;
         class StringScop extends bind.Scop {
             template: (string | Parser.ICode)[];
             Is(toke: string | Parser.CToken): boolean;
             private _dom;
             AttacheTo(Dom: Node): any;
             private pb;
-            constructor(template: (string | Parser.ICode)[], _parent: bind.Scop, controller: Controller);
-            static GetStringScop(s: string, _parent: bind.Scop, controller: Controller): string | StringScop;
+            constructor(template: (string | Parser.ICode)[], e: bind.ScopBuilderEventArg);
+            static GetStringScop(s: string, e: bind.ScopBuilderEventArg): string | StringScop;
             protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
             setParent(v: Scop): boolean;
             Reset(sender?: bind.PropBinding, e?: bind.EventArgs<any, any>): void;
-            FromJson(json: any, context: encoding.SerializationContext, update: any): this;
-            ToJson(context: encoding.SerializationContext, iintexder?: encoding.IIndexer): Object;
             Dispose(): void;
         }
         class NamedScop extends Scop {
@@ -3988,7 +2937,6 @@ declare module "sys/Corelib" {
             constructor(value: any, bindMode?: BindingMode);
             _OnValueChanged(e: EventArgs<any, any>): void;
         }
-        var windowScop: ValueScop;
         class db {
             todo: string;
             init: {
@@ -4025,7 +2973,6 @@ declare module "sys/Corelib" {
             Todo?(job: JobInstance, e: EventArgs<any, any>): void;
             constructor(scopFunction: bind.Scop);
         }
-        type delg = (ovalue: any, value: any, scop: bind.Scop, job: JobInstance, event: EventArgs<any, any>) => void;
         abstract class Filter<T, CT> extends Scop {
             protected source: Scop;
             Is(toke: string | Parser.CToken): boolean;
@@ -4148,162 +3095,174 @@ declare module "sys/Corelib" {
             [name: string]: IApi;
         }
     }
-    export namespace encoding {
-        interface IPath<OB, DP> {
-            Owner: OB;
-            Property: DP;
-            Set<T>(value: T): T;
-            executed: boolean;
+    export interface BuckupList<T> {
+        values: any[];
+        OnUndo?: (self: T, bl: BuckupList<T>) => void;
+    }
+    export namespace injecter {
+        function observe(obj: any, prop: string, callback: (s: bind.PropBinding, e: bind.EventArgs<any, any>) => void, owner?: any): bind.PropBinding;
+        function observePath(obj: any, props: string[], callback: (s: bind.PropBinding, e: bind.EventArgs<any, any>) => void, owner?: any): void;
+        function unobserve(obj: any, prop: string, stat: bind.PropBinding | ((s: bind.PropBinding, e: bind.EventArgs<any, any>) => void), owner?: any): boolean | bind.PropBinding[];
+    }
+    export namespace Notification {
+        interface NotificationArgs {
+            name: string;
+            data: any;
+            handler: NotificationHandler<any>;
         }
-        interface colReader {
-            value: string;
-            cursor: charReader;
-            EOF: boolean;
+        interface NotificationHandler<Owner> {
+            Id?: any;
+            callback: (this: Owner, e: NotificationArgs, ...args: any[]) => void;
+            owner?: Owner;
+            params?: any;
+            context?: IContext;
         }
-        interface charReader {
-            cursor: number;
-            value: string;
-            len?: number;
-            newLine?: boolean;
-            EOF?: boolean;
-        }
-        class BPath implements IPath<bind.DObject, bind.DProperty<any, any>> {
-            Owner: bind.DObject;
-            Property: bind.DProperty<any, any>;
-            executed: boolean;
-            Set(value: any): any;
-            constructor(Owner: bind.DObject, Property: bind.DProperty<any, any>);
-        }
-        class Path implements IPath<any | bind.DObject, string | bind.DProperty<any, any>> {
+        function on(name: string, handler: NotificationHandler<any>): void;
+        function fire(name: string, params: any[]): void;
+        function off(name: string, hndl_id: NotificationHandler<any> | any): boolean;
+    }
+    export namespace bind {
+        class Path implements encoding.IPath<any | bind.DObject, string | bind.DProperty<any, any>> {
             Owner: any | bind.DObject;
             Property: string | bind.DProperty<any, any>;
             executed: boolean;
             Set(value: any): any;
             constructor(Owner: any | bind.DObject, Property: string | bind.DProperty<any, any>);
         }
-        class LPath implements IPath<collection.List<any>, number> {
-            Owner: collection.List<any>;
-            Property: number;
-            executed: boolean;
-            Set(value: any): any;
-            constructor(Owner: collection.List<any>, Property: number);
+    }
+}
+declare module "sys/defs" {
+    import { bind } from "sys/Corelib";
+    import { collection } from "sys/collections";
+    import { UI } from "sys/UI";
+    import { basic } from "sys/utils";
+    export module defs {
+        namespace $UI {
+            interface IPage extends UI.JControl, UI.IService {
+                Name: string;
+                HasSearch: UI.SearchActionMode;
+                OnSearche(o?: string, n?: string): any;
+                OnDeepSearche(): any;
+                OnContextMenu(e: MouseEvent): any;
+                OnPrint(): any;
+                OnSelected: bind.EventListener<(p: this) => void>;
+                Update(): any;
+                OnKeyDown(e: KeyboardEvent): any;
+                ContextMenu?: IContextMenu<IItem>;
+            }
+            interface IApp extends UI.JControl {
+                Name: string;
+                SearchBox: IActionText;
+                Foot: UI.ServiceNavBar<IItem>;
+                Update(): any;
+                OnContextMenu(e: MouseEvent): any;
+                OnKeyDown(e: KeyboardEvent): any | void;
+                OnPrint(): any;
+                OnDeepSearche(): any;
+                OpenPage(pageNme: string): any;
+                Logout(): any;
+                Open(page: IPage): any;
+                AddPage(child: IPage): any;
+                Show(): any;
+                SelectedPage: IPage;
+                SelectNaxtPage(): any;
+                SelectPrevPage(): any;
+                CloseModal(m: IModal): any;
+                OpenModal(m: IModal): any;
+                CurrentModal: IModal;
+                IsAuthentication: boolean;
+                OpenContextMenu<T>(cm: UI.IContextMenu<T>, e: UI.IContextMenuEventArgs<T>): boolean;
+                CloseContextMenu<T>(r?: T): any;
+                OnAttached(): any;
+                OnDetached(): any;
+            }
+            interface IAuthApp extends IApp {
+                IsLogged<T>(callback: (v: boolean, param: T) => void, param: T): any;
+                RedirectApp: IApp;
+                OnStatStatChanged: bind.EventListener<(auth: this, isLogged: boolean) => void>;
+            }
         }
-        interface Serialization<T> {
-            FromJson(json: any, context: SerializationContext, ref: IRef): T;
-            ToJson(data: T, context: SerializationContext, indexer: encoding.IIndexer): any;
+        interface IActionText extends UI.JControl {
         }
-        interface IRef {
-            __ref__: number;
+        interface IItem {
+            Tag: any;
+            Content: string | HTMLElement | UI.JControl;
+            Url: string;
+            OnItemSelected(menuItem: IMenuItem): any;
         }
-        interface IIndexer {
-            ref: IRef;
-            json: any;
-            valid: boolean;
+        interface IMenuItem extends UI.JControl, EventListenerObject, basic.IDisposable {
+            Source: IItem;
+            Dispose(): any;
+            OnClick: (page: IItem, sender: IMenuItem) => void;
+            Text: string;
+            Href: string;
         }
-        class SerializationContext {
-            static GlobalContext: SerializationContext;
-            private _store;
-            private _ext;
-            RequireNew: (json: any, type: Function | reflection.GenericType) => boolean;
+        interface IContextMenu<IItem extends defs.IItem> extends UI.JControl {
+            Items: collection.List<IItem>;
+            AddItems(items?: (IItem | string)[]): any;
+            OnMenuItemSelected: bind.EventListener<(s: this, i: IMenuItem) => void>;
+            Show(x: any, y: any): any;
+            handleEvent(e: MouseEvent): any;
+            Target: UI.JControl;
+        }
+        interface INavbar<T extends IItem> extends UI.JControl {
+            selectable: boolean;
+            SelectedItem: IMenuItem;
+            Float(v: UI.HorizontalAlignement): any;
+            Items: collection.List<T>;
+            OnSelectedItem: bind.EventListener<(item: T) => void>;
+            NavType: 'navbar';
+        }
+    }
+    export namespace defs.$UI {
+        interface IAutoCompleteBox<T> {
+            Box: UI.Input;
+            DataSource: collection.List<T>;
+            View: HTMLElement;
+            IsChanged: boolean;
+            Value: T;
+            PrintSelection?: boolean;
+            AutoPopup: boolean;
+            Blur(): any;
+            Template: UI.ITemplate;
+        }
+        interface IModal extends UI.JControl {
+            Content: UI.JControl;
+            focuser: basic.focuser;
+            onSearch: (modal: this, s: IAutoCompleteBox<any>, oldValue: any, newValue: any) => void;
+            OnSearch(i: (modal: this, s: IAutoCompleteBox<any>, oldValue: any, newValue: any) => void): void;
+            OkTitle(v: string): this;
+            AbortTitle(v: string): this;
+            Canceltitle(v: string): this;
+            Title(v: string): this;
+            Search(d: collection.List<any>): void;
+            SetDialog(title: string, content: UI.JControl): void;
+            readonly IsOpen: boolean;
+            Open(): void;
+            targetApp: defs.$UI.IApp;
+            silentClose(): void;
+            Close(msg: UI.MessageResult): void;
+            SetVisible(role: UI.MessageResult, visible: boolean): void;
             Dispose(): void;
-            constructor(isDefault: boolean);
-            Register<T>(type: Function, ser: Serialization<T>): void;
-            UnRegister<T>(type: Function): Serialization<any>;
-            GetRegistration(type: Function): Serialization<any>;
-            Append(con: SerializationContext): void;
-            Get(type: Function): Serialization<any>;
-            private indexer;
-            private refs;
-            get(ref: number, path: IPath<any, any>): any;
-            set(ref: number, obj: any): void;
-            private cnt;
-            getJson(obj: any): IIndexer;
-            reset(): this;
-            static getType(type: Function): Function;
-            FromJson(json: any, type: Function | reflection.GenericType, path: IPath<any, any>): any;
-            ToJson(obj: any): any;
-            private _toJson;
-            toString(): void;
-            _arrayToJson(arr: Array<any>, ret: IIndexer): {
-                "__type__": NativeTypes;
-                "__value__": any[];
-                "@ref": number;
-            };
-        }
-        interface CsvEventArgs {
-            csv: CSV;
-            index?: number;
-            value?: any;
-            set(this: CsvEventArgs, value: any, index: number): CsvEventArgs;
-        }
-        interface fillArgs {
-            csv?: CSV;
-            parser?: (e: CsvEventArgs) => any;
-            header?: string[];
-            cols?: Object | any[];
-            e?: CsvEventArgs;
-        }
-        class CSV {
-            private input;
-            private autoParse;
-            private asJson;
-            static separator: string;
-            static emptyArray: string[];
-            private e;
-            Columns: any[];
-            private _cursor;
-            private _startCursor;
-            static ReadAllLines(s: string): string[];
-            private parse;
-            private static isEmptyLine;
-            private static trim;
-            private static nextChar;
-            private static readString;
-            private static readColumn;
-            private static clear;
-            private static fillColumns;
-            private static readLine;
-            constructor(input: string, autoParse: boolean, asJson: any);
-            ColumnName(index: number): string;
-            ColumnIndex(name: string): number;
-            private _current;
-            readonly Cursor: charReader;
-            Reset(): this;
-            AllowNullValue: boolean;
-            Next(e?: fillArgs): boolean;
-            swapArgs(e: fillArgs): fillArgs;
-            private jsonParser;
-            readonly Current: any[] | Object;
-            Field(name_index: string | number): any;
-        }
-        enum NativeTypes {
-            Nullable = 0,
-            Boolean = 1,
-            Number = 2,
-            String = 3,
-            Function = 4,
-            Array = 5,
-            Object = 6,
-            DObject = 7
+            readonly OnClosed: bind.EventListener<(e: UI.MessageEventArgs) => void>;
+            Clear(): void;
+            setWidth(value: string): this;
+            setHeight(value: string): this;
+            IsMaterial: boolean;
+            OnContextMenu(e: any): any;
         }
     }
-    export class xNode<T> {
-        node: Node;
-        param: T;
-        unknown?: xNode<T>[];
-        children: xNode<T>[];
-        parent: xNode<T>;
-        constructor(node: Node, param: T, unknown?: xNode<T>[]);
-        add(node: Node, param: T): xNode<T>;
-        __add(v: xNode<T>): xNode<T>;
-        Validate(): this;
-        ReValidate(callback: (node: xNode<T>) => void): void;
-        get(node: Node): xNode<T>;
-        private _add;
-        remove(node: Node): xNode<T>;
-        hasChild(node: Node): xNode<T>;
-        foreach(callback: (parent: xNode<T>, child: xNode<T>) => number, parent?: xNode<T>): number;
+    export namespace defs {
+        interface ModalApi {
+            New(...args: any[]): defs.$UI.IModal;
+            ShowDialog(title: string, msg: string | HTMLElement | UI.JControl, callback?: (e: UI.MessageEventArgs) => void, ok?: string, cancel?: string, abort?: string): defs.$UI.IModal;
+            NextZIndex(): number;
+        }
     }
+}
+declare module "sys/net" {
+    import { bind } from "sys/Corelib";
+    import { basic } from "sys/utils";
     export namespace net {
         class Header {
             private _key;
@@ -4438,103 +3397,28 @@ declare module "sys/Corelib" {
             Url: string;
             constructor(_url: string, context: basic.IContext, Header?: IRequestHeader, Method?: net.WebRequestMethod, HasBody?: boolean, ResponseType?: ResponseType);
         }
+        function New(): number;
     }
-    export namespace basic {
-        class DomEventHandler<T extends Event, P> implements IEventHandler, EventListenerObject {
-            dom: Element;
-            event: string;
-            private owner;
-            private handle;
-            private param?;
-            Started: boolean;
-            constructor(dom: Element, event: string, owner: any, handle: (eh: DomEventHandler<T, P>, ev: T, param: P) => void, param?: P);
-            Start(): void;
-            Pause(): void;
-            Dispose(): void;
-            Reset(): void;
-            handleEvent(evt: Event): void;
-            static Dispose(dom: EventTarget, event?: string): void;
-        }
+    export class GuidManager {
+        vars: any;
+        static readonly current: number;
+        constructor(vars: any);
+        static readonly isValid: boolean;
+        static readonly Next: number;
+        static New<T>(callback: (id: number, param: T) => void, pram: T): void;
+        static t: net.WebRequest;
+        static isLoading: boolean;
+        static update<T>(callback?: (id: number, param: T) => void, pram?: T): void;
     }
-    export interface BuckupList<T> {
-        values: any[];
-        OnUndo?: (self: T, bl: BuckupList<T>) => void;
-    }
-    export namespace injecter {
-        function observe(obj: any, prop: string, callback: (s: bind.PropBinding, e: bind.EventArgs<any, any>) => void, owner?: any): bind.PropBinding;
-        function observePath(obj: any, props: string[], callback: (s: bind.PropBinding, e: bind.EventArgs<any, any>) => void, owner?: any): void;
-        function unobserve(obj: any, prop: string, stat: bind.PropBinding | ((s: bind.PropBinding, e: bind.EventArgs<any, any>) => void), owner?: any): boolean | bind.PropBinding[];
-    }
-    export namespace Notification {
-        interface NotificationArgs {
-            name: string;
-            data: any;
-            handler: NotificationHandler<any>;
-        }
-        interface NotificationHandler<Owner> {
-            Id?: any;
-            callback: (this: Owner, e: NotificationArgs, ...args: any[]) => void;
-            owner?: Owner;
-            params?: any;
-            context?: IContext;
-        }
-        function on(name: string, handler: NotificationHandler<any>): void;
-        function fire(name: string, params: any[]): void;
-        function off(name: string, hndl_id: NotificationHandler<any> | any): boolean;
-    }
-}
-declare module "sys/defs" {
-    import { bind } from "sys/Corelib";
-    import { UI } from "sys/UI";
-    export module defs {
-        namespace $UI {
-            interface IPage extends UI.JControl, UI.IService {
-                Name: string;
-                HasSearch: UI.SearchActionMode;
-                OnSearche(o?: string, n?: string): any;
-                OnDeepSearche(): any;
-                OnContextMenu(e: MouseEvent): any;
-                OnPrint(): any;
-                OnSelected: bind.EventListener<(p: this) => void>;
-                Update(): any;
-                OnKeyDown(e: KeyboardEvent): any;
-                ContextMenu?: UI.ContextMenu;
-            }
-            interface IApp extends UI.JControl {
-                Name: string;
-                SearchBox: UI.ActionText;
-                Foot: UI.ServiceNavBar<UI.IItem>;
-                Update(): any;
-                OnContextMenu(e: MouseEvent): any;
-                OnKeyDown(e: KeyboardEvent): any | void;
-                OnPrint(): any;
-                OnDeepSearche(): any;
-                OpenPage(pageNme: string): any;
-                Logout(): any;
-                Open(page: IPage): any;
-                AddPage(child: IPage): any;
-                Show(): any;
-                SelectedPage: IPage;
-                SelectNaxtPage(): any;
-                SelectPrevPage(): any;
-                CloseModal(m: UI.Modal): any;
-                OpenModal(m: UI.Modal): any;
-                CurrentModal: UI.Modal;
-                IsAuthentication: boolean;
-                OpenContextMenu<T>(cm: UI.IContextMenu<T>, e: UI.IContextMenuEventArgs<T>): boolean;
-                CloseContextMenu<T>(r?: T): any;
-            }
-            interface IAuthApp extends IApp {
-                IsLogged<T>(callback: (v: boolean, param: T) => void, param: T): any;
-                RedirectApp: IApp;
-                OnStatStatChanged: bind.EventListener<(auth: this, isLogged: boolean) => void>;
-            }
-        }
-    }
+    export function setGuidRange(start: number, end: number): void;
 }
 declare module "sys/System" {
-    import { net, bind, basic, collection, encoding } from "sys/Corelib";
+    import { bind } from "sys/Corelib";
     import { reflection } from "sys/runtime";
+    import { serialization, encoding } from "sys/Encoding";
+    import { net } from "sys/net";
+    import { basic } from "sys/utils";
+    import { collection } from "sys/collections";
     export module Controller {
         type RequestMethodShema = net.RequestMethodShema;
         function Register(service: IService): void;
@@ -4657,7 +3541,7 @@ declare module "sys/System" {
             Update(): void;
             Upload(): void;
             Add(item: T): this;
-            FromCsv(input: string, context?: encoding.SerializationContext, parser?: encoding.fillArgs): void;
+            FromCsv(input: string, context?: encoding.SerializationContext, parser?: serialization.fillArgs): void;
         }
         type bindCallback = (e: bind.EventArgs<any, any>) => void;
         interface Property {
@@ -4711,7 +3595,8 @@ declare module "sys/System" {
 }
 declare module "sys/QModel" {
     import { sdata, Controller } from "sys/System";
-    import { net, collection } from "sys/Corelib";
+    import { collection } from "sys/collections";
+    import { net } from "sys/net";
     export namespace models {
         enum MessageType {
             Info = 0,
@@ -4751,8 +3636,10 @@ declare module "sys/QModel" {
     }
 }
 declare module "sys/db" {
-    import { basic, bind, collection } from "sys/Corelib";
+    import { bind } from "sys/Corelib";
+    import { collection } from "sys/collections";
     import { sdata } from "sys/System";
+    import { basic } from "sys/utils";
     export module db {
         type callback<T> = (iss: boolean, sender: Database, sqlTrans: any, result?: SQLResultSet<T>) => void;
         interface IExecCmd {
@@ -4912,22 +3799,46 @@ declare module "sys/db" {
         }
     }
 }
-declare module "sys/Encoding" {
-    export namespace __encoddings__ {
-        function init(): void;
+declare module "sys/help" {
+    import { Parser } from "sys/Syntaxer";
+    import { bind } from "sys/Corelib";
+    import { basic } from "sys/utils";
+    export namespace string {
+        function IsPrintable(keyCode: number, charCode: number): boolean;
     }
-}
-declare module "sys/Jobs" {
-    import { basic, bind } from "sys/Corelib";
-    export function parseTarget(dom: Element): {
-        depth: number;
-        href: string;
-    };
-    export function getTarget(dom: Element, depth: number, id: any): Element;
-    export function getTargetFrom(dom: Element): Element;
-    export module Jobs {
-        function InputChecks(): void;
-        function Load(): void;
+    export module code {
+        class CodeCompiler {
+            private script;
+            constructor();
+            private toRegString;
+            private static params;
+            generateFn(stack: (string | Parser.ICode)[], hasNoReturn?: boolean): IReg;
+            private _push;
+            push(code: string | string[]): any[] | IReg;
+            Compile(): void;
+            reset(): void;
+            private _onload;
+            private _onerror;
+            private OnFnSuccess;
+            onFnLoad: (fn: Function, t: IReg) => void;
+            onload: (t: this) => void;
+            onerror: (t: this) => void;
+            remove(t: IReg): void;
+        }
+        class EvalCode {
+            static Compile(code: string, callback?: Function, onerror?: Function, stat?: any): void;
+            static CompileExpression(expression: string, params: string[], callback?: (exprFn: Function, stat: any) => void, stat?: any, exludeReturn?: boolean): void;
+        }
+        interface IReg {
+            name: string;
+            stat?: any;
+            callback: (exprFn: Function, IReg: this) => void;
+            onError?: (stat: any) => void;
+            code: string;
+            evalCode?: Function;
+            IsString?: boolean;
+        }
+        type delg = (ovalue: any, value: any, scop: bind.Scop, job: bind.JobInstance, event: bind.EventArgs<any, any>) => void;
         class interpolation implements basic.IJob {
             Name: string;
             Todo(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
@@ -4935,6 +3846,19 @@ declare module "sys/Jobs" {
             OnInitialize(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
             OnScopDisposing(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
         }
+    }
+}
+declare module "sys/Jobs" {
+    import { bind } from "sys/Corelib";
+    import { basic } from "sys/utils";
+    export function ParseTarget(dom: Element): {
+        depth: number;
+        href: string;
+    };
+    export function GetTarget(dom: Element, depth: number, id: any): Element;
+    export function GetTarget1(dom: Element): Element;
+    export function GetTarget2(ji: bind.JobInstance): HTMLElement;
+    export module Jobs {
         class CheckBox implements basic.IJob {
             Name: string;
             Todo(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
@@ -4959,26 +3883,7 @@ declare module "sys/Jobs" {
             callback(): void;
             OnScopDisposing(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
         }
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var textboxJob: basic.IJob;
-        var LabelJob: basic.IJob;
         var ratingJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var LabelJob: basic.IJob;
-        var TextJob: basic.IJob;
-        var TextJob: basic.IJob;
-        var TextJob: basic.IJob;
-        var CheckJob: basic.IJob;
     }
 }
 declare module "sys/Thread" {
@@ -5052,15 +3957,36 @@ declare module "sys/Thread" {
     }
 }
 declare module "sys/Initializer" {
+    import { bind } from "sys/Corelib";
     import { Processor } from "sys/Dom";
+    import { Parser } from "sys/Syntaxer";
+    export class AttributeScop extends bind.Scop {
+        getAttrValue(): any;
+        static _build(e: bind.ScopBuilderEventArg): AttributeScop;
+        Is(toke: string | Parser.CToken): boolean;
+        protected _OnValueChanged(e: bind.EventArgs<any, any>): void;
+        dom: Element;
+        attribute: null | string | string[];
+        constructor(e: bind.ScopBuilderEventArg);
+        MdObserverElement(el: Element, config: MutationObserverInit): MutationObserver;
+        private observer;
+        onAttributeChanged(mutations: MutationRecord[], _observer: MutationObserver): void;
+        Dispose(): void;
+    }
     export class AttributeDerectives implements Processor.Def {
         static _default: AttributeDerectives;
         static readonly default: AttributeDerectives;
         name: string;
         attribute: string;
-        check?(x: Processor.Tree, e: Processor.Instance): boolean;
+        check?(_x: Processor.Tree, _e: Processor.Instance): boolean;
+        static flip(mode: bind.BindingMode): 0 | 1 | 3 | 2;
+        static observeAttribute(dom: any, attribute: any, mode: any): {
+            scop: bind.ValueScop;
+            attrScop: AttributeScop;
+            binder: bind.TwoBind<any>;
+        };
         execute(xx: Processor.Tree, m: Processor.Instance): Processor.Tree;
-        valueParser?(value: string): void;
+        valueParser?(_value: string): void;
         readonly priority: number;
         isPrimitive: boolean;
         isFinalizer: boolean;
@@ -5070,9 +3996,16 @@ declare module "sys/Initializer" {
         static readonly default: PropertyDerectives;
         name: string;
         attribute: string;
-        check?(x: Processor.Tree, e: Processor.Instance): boolean;
+        check?(_x: Processor.Tree, _e: Processor.Instance): boolean;
+        private getName;
+        private buildDeriScop;
+        static observeAttribute(dom: any, attribute: any, mode: any): {
+            scop: bind.ValueScop;
+            attrScop: AttributeScop;
+            binder: bind.TwoBind<any>;
+        };
         execute(xx: Processor.Tree, m: Processor.Instance): Processor.Tree;
-        valueParser?(value: string): void;
+        valueParser?(_value: string): void;
         readonly priority: number;
         isPrimitive: boolean;
         isFinalizer: boolean;
@@ -5101,7 +4034,8 @@ declare module "sys/Services" {
     }
 }
 declare module "sys/Critere" {
-    import { bind, utils } from "sys/Corelib";
+    import { bind } from "sys/Corelib";
+    import { utils } from "sys/collections";
     import { UI } from "sys/UI";
     import { reflection } from "sys/runtime";
     export namespace Critere {
@@ -5372,8 +4306,11 @@ declare module "Core" {
 }
 declare module "sys/Components" {
     import { UI } from "sys/UI";
-    import { bind, basic, collection } from "sys/Corelib";
+    import { bind } from "sys/Corelib";
+    import { collection } from "sys/collections";
     import { attributes as _attributes, Controller } from "sys/Dom";
+    import { defs } from "sys/defs";
+    import { basic } from "sys/utils";
     export namespace Components {
         class MdTextbox<T> extends UI.JControl {
             Label: string;
@@ -5531,7 +4468,7 @@ declare module "sys/Components" {
             constructor();
             initialize(): void;
             OnSourceChanged(e: bind.EventArgs<collection.List<T>, this>): void;
-            OnValueChanged(box: UI.IAutoCompleteBox, oldValue: T, newValue: T): void;
+            OnValueChanged(box: defs.$UI.IAutoCompleteBox<T>, oldValue: T, newValue: T): void;
         }
     }
     export namespace Components {

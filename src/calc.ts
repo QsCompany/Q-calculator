@@ -1,12 +1,16 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../lib/qloader.d.ts" />
 import { template } from "template|../src/calc.html";
-import { UI, html, bind } from "../lib/q/Core";
+import { UI } from "../lib/q/Core";
+import { bind } from "../lib/q/sys/Corelib";
+
 import { context } from "context";
 import { CalcData } from './calc-logic';
 
 import { attributes as _attributes, Controller } from "../lib/q/sys/Dom";
 import { thread } from "../lib/q/sys/runtime";
+import { loadMDResources } from "./md/md";
+
 Object.defineProperty(Object.prototype, 'string', { get() { return this.toString(); }, configurable: false, enumerable: false });
 
 @_attributes.Component({ name: "calc-button", handler: CalcButton.creator })
@@ -27,10 +31,7 @@ export class CalcButton extends UI.JControl {
     }
     initialize() { }
 }
-@_attributes.Content({
-    handler: () => {
-    }, type: _attributes.ContentType.multiple
-})
+@_attributes.Content({ keepInTree: true, handler: (e) => { }, type: _attributes.ContentType.multiple })
 @_attributes.Component({
     name: 'q-calc',
     handler: Calc.creator
@@ -70,11 +71,26 @@ export class Calc extends UI.TControl<CalcData> {
     }
 }
 
-function loadResources() {
+function loadResources1() {
     var t = ['../lib/q/assets/style/bundle.css', '../src/calc.css'];
     for (const s of t)
         (require as any)('style|' + s, void 0, void 0, context);
 }
-Controller.Attach(UI.Desktop.Current, new CalcData());
+//Controller.Attach(UI.Desktop.Current, new CalcData());
 thread.Dispatcher.OnIdle(UI.Spinner.Default, UI.Spinner.Default.Pause, true);
-loadResources();
+loadMDResources();
+var app = $('#app', document.body) as any;
+
+UI.processHTML(app, new CalcData())
+
+// debugger;
+
+
+// var scopA = new bind.ValueScop("A Value", 1);
+// var scopB = new bind.ValueScop("B Value", 2);
+
+// var tbAB = new bind.TwoBind(1, scopA, scopB, bind.Scop.DPValue, bind.Scop.DPValue);
+// var tbBA = new bind.TwoBind(1, scopB, scopA, bind.Scop.DPValue, bind.Scop.DPValue);
+// window['test'] = {
+//     scopA, scopB, tbAB, tbBA
+// }

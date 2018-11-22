@@ -1,5 +1,6 @@
 import { sdata, Controller } from './System';
-import { net, collection } from './Corelib';
+import { collection } from './collections';
+import { net } from './net';
 export declare namespace models {
     enum MessageType {
         Info = 0,
@@ -37,3 +38,4 @@ export declare namespace models {
         private static pstore;
     }
 }
+//# sourceMappingURL=QModel.d.ts.map

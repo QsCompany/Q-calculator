@@ -3,26 +3,105 @@
 
 <head>
     <script>
-        DEBUG = true;
+        DEBUG = false;
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="Description" content="Developped by Achour Brahim., Price: Free,Length: 1 MB" />
-    <meta name="author" content="Achour Brahim" />
-    <meta name="google-play-app" content="qapp.ddns.net" />
-    <link rel="manifest" href="/manifest.json">
     <script src="./lib/qloader.js" entry-point="./entrypoint.js"></script>
     <link rel="icon" href="./assets/favicon.ico">
+    <link rel="stylesheet" href="./fonts/md-font.css">
+    <style lang="stylesheet">
+        .md-card {
+            width: 320px;
+            margin: 4px;
+            display: inline-block;
+            vertical-align: top;
+        }
+    </style>
 </head>
 
-<body>
-    <!-- the sum of {{*c}} ** {{*b}} => {{(*c***b)}} -->
-    <q-app>
-        <!-- <md-textbox type='text' db-bind="*c" label="C value" bind-to-scop db-twoway=true></md-textbox>
-        <md-textbox type='text' db-bind="*b" label="B Value" bind-to-scop db-twoway=true></md-textbox> -->
-        <q-calc db-name="_calc" on:result="window.console.log(data.Result)" :value="Result">
-        </q-calc>
-    </q-app>
+<body value=true>
+    <div id="app">
+        <div>
+            <md-card>
+                <md-card-header>
+                    <div class="md-title">Card without hover effect</div>
+                </md-card-header>
+
+                <md-card-content>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio itaque ea, nostrum odio. Dolores, sed accusantium quasi non.
+                </md-card-content>
+
+                <md-card-actions>
+                    <md-button>Action</md-button>
+                    <md-button>Action</md-button>
+                </md-card-actions>
+            </md-card>
+
+            <md-card md-with-hover>
+                <md-ripple>
+                    <md-card-header>
+                        <div class="md-title">Card with hover effect</div>
+                        <div class="md-subhead">It also have a ripple</div>
+                    </md-card-header>
+
+                    <md-card-content>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio itaque ea, nostrum odio. Dolores, sed accusantium quasi non.
+                    </md-card-content>
+
+                    <md-card-actions>
+                        <md-button>Action</md-button>
+                        <md-button>Action</md-button>
+                    </md-card-actions>
+                </md-ripple>
+            </md-card>
+        </div>
+        <div>
+            <md-avatar>
+                <img src="/avatar.png" alt="Avatar">
+            </md-avatar>
+
+            <md-avatar class="md-avatar-icon">
+                <md-icon>home</md-icon>
+            </md-avatar>
+
+            <md-avatar class="md-avatar-icon md-primary">
+                <md-icon>folder</md-icon>
+            </md-avatar>
+
+            <md-avatar class="md-avatar-icon md-accent">
+                <md-icon>favorite</md-icon>
+            </md-avatar>
+        </div>
+        <div>
+            <div class="separator">
+                <md-avatar class="md-avatar-icon">A</md-avatar>
+                <md-avatar class="md-avatar-icon md-primary">A</md-avatar>
+                <md-avatar class="md-avatar-icon md-accent">A</md-avatar>
+            </div>
+
+            <div class="separator">
+                <md-avatar class="md-avatar-icon md-small">B</md-avatar>
+                <md-avatar class="md-avatar-icon md-small md-primary">B</md-avatar>
+                <md-avatar class="md-avatar-icon md-small md-accent">B</md-avatar>
+            </div>
+
+            <div class="separator">
+                <md-avatar class="md-avatar-icon md-large test">
+                    <md-ripple debugger>MM</md-ripple>
+                </md-avatar>
+
+                <md-avatar class="md-avatar-icon md-large md-primary">
+                    <md-ripple>MM</md-ripple>
+                </md-avatar>
+
+                <md-avatar class="md-avatar-icon md-large md-accent">
+                    <md-ripple>MM</md-ripple>
+                </md-avatar>
+            </div>
+        </div>
+        <!-- <md-ripple p:md-disabled="true" p:md-centered="->(@value)" :href="->this.mdCentered" value=true></md-ripple> -->
+    </div>
 </body>
 
 </html>

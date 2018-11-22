@@ -1,5 +1,9 @@
-import { net, bind, basic, collection, encoding } from './Corelib';
+import { bind } from './Corelib';
 import { reflection } from './runtime';
+import { serialization, encoding } from './Encoding';
+import { net } from './net';
+import { basic } from './utils';
+import { collection } from './collections';
 export declare module Controller {
     type RequestMethodShema = net.RequestMethodShema;
     function Register(service: IService): void;
@@ -122,7 +126,7 @@ export declare module sdata {
         Update(): void;
         Upload(): void;
         Add(item: T): this;
-        FromCsv(input: string, context?: encoding.SerializationContext, parser?: encoding.fillArgs): void;
+        FromCsv(input: string, context?: encoding.SerializationContext, parser?: serialization.fillArgs): void;
     }
     type bindCallback = (e: bind.EventArgs<any, any>) => void;
     interface Property {
@@ -173,3 +177,4 @@ export declare module base {
         Check(val: number): boolean;
     }
 }
+//# sourceMappingURL=System.d.ts.map

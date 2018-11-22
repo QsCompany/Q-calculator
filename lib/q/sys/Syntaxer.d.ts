@@ -55,7 +55,8 @@ export declare namespace Parser {
         arrayCall = 9,
         condition = 10,
         biCompute = 11,
-        uniCompute = 12
+        uniCompute = 12,
+        StringTemplate = 13
     }
     interface ParserResult {
         start?: Token;
@@ -147,28 +148,31 @@ export declare namespace Parser {
             function Expre(): void;
             function chain(_s: parser): void;
         }
-        function _keyword(strm: syntaxer, word: string, rslt: ParserResult, token?: string | CToken): boolean;
-        function whitespace(strm: syntaxer, rslt: ParserResult): boolean;
+        function _keyword(strm: syntaxer, word: string, rslt?: ParserResult, token?: string | CToken): boolean;
+        function whitespace(strm: syntaxer, rslt?: ParserResult): true;
         function keyword(word: string): parser;
         function undefined(strm: syntaxer, rslt: ParserResult): boolean;
         function boolean(strm: syntaxer, rslt: ParserResult): boolean;
         function string(strm: syntaxer, rslt: ParserResult): boolean;
-        function number(strm: syntaxer, rslt: ParserResult): boolean;
+        function number(b: syntaxer, rslt: ParserResult): boolean;
         function constant(strm: syntaxer, rslt: ParserResult): boolean;
-        function digit(strm: syntaxer, rslt: ParserResult): boolean;
+        function digit(b: syntaxer, rslt: ParserResult): boolean;
         function word(strm: syntaxer, rslt: ParserResult): boolean;
         function pint(b: syntaxer, rslt: ParserResult): boolean;
         function anonymouseScop(s: syntaxer, rslt: ParserResult): boolean;
+        function attributeScop(s: syntaxer, rslt: ParserResult): boolean;
         function namedScop(s: syntaxer, rslt: ParserResult): boolean;
         function subScop(s: syntaxer, rslt: ParserResult): boolean;
         function typedScop(s: syntaxer, rslt: ParserResult): boolean;
         function bindscope(b: syntaxer, rslt: ParserResult): boolean;
         function stringChainedScop(b: syntaxer, rslt: ParserResult): boolean;
-        function composedPath(b: syntaxer, rslt: ParserResult): boolean;
+        function path(b: syntaxer, rslt: ParserResult): boolean;
+        function cpath(b: syntaxer, rslt: ParserResult): boolean;
         const _parent1: (b: syntaxer, result: ParserResult) => boolean;
         function parent(b: syntaxer, rslt: ParserResult): boolean;
-        function condtion(b: syntaxer, rslt: ParserResult): boolean;
+        function condition(b: syntaxer, rslt: ParserResult): boolean;
         function expression(b: syntaxer, rslt: ParserResult): boolean;
+        function fxpression(b: syntaxer, rslt: ParserResult): boolean;
         interface BiComputeResult {
             a: ParserResult;
             o: {
@@ -225,6 +229,7 @@ export declare namespace Parser {
     type IKeywordScop = string;
     function parseComposePath(str: string): ParserResult;
     function parseExpression(str: string): ParserResult;
+    function parseStringTemplate(str: string): ParserResult;
     function Execute(code: string, parser: Parser.parser): ParserResult;
 }
 export declare namespace Parser {
@@ -253,3 +258,4 @@ export declare namespace Parser {
         static GenearteString(stack: (string | ICode)[]): string;
     }
 }
+//# sourceMappingURL=Syntaxer.d.ts.map

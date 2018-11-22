@@ -1,5 +1,7 @@
-import { basic, bind, collection } from './Corelib';
+import { bind } from './Corelib';
+import { collection } from './collections';
 import { sdata } from './System';
+import { basic } from './utils';
 export declare module db {
     type callback<T> = (iss: boolean, sender: Database, sqlTrans: any, result?: SQLResultSet<T>) => void;
     interface IExecCmd {
@@ -158,3 +160,4 @@ export declare module db {
         insertId: number;
     }
 }
+//# sourceMappingURL=db.d.ts.map

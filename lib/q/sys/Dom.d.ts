@@ -1,6 +1,8 @@
-import { bind, basic } from "./Corelib";
 import { UI } from "./UI";
-import { Attributes, thread } from "./runtime";
+import { Attributes, Dom } from "./runtime";
+import { Parser } from "./Syntaxer";
+import { basic } from "./utils";
+import { bind } from "./Corelib";
 export declare namespace Processor {
     class debug {
         private static lst;
@@ -27,7 +29,7 @@ export declare namespace Processor {
         stat: Stat;
         value: any;
         instance: Def;
-        manager: Manager;
+        manager: DerictivesExtractor;
     }
     interface ComponentCreator {
         Def: Def;
@@ -35,7 +37,8 @@ export declare namespace Processor {
         context: IContext;
         TagName: string;
     }
-    class Manager {
+    class DerictivesExtractor {
+        private dom;
         private static _processors;
         private static enumerator;
         static maxPriority: number;
@@ -43,24 +46,21 @@ export declare namespace Processor {
         static getPrcessorByAttribute(name: string): Def;
         static stringIsNullOrWhiteSpace(s: string): boolean;
         static registerComponent(p: attributes.ComponentArgs): void;
-        static register(p: Def): void;
+        static register(p: Def): Def;
         private static orderDefs;
         private static orderInstances;
         enumerator: Instance[];
-        events: {
-            [s: string]: string;
-        };
-        notifies: {
-            [s: string]: string;
-        };
         ComponentCreator: Instance;
         getProcessorByAttribute(processor: string): Instance;
-        constructor(dom: Node);
+        constructor(dom: HTMLElement, _attributes: Attr[], skipTag: any, insertAttributes: any);
+        static CompileDerictives(x: Tree): Processor.Tree;
+        private Compile;
     }
     class Tree {
         e: bind.IJobScop;
         parent: Tree;
         controller: Controller;
+        creteScopBuilderEventArgs(mode?: bind.BindingMode): bind.ScopBuilderEventArg;
         readonly Scop: bind.Scop;
         readonly ParentScop: bind.Scop;
         readonly Control: UI.JControl;
@@ -71,54 +71,64 @@ export declare namespace Processor {
         static New(dom: Node, parent: Tree, controller: Controller): Tree;
         static Root(dom: Node, Scop: bind.Scop, Control: UI.JControl, controller?: Controller): Tree;
         New(dom: Node): Tree;
+        NewScop(scop: bind.Scop): Tree;
+        NewControlScop(scop: bind.Scop): Tree;
         readonly Depth: any;
         ContinueInto: Element;
+        skipProcessingChildren: boolean;
+        componentData: {
+            attributes: Attr[];
+            slots: Dom.SlotChildrenMap;
+        };
     }
     class TreeWalker {
         static ParseBinding(data: Processor.Tree): Processor.Tree;
         private static setChild;
         private static processComponentChild;
         private static processComponentChildren;
-        static strTemplate(text: Text, x: Tree): bind.StringScop;
+        static strTemplate(text: Text, x: Tree): bind.Scop;
         static ExploreTree(node: Processor.Tree): void;
     }
     function register(p: Def): void;
     class Compiler {
-        private static initEvents;
-        static Compile(x: Tree): Processor.Tree;
     }
-    function Register(p: Processor.Def): void;
+    function Register(p: Processor.Def): Def;
     function Compile(x: Tree): Tree;
 }
 export declare namespace attributes {
     enum ContentType {
-        premitive = 0,
-        multiple = 1,
+        multiple = 0,
+        premitive = 1,
         signle = 2,
         costum = 3
     }
     interface ContentEventArgs {
         child: Processor.Tree;
         parent: Processor.Tree;
+        slot: string;
     }
     interface ContentArgs {
-        type: ContentType;
+        type?: ContentType;
         handler: string | ((e: ContentEventArgs) => void);
         IsProperty?: boolean;
         selector?(e: ContentEventArgs): any;
         target?: typeof UI.JControl;
         getHandler?(cnt: UI.JControl): (e: ContentEventArgs) => void;
+        keepInTree?: boolean;
     }
     interface contentDecl extends Attributes.Attribute<ContentArgs> {
         (param: ContentArgs): any;
     }
     var Content: contentDecl;
+    function ContentHandler(keepInTree: boolean): (target: any, propertyKey: string, des?: PropertyDescriptor) => void;
 }
 export declare namespace attributes {
     interface ComponentEventArgs {
         node: Processor.Tree;
         instance: Processor.Instance;
         Services: any[];
+        processChildrens: boolean;
+        nodesToProcess: Node[];
     }
     interface ComponentArgs {
         name: string;
@@ -130,6 +140,7 @@ export declare namespace attributes {
         (param: ComponentArgs): any;
     }
     var Component: componentType;
+    function ComponentHandler(name: string, initializer?: (ins: Processor.Instance, dom: HTMLElement) => void): (target: any, _propertyKey: string, des?: PropertyDescriptor) => void;
 }
 export declare namespace attributes {
     type Prototype = any;
@@ -153,44 +164,29 @@ export declare namespace attributes {
     const Event: EventAttribute;
 }
 export declare namespace attributes {
-    interface ComponentEventArgs {
-        node: Processor.Tree;
-        instance: Processor.Instance;
-        Services: any[];
-    }
     interface ComponentArgs {
         name: string;
         handler: string | ((e: ComponentEventArgs) => Processor.Tree);
         Serices?: Array<Function | string>;
         target?: typeof UI.JControl;
+        initialize?: (string | ((ins: Processor.Instance, dom: HTMLElement) => void));
     }
     interface componentType extends Attributes.Attribute<ComponentArgs> {
         (param: ComponentArgs): any;
     }
     var Component: componentType;
 }
-export declare module help {
-    class EventData {
-        events: events;
-        interpolation: string;
-        scop?: bind.Scop;
-        constructor(events: events, interpolation: string);
-        readonly dom: Node;
-        readonly controller: Controller;
-        readonly parentScop: bind.Scop;
+export declare namespace attributes {
+    interface ScopHandlerAttribute extends Attributes.Attribute<ScopHandlerArgs> {
+        (param: ScopHandlerArgs): any;
     }
-    class events implements basic.IJob, EventListenerObject {
-        xx: Processor.Tree;
-        private events;
-        Name: string;
-        Todo?(job: bind.JobInstance, e: bind.EventArgs<any, any>): void;
-        Register(eventType: string, v: string): void;
-        private getScop;
-        handleEvent(e: Event): void;
-        private exec;
-        constructor(xx: Processor.Tree);
-        scop: bind.Scop;
+    interface ScopHandlerArgs {
+        token: Parser.CToken | string;
+        handler?: bind.ScopBuilderHandler;
+        target?: typeof bind.Scop;
     }
+    const Parser2Scop: ScopHandlerAttribute;
+    function Parser2ScopHandler(token: Parser.CToken | string): (target: any, propertyKey: string, des?: PropertyDescriptor) => void;
 }
 export declare enum ProcessStat {
     NotProcessed = 0,
@@ -211,7 +207,7 @@ export declare class Controller extends bind.DObject implements basic.IDisposabl
     static __feilds__(): bind.DProperty<HTMLElement, Controller>[];
     static DPView: bind.DProperty<HTMLElement, Controller>;
     View: HTMLElement;
-    JCParent: UI.JControl[];
+    private _JCParent;
     private _onCompiled;
     OnCompiled: basic.ITBindable<(t: this) => void>;
     private _onCompiling;
@@ -224,13 +220,30 @@ export declare class Controller extends bind.DObject implements basic.IDisposabl
     private ProcessBinding;
     private static pb;
     Scop: bind.Scop;
-    static explorerJob: thread.JobParam;
-    readonly CurrentControl: UI.JControl;
+    CurrentControl: UI.JControl;
+    OldControl: UI.JControl;
     instances: bind.JobInstance[];
-    CompileChild(dom: Node, scop: bind.Scop, control: UI.JControl): Processor.Tree;
     private processEvent;
     constructor(cnt: UI.JControl);
     PDispose(): void;
     Dispose(): void;
     createJobInstance(name: string, x: Processor.Tree): bind.JobInstance;
 }
+export declare class xNode<T> {
+    node: Node;
+    param: T;
+    unknown?: xNode<T>[];
+    children: xNode<T>[];
+    parent: xNode<T>;
+    constructor(node: Node, param: T, unknown?: xNode<T>[]);
+    add(node: Node, param: T): xNode<T>;
+    __add(v: xNode<T>): xNode<T>;
+    Validate(): this;
+    ReValidate(callback: (node: xNode<T>) => void): void;
+    get(node: Node): xNode<T>;
+    private _add;
+    remove(node: Node): xNode<T>;
+    hasChild(node: Node): xNode<T>;
+    foreach(callback: (parent: xNode<T>, child: xNode<T>) => number, parent?: xNode<T>): number;
+}
+//# sourceMappingURL=Dom.d.ts.map

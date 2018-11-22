@@ -91,3 +91,4 @@ export declare namespace AI {
         function test(f: Function, iter: number, args: any[]): number;
     }
 }
+//# sourceMappingURL=AI.d.ts.map

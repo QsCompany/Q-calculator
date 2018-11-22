@@ -20,7 +20,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define(["require", "exports", "template|../src/calc.html", "../lib/q/Core", "context", "./calc-logic", "../lib/q/sys/Dom", "../lib/q/sys/runtime"], function (require, exports, calc_html_1, Core_1, context_1, calc_logic_1, Dom_1, runtime_1) {
+define(["require", "exports", "template|../src/calc.html", "../lib/q/Core", "../lib/q/sys/Corelib", "context", "./calc-logic", "../lib/q/sys/Dom", "../lib/q/sys/runtime", "./md/md"], function (require, exports, calc_html_1, Core_1, Corelib_1, context_1, calc_logic_1, Dom_1, runtime_1, md_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     Object.defineProperty(Object.prototype, 'string', { get: function () { return this.toString(); }, configurable: false, enumerable: false });
@@ -74,26 +74,24 @@ define(["require", "exports", "template|../src/calc.html", "../lib/q/Core", "con
             if (!this._view.contains(document.activeElement))
                 return;
             this.Value.append(e);
-            e.preventDefault();
             e.stopPropagation();
             return true;
         };
         Calc.get = function (e) {
-            var t = calc_html_1.template.get("calcView").content.firstElementChild.cloneNode(true);
+            var tm = calc_html_1.template.get("calcView");
+            if (!e)
+                return tm;
+            var t = tm.content.firstElementChild.cloneNode(true);
             e.node.e.dom.appendChild(t);
             return new Core_1.UI.HtmlTemplate(e.node.e.dom, false);
         };
-        Calc.prototype.setName = function (n, dom) { this[n] = dom; };
         var Calc_1;
         __decorate([
-            Core_1.bind.property(Number),
+            Corelib_1.bind.property(Number),
             __metadata("design:type", Number)
         ], Calc.prototype, "fontSize", void 0);
         Calc = Calc_1 = __decorate([
-            Dom_1.attributes.Content({
-                handler: function () {
-                }, type: Dom_1.attributes.ContentType.multiple
-            }),
+            Dom_1.attributes.Content({ keepInTree: true, handler: function (e) { }, type: Dom_1.attributes.ContentType.multiple }),
             Dom_1.attributes.Component({
                 name: 'q-calc',
                 handler: Calc_1.creator
@@ -104,20 +102,16 @@ define(["require", "exports", "template|../src/calc.html", "../lib/q/Core", "con
         return Calc;
     }(Core_1.UI.TControl));
     exports.Calc = Calc;
-    function loadResources() {
+    function loadResources1() {
         var t = ['../lib/q/assets/style/bundle.css', '../src/calc.css'];
         for (var _i = 0, t_1 = t; _i < t_1.length; _i++) {
             var s = t_1[_i];
             require('style|' + s, void 0, void 0, context_1.context);
         }
     }
-    Dom_1.Controller.Attach(Core_1.UI.Desktop.Current, new calc_logic_1.CalcData());
     runtime_1.thread.Dispatcher.OnIdle(Core_1.UI.Spinner.Default, Core_1.UI.Spinner.Default.Pause, true);
-    loadResources();
-    function wrap(child, into) {
-        Core_1.html.replace(child, into).appendChild(child);
-        return into;
-    }
-    exports.wrap = wrap;
+    md_1.loadMDResources();
+    var app = $('#app', document.body);
+    Core_1.UI.processHTML(app, new calc_logic_1.CalcData());
 });
 //# sourceMappingURL=calc.js.map

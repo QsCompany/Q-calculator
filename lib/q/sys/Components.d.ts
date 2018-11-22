@@ -1,6 +1,9 @@
 import { UI } from "./UI";
-import { bind, basic, collection } from "./Corelib";
+import { bind } from "./Corelib";
+import { collection } from './collections';
 import { attributes as _attributes, Controller } from "./Dom";
+import { defs } from "./defs";
+import { basic } from "./utils";
 export declare namespace Components {
     class MdTextbox<T> extends UI.JControl {
         Label: string;
@@ -158,7 +161,7 @@ export declare namespace Components {
         constructor();
         initialize(): void;
         OnSourceChanged(e: bind.EventArgs<collection.List<T>, this>): void;
-        OnValueChanged(box: UI.IAutoCompleteBox, oldValue: T, newValue: T): void;
+        OnValueChanged(box: defs.$UI.IAutoCompleteBox<T>, oldValue: T, newValue: T): void;
     }
 }
 export declare namespace Components {
@@ -174,3 +177,4 @@ export declare namespace Components {
         static ctor(): void;
     }
 }
+//# sourceMappingURL=Components.d.ts.map

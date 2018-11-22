@@ -66,3 +66,4 @@ export declare namespace Workers {
         }>;
     }
 }
+//# sourceMappingURL=Thread.d.ts.map

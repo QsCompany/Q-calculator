@@ -1,13 +1,13 @@
 ﻿<templates>
     <require module="../../sys/Corelib"></require>
-    <descriptor type="Components.MdIconGroup" name="IconGroup">
+    <descriptor name="IconGroup">
         <template name="item">
             <div class="menu-icon ripple">
                 <i class="material-icons" db-bind="iconName" db-job="label"></i>
             </div>
         </template>
     </descriptor>
-    <descriptor type="Components.MdContextMenu" name="MdContextMenu" >
+    <descriptor name="MdContextMenu">
         <template name="label">
             <div class="label" db-bind="value" db-job="label">
                 Share:

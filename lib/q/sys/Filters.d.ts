@@ -1,4 +1,5 @@
-import { utils, bind, collection } from './Corelib';
+import { bind } from './Corelib';
+import { collection, utils } from './collections';
 export declare module filters {
     namespace scopic {
         interface IListFilterParam {
@@ -126,3 +127,4 @@ export declare module filters {
         };
     }
 }
+//# sourceMappingURL=Filters.d.ts.map
